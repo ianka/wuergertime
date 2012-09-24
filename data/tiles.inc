@@ -7,26 +7,37 @@
 
 #include <uzebox.h>
 
+
 /*
  *  Tile offsets.
  */
 #define TILEMAP_WIDTH 16
 #define SHARED_TILES_COUNT 128
+#define UNIQUE_TILES_COUNT 80
+
 
 /* Tile index by unique/shared tile in page 0/1. */
-#define utile(page,row,column) ((RAM_TILES_COUNT+(page?SHARED_TILES_COUNT:0)+TILEMAP_WIDTH*row+column))
-#define stile(page,row,column) (((page?256-SHARED_TILES_COUNT:0)+RAM_TILES_COUNT+TILEMAP_WIDTH*row+column))
+#define utile(page,row,column) (((page?SHARED_TILES_COUNT:0)+TILEMAP_WIDTH*row+column))
+#define stile(page,row,column) (((page?0:UNIQUE_TILES_COUNT)+TILEMAP_WIDTH*row+column))
 
 
 /*
  *  Semantic of tiles.
  */
 
-/* Calculated tile indices for digits and alphabetic characters. */
-#define TILES_LIST(list,member) ((list+member))
+
+/* Tile initializers by page. */
+#define TILES(name) { TILES0_ ## name, TILES1_ ## name }
+#define TILES_COMPOUND(compound,name) { compound(TILES0_ ## name), compound(TILES1_ ## name) }
 
 
 /* Compounds */
+typedef uint8_t tiles_duo_t[2];
+typedef uint8_t tiles_tallduo_t[2];
+typedef uint8_t tiles_trio_t[3];
+typedef struct { uint8_t ul, ur, ll, lr } tiles_block_t;
+typedef uint8_t tiles_burger_t[5];
+
 #define TILES_DUO(c) { c ## _LEFT, c ## _RIGHT }
 #define TILES_TALLDUO(c) { c ## _TOP, c ## _BOTTOM }
 #define TILES_TRIO(c) { c ## _LEFT, c ## _MIDDLE, c ## _RIGHT }
@@ -66,32 +77,32 @@
 
 
 /* Big icons */
-#define TILES0_FRIES_UPPER_LEFT utile(0,2,12)
-#define TILES0_FRIES_UPPER_RIGHT utile(0,2,13)
-#define TILES0_FRIES_LOWER_LEFT utile(0,3,12)
-#define TILES0_FRIES_LOWER_RIGHT utile(0,3,13)
-#define TILES1_FRIES_UPPER_LEFT utile(1,2,12)
-#define TILES1_FRIES_UPPER_RIGHT utile(1,2,13)
-#define TILES1_FRIES_LOWER_LEFT utile(1,3,12)
-#define TILES1_FRIES_LOWER_RIGHT utile(1,3,13)
+#define TILES0_FRIES_UPPER_LEFT stile(0,2,12)
+#define TILES0_FRIES_UPPER_RIGHT stile(0,2,13)
+#define TILES0_FRIES_LOWER_LEFT stile(0,3,12)
+#define TILES0_FRIES_LOWER_RIGHT stile(0,3,13)
+#define TILES1_FRIES_UPPER_LEFT stile(1,2,12)
+#define TILES1_FRIES_UPPER_RIGHT stile(1,2,13)
+#define TILES1_FRIES_LOWER_LEFT stile(1,3,12)
+#define TILES1_FRIES_LOWER_RIGHT stile(1,3,13)
 
-#define TILES0_SODA_UPPER_LEFT utile(0,2,7)
-#define TILES0_SODA_UPPER_RIGHT utile(0,2,8)
-#define TILES0_SODA_LOWER_LEFT utile(0,3,7)
-#define TILES0_SODA_LOWER_RIGHT utile(0,3,8)
-#define TILES1_SODA_UPPER_LEFT utile(1,2,7)
-#define TILES1_SODA_UPPER_RIGHT utile(1,2,8)
-#define TILES1_SODA_LOWER_LEFT utile(1,3,7)
-#define TILES1_SODA_LOWER_RIGHT utile(1,3,8)
+#define TILES0_SODA_UPPER_LEFT stile(0,2,7)
+#define TILES0_SODA_UPPER_RIGHT stile(0,2,8)
+#define TILES0_SODA_LOWER_LEFT stile(0,3,7)
+#define TILES0_SODA_LOWER_RIGHT stile(0,3,8)
+#define TILES1_SODA_UPPER_LEFT stile(1,2,7)
+#define TILES1_SODA_UPPER_RIGHT stile(1,2,8)
+#define TILES1_SODA_LOWER_LEFT stile(1,3,7)
+#define TILES1_SODA_LOWER_RIGHT stile(1,3,8)
 
-#define TILES0_CROWN_UPPER_LEFT utile(0,4,12)
-#define TILES0_CROWN_UPPER_RIGHT utile(0,4,13)
-#define TILES0_CROWN_LOWER_LEFT utile(0,5,12)
-#define TILES0_CROWN_LOWER_RIGHT utile(0,5,13)
-#define TILES1_CROWN_UPPER_LEFT utile(1,4,12)
-#define TILES1_CROWN_UPPER_RIGHT utile(1,4,13)
-#define TILES1_CROWN_LOWER_LEFT utile(1,5,12)
-#define TILES1_CROWN_LOWER_RIGHT utile(1,5,13)
+#define TILES0_CROWN_UPPER_LEFT stile(0,4,12)
+#define TILES0_CROWN_UPPER_RIGHT stile(0,4,13)
+#define TILES0_CROWN_LOWER_LEFT stile(0,5,12)
+#define TILES0_CROWN_LOWER_RIGHT stile(0,5,13)
+#define TILES1_CROWN_UPPER_LEFT stile(1,4,12)
+#define TILES1_CROWN_UPPER_RIGHT stile(1,4,13)
+#define TILES1_CROWN_LOWER_LEFT stile(1,5,12)
+#define TILES1_CROWN_LOWER_RIGHT stile(1,5,13)
 
 
 /* Plate and sign frame */
