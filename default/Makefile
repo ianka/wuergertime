@@ -54,7 +54,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o $(GAME).o 
+OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o $(GAME).o tiles.o draw.o screens.o screens_ingame.o screens_outofgame.o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -63,7 +63,7 @@ LINKONLYOBJECTS =
 INCLUDES = -I"$(KERNEL_DIR)" 
 
 ## Build
-all: ../data/tiles.inc ../data/patches.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
+all: $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
 
 ## Compile Kernel files
 uzeboxVideoEngineCore.o: $(KERNEL_DIR)/uzeboxVideoEngineCore.s
@@ -85,7 +85,23 @@ uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c
 $(GAME).o: ../$(GAME).c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
-##Link
+tiles.o: ../tiles.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+draw.o: ../draw.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+screens.o: ../screens.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+screens_outofgame.o: ../screens_outofgame.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+screens_ingame.o: ../screens_ingame.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+
+## Link
 $(TARGET): $(OBJECTS)
 	 $(CC) $(LDFLAGS) $(OBJECTS) $(LINKONLYOBJECTS) $(LIBDIRS) $(LIBS) -o $(TARGET)
 
