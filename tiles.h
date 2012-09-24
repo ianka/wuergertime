@@ -36,6 +36,7 @@ extern const char Tiles[] PROGMEM;
 #define TILEMAP_WIDTH 16
 #define SHARED_TILES_COUNT 128
 #define UNIQUE_TILES_COUNT 80 /* 256-SHARED_TILES_COUNT-RAM_TILES_COUNT */
+#define FONT_BEFORE_BORDER_TILES_COUNT 32
 
 
 /* Tilesets */
@@ -51,6 +52,8 @@ extern uint8_t Tileset;
 static inline void SetTileset(uint8_t tileset) {
 	Tileset=tileset;
 	SetTileTable(Tiles+(tileset?PIXELS_PER_TILE*UNIQUE_TILES_COUNT:0));
+	//SetFontTable(Tiles+(tileset?PIXELS_PER_TILE*UNIQUE_TILES_COUNT:0)); /* Not implemented in video mode 3 */
+	SetFontTilesIndex(SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT-RAM_TILES_COUNT+(tileset?0:UNIQUE_TILES_COUNT));
 }
 
 

@@ -20,6 +20,17 @@
 #include <avr/pgmspace.h> /* for PROGMEM */
 
 
+/* Screen size. */
+#define SCREEN_WIDTH  30
+#define SCREEN_HEIGHT 28
+
+
+/* Center strings. */
+#define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);
+
+
+
+/* Drawables in screen lists. */
 #define DRAWABLE_LADDER           0xc0
 #define DRAWABLE_LADDER_CONTINUED 0x20
 #define DRAWABLE_LADDER_LENGTH    0x1f
@@ -32,7 +43,9 @@
 typedef struct { uint8_t c, x, y; } PROGMEM drawable_t;
 
 void clearScreen(void);
+void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps);
 void drawLevel(uint8_t level, uint8_t length_tweak);
+
 
 
 #endif /* DRAW_H */

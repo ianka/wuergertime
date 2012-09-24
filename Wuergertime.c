@@ -42,6 +42,7 @@ int main(void) {
 	Tileset=TILESET_OUTOFGAME;
 	GameScreenPrevious=GAME_SCREEN_INVALID;
 	GameScreen=GAME_SCREEN_START;
+	GameScreenAnimationPhase=0;
 	GameScreenUpdateFunction=NULL; /* This will be set correctly below. */
 
 	/* Setup audio. */
@@ -57,6 +58,9 @@ int main(void) {
 		if (GameScreen == GameScreenPrevious) {
 			/* No change. Call update function by pointer for current screen. */
 			GameScreenUpdateFunction();
+
+			/* Next animation phase. */
+			GameScreenAnimationPhase++;
 
 			/* Wait for next frame (let the interrupt kernel work). */
 			WaitVsync(1);
@@ -83,7 +87,13 @@ int main(void) {
 			}
 
 			/* Initialize new screen. */
+			/* Default tileset */
 			SetTileset(TILESET_OUTOFGAME);
+
+			/* Reset animation phase. */
+			GameScreenAnimationPhase=0;
+
+			/* Call screen dependent init function. */
 			switch (GameScreen) {
 				case GAME_SCREEN_DEBUG:
 					GameScreenUpdateFunction=&updateDebugScreen;

@@ -19,9 +19,10 @@
 #include "data/screenlists.inc"
 
 
-/* Game screen switch and update function pointer. */ 
+/* Game screen switch, animation phase and update function pointer. */ 
 uint8_t GameScreenPrevious;
 uint8_t GameScreen;
+uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 
 

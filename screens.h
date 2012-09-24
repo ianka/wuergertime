@@ -47,9 +47,10 @@
 #define GAME_SCREEN_INVALID       0xff 
 
 
-/* Game screen switch and update function pointer. */ 
+/* Game screen switch, animation phase and update function pointer. */ 
 extern uint8_t GameScreenPrevious;
 extern uint8_t GameScreen;
+extern uint16_t GameScreenAnimationPhase;
 extern void (*GameScreenUpdateFunction)(void);
 
 

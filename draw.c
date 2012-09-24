@@ -22,7 +22,7 @@
 /* Clear screen. */
 void clearScreen(void) {
 	uint8_t space[2]=TILES(SPACE);
-	Fill(0,0,30,28,space[Tileset]);
+	Fill(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,space[Tileset]);
 }
 
 
