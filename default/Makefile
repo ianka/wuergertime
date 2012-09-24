@@ -19,8 +19,10 @@ INFO=../gameinfo.properties
 
 ## Kernel settings
 KERNEL_DIR = ../../trunk/kernel
-KERNEL_OPTIONS  = -DVIDEO_MODE=3 -DINTRO_LOGO=0 -DSOUND_CHANNEL_4_ENABLE=0 -DSOUND_CHANNEL_2_ENABLE=1 -DSOUND_CHANNEL_3_ENABLE=1 -DMIXER_CHAN4_TYPE=1
-KERNEL_OPTIONS += -DMAX_SPRITES=20 -DRAM_TILES_COUNT=48
+KERNEL_OPTIONS  = -DVIDEO_MODE=3 -DINTRO_LOGO=0
+#KERNEL_OPTIONS += -DSOUND_CHANNEL_4_ENABLE=0 -DSOUND_CHANNEL_2_ENABLE=1 -DSOUND_CHANNEL_3_ENABLE=1 -DMIXER_CHAN4_TYPE=1
+KERNEL_OPTIONS += -DMAX_SPRITES=20
+KERNEL_OPTIONS += -DRAM_TILES_COUNT=8
 #KERNEL_OPTIONS  += -DMIXER_WAVES=\"$(MIX_PATH_ESC)\"
 
 ## Options common to compile, link and assembly rules
@@ -61,14 +63,7 @@ LINKONLYOBJECTS =
 INCLUDES = -I"$(KERNEL_DIR)" 
 
 ## Build
-#all: ../data/tiles0.inc ../data/sprites.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
-all: $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
-
-## Regenerate the graphics include file
-../data/tiles0.inc: ../data/tiles0.png ../data/tiles0.xml
-	gconvert ../data/tiles0.xml
-../data/sprites.inc: ../data/sprites.png ../data/sprites.xml
-	gconvert ../data/sprites.xml
+all: ../data/tiles.inc ../data/patches.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
 
 ## Compile Kernel files
 uzeboxVideoEngineCore.o: $(KERNEL_DIR)/uzeboxVideoEngineCore.s
