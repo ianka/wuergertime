@@ -7,13 +7,18 @@
 
 #include <uzebox.h>
 
+/*
+ * Tile basics.
+ */
+#define PIXELS_PER_TILE 64
+
 
 /*
  *  Tile offsets.
  */
 #define TILEMAP_WIDTH 16
 #define SHARED_TILES_COUNT 128
-#define UNIQUE_TILES_COUNT 80
+#define UNIQUE_TILES_COUNT 80 /* 256-SHARED_TILES_COUNT-RAM_TILES_COUNT */
 
 
 /* Tile index by unique/shared tile in page 0/1. */
@@ -32,11 +37,11 @@
 
 
 /* Compounds */
-typedef uint8_t tiles_duo_t[2];
-typedef uint8_t tiles_tallduo_t[2];
-typedef uint8_t tiles_trio_t[3];
-typedef struct { uint8_t ul, ur, ll, lr } tiles_block_t;
-typedef uint8_t tiles_burger_t[5];
+typedef struct { uint8_t left, right; } tiles_duo_t;
+typedef struct { uint8_t top, bottom; } tiles_tallduo_t;
+typedef struct { uint8_t left, middle, right; } tiles_trio_t;
+typedef struct { uint8_t upperleft, upperright, lowerleft, lowerright; } tiles_block_t;
+typedef struct { uint8_t left, middleleft, middle, middleright, right; } tiles_burger_t;
 
 #define TILES_DUO(c) { c ## _LEFT, c ## _RIGHT }
 #define TILES_TALLDUO(c) { c ## _TOP, c ## _BOTTOM }
@@ -210,11 +215,11 @@ typedef uint8_t tiles_burger_t[5];
 
 
 /* Floors and ladders */
-#define TILES0_FLOOR stile(0,0,2)
-#define TILES1_FLOOR stile(1,0,2)
-
 #define TILES0_FLOOR_LEFT stile(0,1,3)
 #define TILES1_FLOOR_LEFT stile(1,1,3)
+
+#define TILES0_FLOOR_MIDDLE stile(0,0,2)
+#define TILES1_FLOOR_MIDDLE stile(1,0,2)
 
 #define TILES0_FLOOR_RIGHT stile(0,0,3)
 #define TILES1_FLOOR_RIGHT stile(1,0,3)
