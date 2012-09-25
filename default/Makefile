@@ -62,8 +62,11 @@ LINKONLYOBJECTS =
 ## Include Directories
 INCLUDES = -I"$(KERNEL_DIR)" 
 
+
+
 ## Build
-all: $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
+all: $(TARGET) ../data/tiles0.inc $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
+
 
 ## Compile Kernel files
 uzeboxVideoEngineCore.o: $(KERNEL_DIR)/uzeboxVideoEngineCore.s
@@ -81,9 +84,15 @@ uzeboxSoundEngine.o: $(KERNEL_DIR)/uzeboxSoundEngine.c
 uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
+
+## Convert tilesets.
+../data/tiles0.inc: ../data/tiles.pcx
+	../tools/pcxtotiles.tcl <$^ >$@
+
+
 ## Compile game sources
 $(GAME).o: ../$(GAME).c
-	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 utils.o: ../utils.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<

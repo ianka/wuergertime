@@ -18,13 +18,14 @@
 /* Local includes. */
 #include "screens.h"
 #include "draw.h"
+#include "tiles.h"
 
 
 /* Fixed strings. */
 const char TextDebug[] PROGMEM = "DEBUG";
-const char TextWuergertime[] PROGMEM = "WUERGERTIME";
-const char TextPressStart[] PROGMEM = "PRESS START";
-const char TextPressStartBlink[] PROGMEM = "           ";
+const char TextPress[] PROGMEM = "PRESS";
+const char TextStart[] PROGMEM = "START";
+const char TextPressStartBlink[] PROGMEM = "     ";
 const char TextProgrammingAndArtwork[] PROGMEM = "PROGRAMMING AND ARTWORK";
 const char TextByJanKandziora[] PROGMEM = "BY JAN KANDZIORA";
 const char TextCopyleft[] PROGMEM = "@2012 JAN KANDZIORA";
@@ -62,11 +63,16 @@ void cleanupDebugScreen(void) {
  *  and in rotation with credits, demo and highscores.
  */
 void initStartScreen(void) {
+	uint8_t *p;
+	uint8_t i;
+
 	FadeIn(1,0);
 	clearScreen();
-	drawStringCentered(10,TextWuergertime)
-	drawStringCentered(15,TextPressStart)
+
+
 	drawFloor(0,19,SCREEN_WIDTH,0);
+	drawShape(5,1,ShapeFoodTruck);
+
 	drawStringCentered(21,TextProgrammingAndArtwork);
 	drawStringCentered(22,TextByJanKandziora);
 	drawStringCentered(24,TextCopyleft);
@@ -75,14 +81,24 @@ void initStartScreen(void) {
 }
 
 void updateStartScreen(void) {
-	if (GameScreenAnimationPhase & 2) {
-		drawStringCentered(15,TextPressStart)
+	if (GameScreenAnimationPhase & 32) {
+		SetTile(13,1,TILES1_OPEN_LEFT);
+		SetTile(14,1,TILES1_OPEN_RIGHT);
 	} else {
-		drawStringCentered(15,TextPressStartBlink)
+		SetTile(13,1,TILES1_SIGN_TOP);
+		SetTile(14,1,TILES1_SIGN_TOP);
 	}
 
-	if (GameScreenAnimationPhase>100)
-		ChangeGameScreen(GAME_SCREEN_DEBUG);
+	if (GameScreenAnimationPhase & 4) {
+		Print(23,10,TextPress);
+		Print(23,12,TextStart);
+	} else {
+		Print(23,10,TextPressStartBlink);
+		Print(23,12,TextPressStartBlink);
+	}
+
+//	if (GameScreenAnimationPhase>1000)
+	//	ChangeGameScreen(GAME_SCREEN_DEBUG);
 }
 
 void cleanupStartScreen(void) {

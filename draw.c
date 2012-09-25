@@ -26,6 +26,25 @@ void clearScreen(void) {
 }
 
 
+/* Draw an arbitrary shape on screen */
+void drawShape(uint8_t x, uint8_t y, uint8_t *p) {
+	uint8_t width, height, sx, sy;
+
+	/* Get width and height of shape. */
+	width=pgm_read_byte(p);
+	p++;
+	height=pgm_read_byte(p);
+	p++;
+
+	/* Draw lines. */
+	for (sy=0;sy<height;sy++)
+		for (sx=0;sx<width;sx++) {
+			SetTile(x+sx,y+sy,pgm_read_byte(p));
+			p++;
+		}
+}
+
+
 /* Draw a floor. */
 void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 	tiles_trio_t floor[2]=TILES_COMPOUND(TILES_TRIO,FLOOR);
@@ -125,4 +144,5 @@ void drawLevel(uint8_t level, uint8_t length_tweak) {
 		p++;
 	}	
 }
+
 

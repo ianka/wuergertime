@@ -17,6 +17,7 @@
 
 
 #include <avr/io.h> /* for uint8_t */
+#include <avr/pgmspace.h> /* for PROGMEM */
 #include <uzebox.h> /* for RAM_TILES_COUNT */
 
 
@@ -52,7 +53,6 @@ extern uint8_t Tileset;
 static inline void SetTileset(uint8_t tileset) {
 	Tileset=tileset;
 	SetTileTable(Tiles+(tileset?PIXELS_PER_TILE*UNIQUE_TILES_COUNT:0));
-	//SetFontTable(Tiles+(tileset?PIXELS_PER_TILE*UNIQUE_TILES_COUNT:0)); /* Not implemented in video mode 3 */
 	SetFontTilesIndex(SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT-RAM_TILES_COUNT+(tileset?0:UNIQUE_TILES_COUNT));
 }
 

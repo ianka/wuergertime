@@ -63,5 +63,7 @@ static inline void ChangeGameScreen(uint8_t screen) {
 /* Screen Lists */
 extern const drawable_t ScreenLists[] PROGMEM;
 
+/* Shapes. */
+extern const uint8_t ShapeFoodTruck[] PROGMEM;
 
 #endif /* SCREENS_H */
