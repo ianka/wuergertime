@@ -17,10 +17,26 @@
 
 
 #include <avr/io.h> /* for uint8_t */
+#include <avr/pgmspace.h> /* for PROGMEM */
 
 
-/* Local includes. */
-#include "draw.h" /* for drawable_t */
+/* Items in levels. */
+#define LEVEL_ITEM_SIGN             0x80
+#define LEVEL_ITEM_LADDER           0xc0
+#define LEVEL_ITEM_LADDER_CONTINUED 0x20
+#define LEVEL_ITEM_LADDER_LENGTH    0x1f
+#define LEVEL_ITEM_FLOOR            0x00
+#define LEVEL_ITEM_FLOOR_CAP_LEFT   0x40 
+#define LEVEL_ITEM_FLOOR_CAP_RIGHT  0x20 
+#define LEVEL_ITEM_FLOOR_CAP_BOTH   ((LEVEL_ITEM_FLOOR_CAP_LEFT|LEVEL_ITEM_FLOOR_CAP_RIGHT))
+#define LEVEL_ITEM_FLOOR_LENGTH     0x1f 
+
+typedef struct { uint8_t c, x, y; } PROGMEM level_item_t;
+
+
+/* Levels */
+extern const level_item_t Levels[] PROGMEM;
+
 
 
 /*
@@ -60,10 +76,8 @@ static inline void ChangeGameScreen(uint8_t screen) {
 }
 
 
-/* Screen Lists */
-extern const drawable_t ScreenLists[] PROGMEM;
+/* Prepare a level. */
+void prepareLevel(uint8_t level, uint8_t length_tweak);
 
-/* Shapes. */
-extern const uint8_t ShapeFoodTruck[] PROGMEM;
 
 #endif /* SCREENS_H */

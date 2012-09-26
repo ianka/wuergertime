@@ -15,8 +15,13 @@
 #include <avr/io.h> /* for uint8_t */
 
 
-/* Actual screen list data */
-#include "data/screenlists.inc"
+/* Actual level data */
+#include "data/levels.inc"
+
+
+/* Local Includes */
+#include "draw.h"
+#include "utils.h"
 
 
 /* Game screen switch, animation phase and update function pointer. */ 
@@ -24,5 +29,48 @@ uint8_t GameScreenPrevious;
 uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
+
+
+/* Prepare a level. */
+void prepareLevel(uint8_t level, uint8_t length_tweak) {
+	const level_item_t *p=Levels;
+	uint8_t c, x, y, length;
+
+	/* Skip to given level */
+	while (level--) {
+		while (pgm_read_byte(&(p->c))) p++;
+		p++;
+	}
+
+	/* Draw level specific screen list. */
+	while ((c=pgm_read_byte(&(p->c))) != 0) {
+		/* Get coordinates */
+		x=pgm_read_byte(&(p->x));
+		y=pgm_read_byte(&(p->y));
+
+		/* Check for type of drawable. */
+		switch (c) {
+			case LEVEL_ITEM_SIGN:
+				/* Draw sign shape */
+				drawShape(x,y,ShapeSignTilesInGame);
+				break;
+			default:
+				/* Ladders and floors. */
+				if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
+					/* Ladder. Draw it. */
+					drawLadder(x,y,c & LEVEL_ITEM_LADDER_LENGTH,c & LEVEL_ITEM_LADDER_CONTINUED);
+				} else {
+					/* Floor. Honor the length tweak, e.g. for the level start animation. */
+					length=min(c & LEVEL_ITEM_FLOOR_LENGTH,length_tweak);
+
+					/* Draw it. */
+					drawFloor(x+((c & LEVEL_ITEM_FLOOR_LENGTH)-length)/2,y,length,c & LEVEL_ITEM_FLOOR_CAP_BOTH);
+				}
+		}	
+
+		/* Next element in screen list. */
+		p++;
+	}	
+}
 
 

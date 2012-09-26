@@ -12,8 +12,13 @@
  */
 
 
+#include <uzebox.h>
+
+
 /* Local includes. */
 #include "screens.h"
+#include "draw.h"
+#include "tiles.h"
 
 
 /*
@@ -24,6 +29,11 @@
  */
 
 void initInGamePrepareScreen(void) {
+	/* Fade into clear screen */
+	clearScreen();
+	FadeIn(1,0);
+
+	prepareLevel(1,32);
 }
 
 void updateInGamePrepareScreen(void) {

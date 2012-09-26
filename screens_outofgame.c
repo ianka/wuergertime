@@ -63,16 +63,16 @@ void cleanupDebugScreen(void) {
  *  and in rotation with credits, demo and highscores.
  */
 void initStartScreen(void) {
-	uint8_t *p;
-	uint8_t i;
-
-	FadeIn(1,0);
+	/* Fade into clear screen */
 	clearScreen();
+	FadeIn(1,0);
 
-
+	/* Draw picture */
 	drawFloor(0,19,SCREEN_WIDTH,0);
-	drawShape(5,1,ShapeFoodTruck);
+	drawShape(7,1,ShapeSignTilesOutOfGame);
+	drawShape(5,6,ShapeFoodTruck);
 
+	/* Draw credits and licensing strings. */
 	drawStringCentered(21,TextProgrammingAndArtwork);
 	drawStringCentered(22,TextByJanKandziora);
 	drawStringCentered(24,TextCopyleft);
@@ -81,14 +81,16 @@ void initStartScreen(void) {
 }
 
 void updateStartScreen(void) {
+	/* Animate open sign. */
 	if (GameScreenAnimationPhase & 32) {
-		SetTile(13,1,TILES1_OPEN_LEFT);
-		SetTile(14,1,TILES1_OPEN_RIGHT);
+		SetTile(13,1,TILES1_OPEN_ON_LEFT);
+		SetTile(14,1,TILES1_OPEN_ON_RIGHT);
 	} else {
-		SetTile(13,1,TILES1_SIGN_TOP);
-		SetTile(14,1,TILES1_SIGN_TOP);
+		SetTile(13,1,TILES1_OPEN_OFF_LEFT);
+		SetTile(14,1,TILES1_OPEN_OFF_RIGHT);
 	}
 
+	/* Animate "Press Start". */
 	if (GameScreenAnimationPhase & 4) {
 		Print(23,10,TextPress);
 		Print(23,12,TextStart);
@@ -97,11 +99,14 @@ void updateStartScreen(void) {
 		Print(23,12,TextPressStartBlink);
 	}
 
-//	if (GameScreenAnimationPhase>1000)
-	//	ChangeGameScreen(GAME_SCREEN_DEBUG);
+	/* Switch to highscore screen */
+	if (GameScreenAnimationPhase>100)
+		ChangeGameScreen(0+GAME_SCREEN_LEVEL_PREPARE);
+	//	ChangeGameScreen(GAME_SCREEN_HIGHSCORE);
 }
 
 void cleanupStartScreen(void) {
+	/* Fade out and wait to complete */
 	FadeOut(1,1);
 }
 

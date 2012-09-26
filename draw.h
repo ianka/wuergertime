@@ -20,6 +20,21 @@
 #include <avr/pgmspace.h> /* for PROGMEM */
 
 
+/* Local includes. */
+#include "screens.h" /* for draw options */
+
+
+/* Draw options. */
+#define DRAW_OPTION_FLOOR_CAP_LEFT LEVEL_ITEM_FLOOR_CAP_LEFT
+#define DRAW_OPTION_FLOOR_CAP_RIGHT LEVEL_ITEM_FLOOR_CAP_RIGHT
+
+
+/* Shapes. */
+extern const uint8_t ShapeSignTilesOutOfGame[] PROGMEM;
+extern const uint8_t ShapeSignTilesInGame[] PROGMEM;
+extern const uint8_t ShapeFoodTruck[] PROGMEM;
+
+
 /* Screen size. */
 #define SCREEN_WIDTH  30
 #define SCREEN_HEIGHT 28
@@ -29,24 +44,13 @@
 #define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);
 
 
-
-/* Drawables in screen lists. */
-#define DRAWABLE_LADDER           0xc0
-#define DRAWABLE_LADDER_CONTINUED 0x20
-#define DRAWABLE_LADDER_LENGTH    0x1f
-#define DRAWABLE_FLOOR            0x00
-#define DRAWABLE_FLOOR_CAP_LEFT   0x40 
-#define DRAWABLE_FLOOR_CAP_RIGHT  0x20 
-#define DRAWABLE_FLOOR_CAP_BOTH   ((DRAWABLE_FLOOR_CAP_LEFT|DRAWABLE_FLOOR_CAP_RIGHT))
-#define DRAWABLE_FLOOR_LENGTH     0x1f 
-
-typedef struct { uint8_t c, x, y; } PROGMEM drawable_t;
-
 void clearScreen(void);
-void drawShape(uint8_t x, uint8_t y, uint8_t *p);
+void drawShape(uint8_t x, uint8_t y, const uint8_t *p);
 void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps);
-void drawLevel(uint8_t level, uint8_t length_tweak);
-
+void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued);
+void drawSoda(uint8_t x, uint8_t y);
+void drawFries(uint8_t x, uint8_t y);
+void drawCrown(uint8_t x, uint8_t y);
 
 
 #endif /* DRAW_H */

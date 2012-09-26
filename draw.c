@@ -16,7 +16,10 @@
 #include "draw.h"
 #include "tiles.h"
 #include "screens.h"
-#include "utils.h"
+
+
+/* Shape data. */
+#include "data/shapes.inc"
 
 
 /* Clear screen. */
@@ -27,7 +30,7 @@ void clearScreen(void) {
 
 
 /* Draw an arbitrary shape on screen */
-void drawShape(uint8_t x, uint8_t y, uint8_t *p) {
+void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
 	uint8_t width, height, sx, sy;
 
 	/* Get width and height of shape. */
@@ -50,7 +53,7 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 	tiles_trio_t floor[2]=TILES_COMPOUND(TILES_TRIO,FLOOR);
 
 	/* Draw left cap if desired. */
-	if (caps & DRAWABLE_FLOOR_CAP_LEFT) {
+	if (caps & DRAW_OPTION_FLOOR_CAP_LEFT) {
 		SetTile(x,y,floor[Tileset].left);
 		x++;
 		length--;
@@ -60,7 +63,7 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 	if (!length) return;
 
 	/* Draw right cap if desired. */
-	if (caps & DRAWABLE_FLOOR_CAP_LEFT) {
+	if (caps & DRAW_OPTION_FLOOR_CAP_LEFT) {
 		length--;
 		SetTile(x+length,y,floor[Tileset].right);
 	}
@@ -101,6 +104,7 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
 }
 
 
+/* Draw a soda can. */
 void drawSoda(uint8_t x, uint8_t y) {
 	tiles_block_t soda[2]=TILES_COMPOUND(TILES_BLOCK,SODA);
 
@@ -111,38 +115,24 @@ void drawSoda(uint8_t x, uint8_t y) {
 }	
 
 
-/* Draw a level. */
-void drawLevel(uint8_t level, uint8_t length_tweak) {
-	const drawable_t *p=ScreenLists;
-	uint8_t c, x, y, length;
+/* Draw fries packet. */
+void drawFries(uint8_t x, uint8_t y) {
+	tiles_block_t fries[2]=TILES_COMPOUND(TILES_BLOCK,FRIES);
 
-	/* Skip to given level */
-	while (level--) {
-		while (pgm_read_byte(&(p->c))) p++;
-		p++;
-	}
-
-	/* Draw level specific screen list. */
-	while ((c=pgm_read_byte(&(p->c))) != 0) {
-		/* Get coordinates */
-		x=pgm_read_byte(&(p->x));
-		y=pgm_read_byte(&(p->y));
-
-		/* Check for type of drawable. */
-		if ((c & DRAWABLE_LADDER) == DRAWABLE_LADDER) {
-			/* Ladder. Draw it. */
-			drawLadder(x,y,c & DRAWABLE_LADDER_LENGTH,c & DRAWABLE_LADDER_CONTINUED);
-		} else {
-			/* Floor. Honor the length tweak, e.g. for the level start animation. */
-			length=min(c & DRAWABLE_FLOOR_LENGTH,length_tweak);
-
-			/* Draw it. */
-			drawFloor(x+((c & DRAWABLE_FLOOR_LENGTH)-length)/2,y,length,c & DRAWABLE_FLOOR_CAP_BOTH);
-		}
-
-		/* Next element in screen list. */
-		p++;
-	}	
+	SetTile(x,y,fries[Tileset].upperleft);
+	SetTile(x+1,y,fries[Tileset].upperright);
+	SetTile(x,y+1,fries[Tileset].lowerleft);
+	SetTile(x+1,y+1,fries[Tileset].lowerright);
 }
 
+
+/* Draw crown. */
+void drawCrown(uint8_t x, uint8_t y) {
+	tiles_block_t crown[2]=TILES_COMPOUND(TILES_BLOCK,CROWN);
+
+	SetTile(x,y,crown[Tileset].upperleft);
+	SetTile(x+1,y,crown[Tileset].upperright);
+	SetTile(x,y+1,crown[Tileset].lowerleft);
+	SetTile(x+1,y+1,crown[Tileset].lowerright);
+}
 
