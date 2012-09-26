@@ -23,6 +23,7 @@
 
 /* Local headers */
 #include "utils.h"
+#include "controllers.h"
 #include "tiles.h"
 #include "draw.h"
 #include "screens.h"
@@ -37,6 +38,7 @@
  */
 int main(void) {
 	/* Game-wide initialisation */
+	initControllers();
 
 	/* Setup game-wide global variables. */
 	Tileset=TILESET_OUTOFGAME;
@@ -56,6 +58,9 @@ int main(void) {
 	for (;;) {
 		/* Check for screen change. */
 		if (GameScreen == GameScreenPrevious) {
+			/* Sample controllers. */
+			sampleControllers();
+
 			/* No change. Call update function by pointer for current screen. */
 			GameScreenUpdateFunction();
 

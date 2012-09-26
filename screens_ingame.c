@@ -27,13 +27,16 @@
  *    + Opening animation of floors and burgers 
  *    + Burger positions are being reset
  */
-
 void initInGamePrepareScreen(void) {
+	/* Select level description by number. */
+	selectLevel(GameScreen & ~GAME_SCREEN_LEVEL_MASK);
+
 	/* Fade into clear screen */
 	clearScreen();
 	FadeIn(1,0);
 
-	prepareLevel(1,32);
+	/* Prepare level by description. */
+	prepareLevel(32);
 }
 
 void updateInGamePrepareScreen(void) {

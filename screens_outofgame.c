@@ -19,6 +19,7 @@
 #include "screens.h"
 #include "draw.h"
 #include "tiles.h"
+#include "controllers.h"
 
 
 /* Fixed strings. */
@@ -49,7 +50,7 @@ void initDebugScreen(void) {
 }
 
 void updateDebugScreen(void) {
-	if (GameScreenAnimationPhase>1000)
+	if (GameScreenAnimationPhase>100)
 		ChangeGameScreen(GAME_SCREEN_START);
 }
 
@@ -99,10 +100,17 @@ void updateStartScreen(void) {
 		Print(23,12,TextPressStartBlink);
 	}
 
-	/* Switch to highscore screen */
-	if (GameScreenAnimationPhase>100)
-		ChangeGameScreen(0+GAME_SCREEN_LEVEL_PREPARE);
-	//	ChangeGameScreen(GAME_SCREEN_HIGHSCORE);
+	/* Check buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_OUTOFGAME)) {
+		case BTN_START:
+			/* Change to level 0 as soon start is pressed. */
+			ChangeGameScreen(0+GAME_SCREEN_LEVEL_PREPARE);
+			break;
+		default:
+			/* Switch to highscore screen after a while. */
+			if (GameScreenAnimationPhase>100)
+				ChangeGameScreen(GAME_SCREEN_DEBUG);
+	}
 }
 
 void cleanupStartScreen(void) {

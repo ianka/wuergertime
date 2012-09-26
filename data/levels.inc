@@ -8,7 +8,7 @@
  *
  * ---------------------------------------------------
  *
- *  data/levels.inc - level drawing lists
+ *  data/levels.inc - level descriptions
  */
 
 
@@ -24,29 +24,22 @@
 #include "../screens.h" /* for level_item_t */
 
 
-/* Screen lists. */
-const level_item_t Levels[] PROGMEM={
+/* Level descriptions. */
+const level_item_t LevelDescriptions[] PROGMEM={
 	/* Level 0 */
-	{ c: LEVEL_ITEM_FLOOR|1, x:0, y:3 },
-	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_LEFT|2, x:0, y:6 },
-	{ c: LEVEL_ITEM_FLOOR|3, x:0, y:9 },
-	{ c: 0 },
-
-	/* Level 1 */
-	{ c: LEVEL_ITEM_SIGN, x:3, y:0 },
 	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_BOTH|22, x:0, y:13 },
 	{ c: LEVEL_ITEM_FLOOR|10, x:5, y:9 },
 	{ c: LEVEL_ITEM_LADDER|5, x:10, y:9 },
 	{ c: LEVEL_ITEM_LADDER|LEVEL_ITEM_LADDER_CONTINUED|10, x:10, y:13 },
+	{ c: LEVEL_ITEM_SIGN, x:3, y:0 },
 	{ c: 0 },
 
-	/* Level 2 */
+	/* Level 1 */
 	{ c: LEVEL_ITEM_FLOOR|3, x:0, y:3 },
 	{ c: LEVEL_ITEM_FLOOR|1, x:0, y:6 },
 	{ c: LEVEL_ITEM_FLOOR|5, x:0, y:9 },
 	{ c: 0 },
 };
-
 
 
 #endif /* SCREENLISTS_INC */

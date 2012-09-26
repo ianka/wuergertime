@@ -31,16 +31,29 @@ uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 
 
-/* Prepare a level. */
-void prepareLevel(uint8_t level, uint8_t length_tweak) {
-	const level_item_t *p=Levels;
-	uint8_t c, x, y, length;
+/* Pointer to current level description. */
+const level_item_t *LevelDescription;
 
-	/* Skip to given level */
+
+/* Select a level description. */
+void selectLevel(uint8_t level) {
+	const level_item_t *p=LevelDescriptions;
+
+	/* Skip level descriptions to given level */
 	while (level--) {
 		while (pgm_read_byte(&(p->c))) p++;
 		p++;
 	}
+
+	/* Remember level description pointer. */
+	LevelDescription=p;
+}
+
+
+/* Prepare current level. */
+void prepareLevel(uint8_t length_tweak) {
+	const level_item_t *p=LevelDescription;
+	uint8_t c, x, y, length;
 
 	/* Draw level specific screen list. */
 	while ((c=pgm_read_byte(&(p->c))) != 0) {
