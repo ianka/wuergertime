@@ -31,14 +31,17 @@ void initInGamePrepareScreen(void) {
 	/* Select level description by number. */
 	selectLevel(GameScreen & ~GAME_SCREEN_LEVEL_MASK);
 
+	/* Prepare level by description. */
+	prepareLevel();
+
 	/* Fade into clear screen */
 	clearScreen();
 	FadeIn(1,0);
 }
 
 void updateInGamePrepareScreen(void) {
-	/* Prepare level by description. */
-	prepareLevel();
+	/* Start animation. */
+	animateLevelStart();
 }
 
 void cleanupInGamePrepareScreen(void) {

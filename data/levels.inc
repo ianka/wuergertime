@@ -27,9 +27,9 @@
 /* Level descriptions. */
 const level_item_t LevelDescriptions[] PROGMEM={
 	/* Level 0 */
-	{ c: LEVEL_ITEM_FLOOR|30, x:0, y:20 },
-	{ c: LEVEL_ITEM_FLOOR|30, x:0, y:16 },
-	{ c: LEVEL_ITEM_FLOOR|30, x:0, y:12 },
+	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_LEFT|30, x:0, y:20 },
+	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_BOTH|30, x:0, y:16 },
+	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_RIGHT|30, x:0, y:12 },
 	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_BOTH|9, x:0, y:7 },
 	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_BOTH|23, x:7, y:8 },
 	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_BOTH|9, x:0, y:3 },

@@ -132,6 +132,36 @@ void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
 }
 
 
+/* Draw an arbitrary shape with some animation on screen */
+/* TODO: So far only skipping the upper part is implemented. */
+void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase) {
+	uint8_t width, height, sx, sy, t;
+
+	/* Get width and height of shape. */
+	width=pgm_read_byte(p);
+	p++;
+	height=pgm_read_byte(p);
+	p++;
+
+	/* Skip if full height was reached. */
+	if (phase>height) return;
+
+	/* Skip lines. */
+	p+=(height-phase)*width;
+
+	/* Draw lines. */
+	for (sy=(height-phase);sy<height;sy++)
+		for (sx=0;sx<width;sx++) {
+			t=pgm_read_byte(p);
+			p++;
+
+			/* Honor skip tiles. */
+			if ((Tileset==0 && t!=TILES0_SKIP) || (Tileset==1 && t!=TILES1_SKIP))
+				SetTile(x+sx,y+sy,t);
+		}
+}
+
+
 /* Draw a floor. */
 void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 	tiles_trio_t floor[2]=TILES_COMPOUND(TILES_TRIO,FLOOR);
@@ -146,7 +176,7 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 		length--;
 	}
 
-	/* End if already reache max length. */
+	/* End if already reached max length. */
 	if (!length) return;
 
 	/* Draw right cap if desired. */
@@ -166,6 +196,9 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
 	tiles_duo_t ladder_top[2]=TILES_COMPOUND(TILES_DUO,LADDER_TOP);
 	tiles_duo_t ladder_middle[2]=TILES_COMPOUND(TILES_DUO,LADDER_MIDDLE);
 	tiles_duo_t ladder_bottom[2]=TILES_COMPOUND(TILES_DUO,LADDER_BOTTOM);
+
+	/* Skip zero length ladder. */
+	if (!length) return;
 
 	/* Draw upper exit. */
 	if (continued) {

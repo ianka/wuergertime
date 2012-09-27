@@ -36,4 +36,10 @@
 uint8_t fastrandom(void);
 
 
+/* Blinking a code. */
+static inline uint8_t blink(uint8_t phase, uint32_t phases) {
+	return (phases>>phase) & 0x01;
+}
+
+
 #endif /* UTILS_H */

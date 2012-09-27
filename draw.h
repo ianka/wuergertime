@@ -41,6 +41,7 @@
 /* Other shapes are selected by pointer. */
 extern const uint8_t ShapeSignTilesOutOfGame[] PROGMEM;
 extern const uint8_t ShapeSignTilesInGame[] PROGMEM;
+extern const uint8_t ShapeSignLevelStart[] PROGMEM;
 extern const uint8_t ShapeFoodTruck[] PROGMEM;
 
 
@@ -56,6 +57,7 @@ extern const uint8_t ShapeFoodTruck[] PROGMEM;
 
 void clearScreen(void);
 void drawShape(uint8_t x, uint8_t y, const uint8_t *p);
+void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase);
 void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps);
 void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued);
 void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t stomped);
