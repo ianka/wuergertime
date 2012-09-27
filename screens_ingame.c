@@ -34,12 +34,11 @@ void initInGamePrepareScreen(void) {
 	/* Fade into clear screen */
 	clearScreen();
 	FadeIn(1,0);
-
-	/* Prepare level by description. */
-	prepareLevel(32);
 }
 
 void updateInGamePrepareScreen(void) {
+	/* Prepare level by description. */
+	prepareLevel();
 }
 
 void cleanupInGamePrepareScreen(void) {

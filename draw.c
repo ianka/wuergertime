@@ -136,6 +136,9 @@ void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
 void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 	tiles_trio_t floor[2]=TILES_COMPOUND(TILES_TRIO,FLOOR);
 
+	/* Skip zero length floor. */
+	if (!length) return;
+
 	/* Draw left cap if desired. */
 	if (caps & DRAW_OPTION_FLOOR_CAP_LEFT) {
 		SetTile(x,y,floor[Tileset].left);

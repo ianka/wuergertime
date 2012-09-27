@@ -50,10 +50,17 @@ void selectLevel(uint8_t level) {
 }
 
 
+#define LEVEL_START_ANIMATION_FLOORS_ENDED SCREEN_WIDTH
+#define LEVEL_START_ANIMATION_LADDERS_ENDED ((LEVEL_START_ANIMATION_FLOORS_ENDED+SCREEN_HEIGHT))
+#define LEVEL_START_ANIMATION_ENDED LEVEL_START_ANIMATION_LADDERS_ENDED
+
 /* Prepare current level. */
-void prepareLevel(uint8_t length_tweak) {
+void prepareLevel() {
 	const level_item_t *p=LevelDescription;
-	uint8_t c, x, y, length;
+	uint8_t c, x, y, length, pos;
+
+	/* Skip if animation is done. */
+	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED+1) return;
 
 	/* Draw level specific screen list. */
 	while ((c=pgm_read_byte(&(p->c))) != 0) {
@@ -64,9 +71,9 @@ void prepareLevel(uint8_t length_tweak) {
 		/* Check for type of drawable. */
 		switch (c) {
 			case LEVEL_ITEM_SIGN:
-				/* Draw sign shape */
-				drawShape(x,y,ShapeSignTilesInGame);
-
+				/* Draw sign shape when animation is done */
+				if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED)
+					drawShape(x,y,ShapeSignTilesInGame);
 				break;
 			case LEVEL_ITEM_PLATE:
 				/* Draw sign shape */
@@ -77,20 +84,28 @@ void prepareLevel(uint8_t length_tweak) {
 			case LEVEL_ITEM_BURGER_PATTY:
 			case LEVEL_ITEM_BURGER_CHEESESALAD:
 			case LEVEL_ITEM_BURGER_BUNBOTTOM:
-				/* Draw burger shape */
-				drawBurgerComponent(x,y,c-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,0);
+				/* Draw burger shape when animation is done. */
+				if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED)
+					drawBurgerComponent(x,y,c-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,0);
 				break;
 			default:
 				/* Ladders and floors. */
 				if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
-					/* Ladder. Draw it. */
-					drawLadder(x,y,c & LEVEL_ITEM_LADDER_LENGTH,c & LEVEL_ITEM_LADDER_CONTINUED);
+					/* Ladder. Animate drawing it when floor animation is done. */
+					if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_FLOORS_ENDED) {
+						length=min(c & LEVEL_ITEM_LADDER_LENGTH,
+							GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED);
+						pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
+						drawLadder(x,pos,length,
+							(length==(c & LEVEL_ITEM_LADDER_LENGTH))?c & LEVEL_ITEM_LADDER_CONTINUED:0);
+					}	
 				} else {
-					/* Floor. Honor the length tweak, e.g. for the level start animation. */
-					length=min(c & LEVEL_ITEM_FLOOR_LENGTH,length_tweak);
+					/* Floor. Animate width. */
+					length=min(c & LEVEL_ITEM_FLOOR_LENGTH,GameScreenAnimationPhase);
+					pos=x+((c & LEVEL_ITEM_FLOOR_LENGTH)-length)/2;
 
 					/* Draw it. */
-					drawFloor(x+((c & LEVEL_ITEM_FLOOR_LENGTH)-length)/2,y,length,c & LEVEL_ITEM_FLOOR_CAP_BOTH);
+					drawFloor(pos,y,length,((pos==0)||(pos+length == SCREEN_WIDTH))?c & LEVEL_ITEM_FLOOR_CAP_BOTH:LEVEL_ITEM_FLOOR_CAP_BOTH);
 				}
 		}	
 

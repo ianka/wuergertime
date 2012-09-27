@@ -83,7 +83,7 @@ static inline void ChangeGameScreen(uint8_t screen) {
 
 
 void selectLevel(uint8_t level);
-void prepareLevel(uint8_t length_tweak);
+void prepareLevel();
 
 
 #endif /* SCREENS_H */
