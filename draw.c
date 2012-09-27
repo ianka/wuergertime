@@ -111,7 +111,7 @@ void clearScreen(void) {
 
 /* Draw an arbitrary shape on screen */
 void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
-	uint8_t width, height, sx, sy;
+	uint8_t width, height, sx, sy, t;
 
 	/* Get width and height of shape. */
 	width=pgm_read_byte(p);
@@ -122,8 +122,12 @@ void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
 	/* Draw lines. */
 	for (sy=0;sy<height;sy++)
 		for (sx=0;sx<width;sx++) {
-			SetTile(x+sx,y+sy,pgm_read_byte(p));
+			t=pgm_read_byte(p);
 			p++;
+
+			/* Honor skip tiles. */
+			if ((Tileset==0 && t!=TILES0_SKIP) || (Tileset==1 && t!=TILES1_SKIP))
+				SetTile(x+sx,y+sy,t);
 		}
 }
 
@@ -143,7 +147,7 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 	if (!length) return;
 
 	/* Draw right cap if desired. */
-	if (caps & DRAW_OPTION_FLOOR_CAP_LEFT) {
+	if (caps & DRAW_OPTION_FLOOR_CAP_RIGHT) {
 		length--;
 		SetTile(x+length,y,floor[Tileset].right);
 	}
@@ -171,7 +175,6 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
 		SetTile(x+1,y,ladder_top[Tileset].right);
 	}	
 	y++;
-	length--;
 
 	/* Draw lower exit. */
 	length--;

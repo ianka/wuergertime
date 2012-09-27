@@ -21,17 +21,21 @@
 
 
 /* Items in levels. */
-#define LEVEL_ITEM_SIGN             0x80
-#define LEVEL_ITEM_PLATE            0x81
-#define LEVEL_ITEM_BURGER           0xa0
-#define LEVEL_ITEM_LADDER           0xc0
-#define LEVEL_ITEM_LADDER_CONTINUED 0x20
-#define LEVEL_ITEM_LADDER_LENGTH    0x1f
-#define LEVEL_ITEM_FLOOR            0x00
-#define LEVEL_ITEM_FLOOR_CAP_LEFT   0x40 
-#define LEVEL_ITEM_FLOOR_CAP_RIGHT  0x20 
-#define LEVEL_ITEM_FLOOR_CAP_BOTH   ((LEVEL_ITEM_FLOOR_CAP_LEFT|LEVEL_ITEM_FLOOR_CAP_RIGHT))
-#define LEVEL_ITEM_FLOOR_LENGTH     0x1f 
+#define LEVEL_ITEM_SIGN               0x80
+#define LEVEL_ITEM_PLATE              0x81
+#define LEVEL_ITEM_BURGER_BUNTOP      0xa0
+#define LEVEL_ITEM_BURGER_TOMATO      0xa1
+#define LEVEL_ITEM_BURGER_PATTY       0xa2
+#define LEVEL_ITEM_BURGER_CHEESESALAD 0xa3
+#define LEVEL_ITEM_BURGER_BUNBOTTOM   0xa4
+#define LEVEL_ITEM_LADDER             0xc0
+#define LEVEL_ITEM_LADDER_CONTINUED   0x20
+#define LEVEL_ITEM_LADDER_LENGTH      0x1f
+#define LEVEL_ITEM_FLOOR              0x00
+#define LEVEL_ITEM_FLOOR_CAP_LEFT     0x40 
+#define LEVEL_ITEM_FLOOR_CAP_RIGHT    0x20 
+#define LEVEL_ITEM_FLOOR_CAP_BOTH     ((LEVEL_ITEM_FLOOR_CAP_LEFT|LEVEL_ITEM_FLOOR_CAP_RIGHT))
+#define LEVEL_ITEM_FLOOR_LENGTH       0x1f 
 
 typedef struct { uint8_t c, x, y; } PROGMEM level_item_t;
 

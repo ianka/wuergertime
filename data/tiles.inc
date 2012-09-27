@@ -23,6 +23,11 @@
 #define TILES1_INVALID stile(1,6,1)
 
 
+/* Skip tile. Background is retained when painting shapes. */
+#define TILES0_SKIP stile(0,9,3)
+#define TILES1_SKIP stile(1,9,3)
+
+
 /* Space/ASCII start */
 #define TILES0_SPACE stile(0,6,0)
 #define TILES1_SPACE stile(1,6,0)

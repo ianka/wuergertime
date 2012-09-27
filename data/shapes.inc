@@ -118,7 +118,7 @@ const uint8_t ShapeSignTilesOutOfGame[] PROGMEM={
 /* Sign used in-game. */
 const uint8_t ShapeSignTilesInGame[] PROGMEM={
 	12, /* Width */
-	5, /* Height */
+	6, /* Height */
 
 	/* Line 0 */
 	TILES0_SIGN_TOP,
@@ -204,6 +204,23 @@ const uint8_t ShapeSignTilesInGame[] PROGMEM={
 
 	TILES0_SPACE,
 	TILES0_SIGN_LEFT,
+
+	/* Line 5 */
+	TILES0_SIGNPOST_RIGHT,
+	TILES0_SKIP,
+
+	TILES0_SKIP,
+	TILES0_SKIP,
+	TILES0_SKIP,
+	TILES0_SIGNPOST_RIGHT,
+
+	TILES0_SKIP,
+	TILES0_SKIP,
+	TILES0_SIGNPOST_LEFT,
+	TILES0_SKIP,
+
+	TILES0_SKIP,
+	TILES0_SIGNPOST_LEFT,
 };
 
 
