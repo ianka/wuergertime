@@ -247,19 +247,15 @@ void animateLevelStart(void) {
 			/* Animate component. Move it down. */
 			GameScreenBurgerComponents[component_counter].half_y++;
 
-			/* Skip if half_y position is still negative. */
-			if (GameScreenBurgerComponents[component_counter].half_y<2) continue;
-
 			/* Restore screen at old position. */
-/*			drawBurgerBackground(
-				GameScreenBurgerComponents[component_counter].x,
-				(GameScreenBurgerComponents[component_counter].half_y>>1)-1);
-*/
 			handleBurgerBackground(
 				GameScreenBurgerComponents[component_counter].x,
 				GameScreenBurgerComponents[component_counter].half_y,
 				GameScreenBurgerComponents[component_counter].stomped,
 				GameScreenBurgerComponents[component_counter].background);
+
+			/* Skip if half_y position is still negative. */
+			if (GameScreenBurgerComponents[component_counter].half_y<0) continue;
 
 			/* Draw burger component at new position. */
 			drawBurgerComponent(

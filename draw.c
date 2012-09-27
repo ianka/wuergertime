@@ -360,7 +360,7 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
  * Save buffer has to be alternated, which can be done by using bit 1 of tile_y as an index.
  */
 void handleBurgerBackground(uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t buffer[2][5]) {
-	uint8_t i, tile_y;
+	uint8_t i, y, tile_y;
 
 	/* Go through all burger component tiles in a row. */
 	for (i=0;i<5;i++) {
@@ -371,7 +371,8 @@ void handleBurgerBackground(uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t 
 		/* Save/restore is selected by full/half tile. */
 		if (tile_y & 0x01) {
 			/* Half tile. Save. */
-			buffer[(tile_y>>1) & 0x01][i]=getTile(x+i,(tile_y>>1)+1);
+			y=(tile_y>>1)+1; if (y>=SCREEN_HEIGHT) y=0;
+			buffer[(tile_y>>1) & 0x01][i]=getTile(x+i,y);
 		} else {
 			/* Full tile. Restore. */
 			SetTile(x+i,(tile_y>>1)-1,buffer[(tile_y>>1) & 0x01][i]);
