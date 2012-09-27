@@ -295,18 +295,6 @@ void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t st
 			SetTile(x+i,tiley>>1,pgm_read_byte(&ShapeBurgers[component][Tileset].left+i));
 		}	
 	}
-
-
-
-//	const uint8_t *p = &ShapeBurgers[component][Tileset].left;
-
-
-	/* Shortcut, actually this is left, middleleft, middle, middleright, right. */
-/*	SetTile(x,y,pgm_read_byte(p)); x++; p++;
-	SetTile(x,y,pgm_read_byte(p)); x++; p++;
-	SetTile(x,y,pgm_read_byte(p)); x++; p++;
-	SetTile(x,y,pgm_read_byte(p)); x++; p++;
-	SetTile(x,y,pgm_read_byte(p)); x++; p++;*/
 }
 
 
@@ -340,5 +328,17 @@ void drawCrown(uint8_t x, uint8_t y) {
 	SetTile(x+1,y,crown[Tileset].upperright);
 	SetTile(x,y+1,crown[Tileset].lowerleft);
 	SetTile(x+1,y+1,crown[Tileset].lowerright);
+}
+
+
+/* Draw plate. */
+void drawPlate(uint8_t x, uint8_t y) {
+	tiles_burger_t plate[2]=TILES_COMPOUND(TILES_BURGER,PLATE);
+
+	SetTile(x,y,plate[Tileset].left);
+	SetTile(x+1,y,plate[Tileset].middleleft);
+	SetTile(x+2,y,plate[Tileset].middle);
+	SetTile(x+3,y,plate[Tileset].middleright);
+	SetTile(x+4,y,plate[Tileset].right);
 }
 

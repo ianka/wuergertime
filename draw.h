@@ -62,6 +62,7 @@ void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t st
 void drawSoda(uint8_t x, uint8_t y);
 void drawFries(uint8_t x, uint8_t y);
 void drawCrown(uint8_t x, uint8_t y);
+void drawPlate(uint8_t x, uint8_t y);
 
 
 /* Read VRAM and honor RAM tile offset. */
