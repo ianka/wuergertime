@@ -21,6 +21,7 @@
 
 
 /* Items in levels. */
+#define LEVEL_ITEM_INVALID              0x00
 #define LEVEL_ITEM_BURGER_PLACEHOLDER   0x80
 #define LEVEL_ITEM_BURGER_BUNTOP        0x81
 #define LEVEL_ITEM_BURGER_TOMATO        0x82

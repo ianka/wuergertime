@@ -26,6 +26,14 @@
 
 /* Level descriptions. */
 const level_item_t LevelDescriptions[] PROGMEM={
+/*	{ c: LEVEL_ITEM_OPTIONS, x:LEVEL_ITEM_OPTION_STOMP_ONCE, y:0 },
+	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:2, y:20 },
+	{ c: LEVEL_ITEM_BURGER_CHEESESALAD, x:2, y:16 },
+	{ c: LEVEL_ITEM_BURGER_PATTY, x:2, y:12 },
+	{ c: LEVEL_ITEM_BURGER_TOMATO, x:2, y:7 },
+	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:2, y:3 },
+	{ c: 0 },*/
+
 	/* Level 0 */
 	{ c: LEVEL_ITEM_OPTIONS, x:LEVEL_ITEM_OPTION_STOMP_ONCE, y:0 },
 	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_LEFT|30, x:0, y:20 },
