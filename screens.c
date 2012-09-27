@@ -29,7 +29,7 @@
 #define LEVEL_START_ANIMATION_FLOORS_ENDED ((SCREEN_WIDTH+10))
 #define LEVEL_START_ANIMATION_LADDERS_ENDED ((LEVEL_START_ANIMATION_FLOORS_ENDED+SCREEN_HEIGHT+10))
 #define LEVEL_START_ANIMATION_SIGNFRAME_ENDED ((LEVEL_START_ANIMATION_LADDERS_ENDED+10))
-#define LEVEL_START_ANIMATION_SIGN_ENDED ((LEVEL_START_ANIMATION_SIGNFRAME_ENDED+32))
+#define LEVEL_START_ANIMATION_SIGN_ENDED ((LEVEL_START_ANIMATION_SIGNFRAME_ENDED+63))
 #define LEVEL_START_ANIMATION_SIGN_BLINKCODE 0xff530507
 #define LEVEL_START_ANIMATION_BURGERS_ENDED ((LEVEL_START_ANIMATION_SIGN_ENDED+100))
 #define LEVEL_START_ANIMATION_ENDED LEVEL_START_ANIMATION_BURGERS_ENDED
@@ -192,11 +192,13 @@ void animateLevelStart(void) {
 						/* Signframe animation. */
 						drawShapeAnimated(x,y,ShapeSignLevelStart,(GameScreenAnimationPhase-LEVEL_START_ANIMATION_LADDERS_ENDED));
 					}	else {
-						/* Blinking sign animation */
-						if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>1,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
-								drawShape(x,y,ShapeSignTilesInGame);
-							else
-								drawShape(x,y,ShapeSignLevelStart);
+						if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGN_ENDED) {
+							/* Blinking sign animation */
+							if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>1,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
+									drawShape(x,y,ShapeSignTilesInGame);
+								else
+									drawShape(x,y,ShapeSignLevelStart);
+						}
 					}
 				}	
 				break;
