@@ -130,8 +130,6 @@
 #define TILES1_OPEN_OFF_LEFT stile(1,6,6)
 #define TILES1_OPEN_OFF_RIGHT stile(1,6,7)
 
-#define TILES0_HI utile(0,2,15)
-
 #define TILES0_SCORE_LEFT utile(0,3,13)
 #define TILES0_SCORE_MIDDLE utile(0,3,14)
 #define TILES0_SCORE_RIGHT utile(0,3,15)
@@ -528,6 +526,13 @@
 #define TILES1_BURGER_BUNBOTTOM_FLOOR_MIDDLE TILES1_INVALID /* invalid in tileset 1 */
 #define TILES1_BURGER_BUNBOTTOM_FLOOR_MIDDLERIGHT TILES1_INVALID /* invalid in tileset 1 */
 #define TILES1_BURGER_BUNBOTTOM_FLOOR_RIGHT TILES1_INVALID /* invalid in tileset 1 */
+
+
+/* Bun in floor. */
+#define TILES0_BURGER_BUNTOP_INFLOOR_LEFT utile(0,0,8)
+#define TILES0_BURGER_BUNTOP_INFLOOR_RIGHT utile(0,0,15)
+#define TILES0_BURGER_BUNBOTTOM_INFLOOR_LEFT utile(0,1,15)
+#define TILES0_BURGER_BUNBOTTOM_INFLOOR_RIGHT utile(0,2,15)
 
 
 /* Food truck.*/

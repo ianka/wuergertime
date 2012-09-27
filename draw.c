@@ -186,7 +186,7 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
 
 /* Draw a burger component. */
 void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t stomped) {
-	uint8_t i, tiley, existing_component=0, upper_combination, lower_combination;
+	uint8_t i, tiley, existing_component=SHAPE_BURGER_HALFTILE_AIR, upper_combination, lower_combination;
 
 	/* Check current VRAM for lower tile. Has to be air or air combo. */
 	if (Tileset == TILESET_INGAME) {
@@ -213,8 +213,6 @@ void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t st
 			case TILES0_FLOOR_MIDDLE:
 				existing_component=SHAPE_BURGER_HALFTILE_FLOOR;
 				break;
-			default:
-				existing_component=SHAPE_BURGER_HALFTILE_FLOOR;
 		}
 	} else {
 		/* Check out-of-game tile indices. */
@@ -255,13 +253,45 @@ void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t st
 
 		/* Now check for "half tile" yhalf value. */
 		if (tiley & 0x01) {
-			/*
-			 *  Two half tiles. Must arrange overlay.
-			 */
+			/* Two half tiles. Special handling for bun ends inside floor. */
+			if (component == SHAPE_BURGER_BUNTOP) {
+				if ((i==0) && (getTile(x,tiley>>1) == TILES0_FLOOR_MIDDLE)) {
+					SetTile(x,tiley>>1,TILES0_BURGER_BUNTOP_INFLOOR_LEFT);
+					SetTile(x,(tiley>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
+
+					/* Next tile. */
+					continue;
+				}
+				if ((i==4) && (getTile(x+4,tiley>>1) == TILES0_FLOOR_MIDDLE)) {
+					SetTile(x+i,tiley>>1,TILES0_BURGER_BUNTOP_INFLOOR_RIGHT);
+					SetTile(x+i,(tiley>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
+
+					/* Next tile. */
+					continue;
+				}
+			}	
+
+			/* Usual half-tiles. */
 			SetTile(x+i,(tiley>>1),pgm_read_byte(&ShapeBurgers[upper_combination][Tileset].left+i));
 			SetTile(x+i,(tiley>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
 		} else {
-			/* Full tile. Easy! */
+			/* Full tile. Special handling for bun ends inside floor. */
+			if (component == SHAPE_BURGER_BUNBOTTOM) {
+				if ((i==0) && (getTile(x,tiley>>1) == TILES0_FLOOR_MIDDLE)) {
+					SetTile(x,tiley>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_LEFT);
+
+					/* Next tile. */
+					continue;
+				}
+				if ((i==4) && (getTile(x+4,tiley>>1) == TILES0_FLOOR_MIDDLE)) {
+					SetTile(x+i,tiley>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_RIGHT);
+
+					/* Next tile. */
+					continue;
+				}
+			}
+			
+			/* Not a special case. */
 			SetTile(x+i,tiley>>1,pgm_read_byte(&ShapeBurgers[component][Tileset].left+i));
 		}	
 	}

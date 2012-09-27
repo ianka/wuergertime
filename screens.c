@@ -73,7 +73,7 @@ void prepareLevel(uint8_t length_tweak) {
 			case LEVEL_ITEM_BURGER+3:
 			case LEVEL_ITEM_BURGER+4:
 				/* Draw burger shape */
-				drawBurgerComponent(x,y,c&7,0x1f);
+				drawBurgerComponent(x,y,c&7,0x01);
 				break;
 			default:
 				/* Ladders and floors. */

@@ -43,7 +43,7 @@ const level_item_t LevelDescriptions[] PROGMEM={
 	{ c: LEVEL_ITEM_BURGER|4, x:20, y:23 },
 	{ c: LEVEL_ITEM_BURGER|2, x:20, y:21 },
 	{ c: LEVEL_ITEM_BURGER|0, x:20, y:19 },
-	{ c: LEVEL_ITEM_BURGER|4, x:5,  y:26 },
+	{ c: LEVEL_ITEM_BURGER|0, x:5,  y:26 },
 	{ c: LEVEL_ITEM_SIGN, x:3, y:0 },
 	{ c: 0 },
 
