@@ -22,6 +22,7 @@
 
 /* Items in levels. */
 #define LEVEL_ITEM_SIGN             0x80
+#define LEVEL_ITEM_BURGER           0xa0
 #define LEVEL_ITEM_LADDER           0xc0
 #define LEVEL_ITEM_LADDER_CONTINUED 0x20
 #define LEVEL_ITEM_LADDER_LENGTH    0x1f

@@ -31,6 +31,7 @@ const level_item_t LevelDescriptions[] PROGMEM={
 	{ c: LEVEL_ITEM_FLOOR|10, x:5, y:9 },
 	{ c: LEVEL_ITEM_LADDER|5, x:10, y:9 },
 	{ c: LEVEL_ITEM_LADDER|LEVEL_ITEM_LADDER_CONTINUED|10, x:10, y:13 },
+	{ c: LEVEL_ITEM_BURGER, x:10, y:10 },
 	{ c: LEVEL_ITEM_SIGN, x:3, y:0 },
 	{ c: 0 },
 

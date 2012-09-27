@@ -12,13 +12,103 @@
  */
 
 
+#include <avr/io.h> /* for uint8_t and uint16_t */
+#include <avr/pgmspace.h> /* for PROGMEM */
+
+
 /* Local includes. */
 #include "draw.h"
 #include "tiles.h"
 #include "screens.h"
 
 
-/* Shape data. */
+/* 
+ * Burger shapes.
+ *
+ * Available half-tile combinations in tileset.
+ *
+ *        THIS|
+ * OVER       | AIR BUNTOP TOMATO PATTY CHEESESALAD BUNBOTTOM FLOOR
+ * -----------+-----------------------------------------------------
+ * AIR        | (*)   *      *      *        *          *       .
+ * BUNTOP     |  *    .      .      .        .          .       .    
+ * TOMATO     |  *    *      .      .        .          .       .
+ * PATTY      |  *    *      *      .        .          .       .
+ * CHEESESALAD|  *    .      .      *        .          .       .
+ * BUNBOTTOM  |  *    .      .      *        *          .       .
+ * FLOOR      | (*)   *      *      *        *          *       .
+ *
+ */
+
+/* Burger shapes are selected by number. */
+#define SHAPE_BURGER_BUNTOP 0
+#define SHAPE_BURGER_TOMATO 1
+#define SHAPE_BURGER_PATTY 2
+#define SHAPE_BURGER_CHEESESALAD 3
+#define SHAPE_BURGER_BUNBOTTOM 4
+
+
+
+
+/* Half-tiles. */
+#define SHAPE_BURGER_HALFTILE_AIR         0
+#define SHAPE_BURGER_HALFTILE_BUNTOP      1
+#define SHAPE_BURGER_HALFTILE_TOMATO      2
+#define SHAPE_BURGER_HALFTILE_PATTY       3
+#define SHAPE_BURGER_HALFTILE_CHEESESALAD 4
+#define SHAPE_BURGER_HALFTILE_BUNBOTTOM   5
+#define SHAPE_BURGER_HALFTILE_FLOOR       6
+#define SHAPE_BURGER_HALFTILE_DUMMY       7
+
+
+/* Index table for half-tile combinations. */
+const uint8_t ShapeBurgersHalftiles[6][8] PROGMEM={
+	{ 0xfe,    5,    7,    9,   11,   13, 0xfd, 0xff },
+	{    6, 0xff,   15,   19, 0xff, 0xff,   21, 0xff },
+	{    8, 0xff, 0xff,   16, 0xff, 0xff,   22, 0xff },
+	{   10, 0xff, 0xff, 0xff,   17,   20,   23, 0xff },
+	{   12, 0xff, 0xff, 0xff, 0xff,   18,   24, 0xff },
+	{   14, 0xff, 0xff, 0xff, 0xff, 0xff,   25, 0xff },
+};
+
+
+/* Burger shapes. */
+const tiles_burger_t ShapeBurgers[26][2] PROGMEM={
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNTOP),
+	TILES_COMPOUND(TILES_BURGER,BURGER_TOMATO),
+	TILES_COMPOUND(TILES_BURGER,BURGER_PATTY),
+	TILES_COMPOUND(TILES_BURGER,BURGER_CHEESESALAD),
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNBOTTOM),
+
+	TILES_COMPOUND(TILES_BURGER,BURGER_AIR_BUNTOP),
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNTOP_AIR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_AIR_TOMATO),
+	TILES_COMPOUND(TILES_BURGER,BURGER_TOMATO_AIR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_AIR_PATTY),
+
+	TILES_COMPOUND(TILES_BURGER,BURGER_PATTY_AIR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_AIR_CHEESESALAD),
+	TILES_COMPOUND(TILES_BURGER,BURGER_CHEESESALAD_AIR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_AIR_BUNBOTTOM),
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNBOTTOM_AIR),
+
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNTOP_TOMATO),
+	TILES_COMPOUND(TILES_BURGER,BURGER_TOMATO_PATTY),
+	TILES_COMPOUND(TILES_BURGER,BURGER_PATTY_CHEESESALAD),
+	TILES_COMPOUND(TILES_BURGER,BURGER_CHEESESALAD_BUNBOTTOM),
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNTOP_PATTY),
+
+	TILES_COMPOUND(TILES_BURGER,BURGER_PATTY_BUNBOTTOM),
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNTOP_FLOOR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_TOMATO_FLOOR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_PATTY_FLOOR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_CHEESESALAD_FLOOR),
+
+	TILES_COMPOUND(TILES_BURGER,BURGER_BUNBOTTOM_FLOOR),
+};
+
+
+/* Other shape data. */
 #include "data/shapes.inc"
 
 
@@ -101,6 +191,41 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
 	/* Draw a ladder inbetween. */
 	Fill(x,y,1,length,ladder[Tileset].left);
 	Fill(x+1,y,1,length,ladder[Tileset].right);
+}
+
+
+/* Draw a burger component. */
+void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint16_t stomped) {
+	uint8_t i, tiley;
+
+	/* Go through all burger component tiles in a row. */
+	for (i=0;i<5;i++) {
+		/* Add tile stomped value to tile y position. */
+		tiley=yhalf+(stomped & 0x03);
+		stomped>>=2;
+
+		/* Now check for "half tile" yhalf value. */
+		if (tiley & 0x01) {
+			/* Half tile. Must arrange overlay. */
+
+
+		} else {
+			/* Full tile. Easy! */
+			SetTile(x+i,tiley>>1,pgm_read_byte(&ShapeBurgers[component][Tileset].left+i));
+		}	
+	}
+
+
+
+//	const uint8_t *p = &ShapeBurgers[component][Tileset].left;
+
+
+	/* Shortcut, actually this is left, middleleft, middle, middleright, right. */
+/*	SetTile(x,y,pgm_read_byte(p)); x++; p++;
+	SetTile(x,y,pgm_read_byte(p)); x++; p++;
+	SetTile(x,y,pgm_read_byte(p)); x++; p++;
+	SetTile(x,y,pgm_read_byte(p)); x++; p++;
+	SetTile(x,y,pgm_read_byte(p)); x++; p++;*/
 }
 
 
