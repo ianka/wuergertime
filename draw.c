@@ -191,7 +191,7 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 
 
 /* Draw a ladder */
-void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
+void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 	tiles_duo_t ladder[2]=TILES_COMPOUND(TILES_DUO,LADDER);
 	tiles_duo_t ladder_top[2]=TILES_COMPOUND(TILES_DUO,LADDER_TOP);
 	tiles_duo_t ladder_middle[2]=TILES_COMPOUND(TILES_DUO,LADDER_MIDDLE);
@@ -200,22 +200,27 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
 	/* Skip zero length ladder. */
 	if (!length) return;
 
-	/* Draw upper exit. */
-	if (continued) {
-		/* Middle exit for a continued ladder. */
-		SetTile(x,y,ladder_middle[Tileset].left);
-		SetTile(x+1,y,ladder_middle[Tileset].right);
-	} else {
-		/* Top exit for a starting ladder. */
-		SetTile(x,y,ladder_top[Tileset].left);
-		SetTile(x+1,y,ladder_top[Tileset].right);
-	}	
-	y++;
+	/* Ladder to bottom? */
+	if (!(options & DRAW_OPTION_LADDER_TOBOTTOM)) {
+		/* No. Draw upper exit. */
+		if (options & DRAW_OPTION_LADDER_CONTINUED) {
+			/* Middle exit for a continued ladder. */
+			SetTile(x,y,ladder_middle[Tileset].left);
+			SetTile(x+1,y,ladder_middle[Tileset].right);
+		} else {
+			/* Top exit for a starting ladder. */
+			SetTile(x,y,ladder_top[Tileset].left);
+			SetTile(x+1,y,ladder_top[Tileset].right);
+		}
 
-	/* Draw lower exit. */
-	length--;
-	SetTile(x,y+length,ladder_bottom[Tileset].left);
-	SetTile(x+1,y+length,ladder_bottom[Tileset].right);
+		/* Advance one row. */
+		y++;
+		length--;
+
+		/* Draw lower exit. */
+		SetTile(x,y+length,ladder_bottom[Tileset].left);
+		SetTile(x+1,y+length,ladder_bottom[Tileset].right);
+	}
 
 	/* Draw a ladder inbetween. */
 	Fill(x,y,1,length,ladder[Tileset].left);

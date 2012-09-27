@@ -163,7 +163,7 @@ void animateLevelStart(void) {
 							(GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED)>>1);
 						pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
 						drawLadder(x,pos,length,
-							(length==(c & LEVEL_ITEM_LADDER_LENGTH))?c & LEVEL_ITEM_LADDER_CONTINUED:0);
+							(length==(c & LEVEL_ITEM_LADDER_LENGTH))?c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_TOBOTTOM):c & LEVEL_ITEM_LADDER_TOBOTTOM);
 					}	
 				} else {
 					/* Floor. Animate width. */
