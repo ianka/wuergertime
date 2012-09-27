@@ -38,6 +38,7 @@ uint8_t GameScreenPrevious;
 uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
+uint16_t GameScreenOptions;
 
 
 /* Pointer to current level description. */
@@ -64,6 +65,9 @@ void prepareLevel(void) {
 	const level_item_t *p=LevelDescription;
 	uint8_t c, x, y;
 
+	/* Reset options. */
+	GameScreenOptions=LEVEL_ITEM_OPTION_STOMP_ONCE;
+
 	/* Draw level specific screen list. */
 	while ((c=pgm_read_byte(&(p->c))) != 0) {
 		/* Get coordinates */
@@ -72,15 +76,20 @@ void prepareLevel(void) {
 
 		/* Check for type of drawable. */
 		switch (c) {
-			case LEVEL_ITEM_SIGN:
+			case LEVEL_ITEM_OPTIONS:
+				/* Use x and y values as option field. */
+				GameScreenOptions=(y<<8)+x;
 				break;
-			case LEVEL_ITEM_PLATE:
-				break;
+			case LEVEL_ITEM_BURGER_PLACEHOLDER:
 			case LEVEL_ITEM_BURGER_BUNTOP:
 			case LEVEL_ITEM_BURGER_TOMATO:
 			case LEVEL_ITEM_BURGER_PATTY:
 			case LEVEL_ITEM_BURGER_CHEESESALAD:
 			case LEVEL_ITEM_BURGER_BUNBOTTOM:
+				break;
+			case LEVEL_ITEM_SIGN:
+				break;
+			case LEVEL_ITEM_PLATE:
 				break;
 			default:
 				/* Ladders and floors. */
@@ -111,6 +120,21 @@ void animateLevelStart(void) {
 
 		/* Check for type of drawable. */
 		switch (c) {
+			case LEVEL_ITEM_OPTIONS:
+				/* Do not draw anything. */
+				break;
+			case LEVEL_ITEM_BURGER_PLACEHOLDER:
+				/* Do not draw anything. */
+				break;
+			case LEVEL_ITEM_BURGER_BUNTOP:
+			case LEVEL_ITEM_BURGER_TOMATO:
+			case LEVEL_ITEM_BURGER_PATTY:
+			case LEVEL_ITEM_BURGER_CHEESESALAD:
+			case LEVEL_ITEM_BURGER_BUNBOTTOM:
+				/* Draw burger shape when animation is done. */
+				if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED)
+					drawBurgerComponent(x,y*2-1+GameScreenOptions,c-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,0);
+				break;
 			case LEVEL_ITEM_SIGN:
 				/* Draw sign shape when ladder animation is done */
 				if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_LADDERS_ENDED)
@@ -129,15 +153,6 @@ void animateLevelStart(void) {
 			case LEVEL_ITEM_PLATE:
 				/* Draw sign shape */
 				drawPlate(x,y);
-				break;
-			case LEVEL_ITEM_BURGER_BUNTOP:
-			case LEVEL_ITEM_BURGER_TOMATO:
-			case LEVEL_ITEM_BURGER_PATTY:
-			case LEVEL_ITEM_BURGER_CHEESESALAD:
-			case LEVEL_ITEM_BURGER_BUNBOTTOM:
-				/* Draw burger shape when animation is done. */
-				if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED)
-					drawBurgerComponent(x,y,c-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,0);
 				break;
 			default:
 				/* Ladders and floors. */
