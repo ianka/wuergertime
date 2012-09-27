@@ -291,7 +291,7 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 
 	/* Go through all burger component tiles in a row. */
 	for (i=0;i<5;i++) {
-		/* Add tile stomped value to tile y position. */
+		/* Add tile stomped value to component y position. */
 		tile_y=half_y+(stomped & 0x01);
 		stomped>>=1;
 
@@ -342,15 +342,41 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 }
 
 
-/* Restore background after moving a burger component down. */
-void drawBurgerBackground(uint8_t x, uint8_t y) {
-	uint8_t space[2]={ TILES0_SPACE, TILES1_SPACE };
+/*
+ * Save/Restore VRAM contents under burger component into buffer.
+ * Burger components are always moving down, so save/restore can be done in a very
+ * straightforward fashion even with half-tiles.
+ *
+ *   tile_y|   0     1       2      3       4
+ *         |
+ *  tile_y |  
+ * --------------------------------------------
+ *    0    | Full   Upper 
+ *    2    |        Lower  Full   Upper   
+ *    4    |                      Lower    Full
+ *
+ * When tile_y is odd, lower background at tile_y+1 has to be saved.
+ * When tile_y is even, background at tile_y-2 has to be restored.
+ * Save buffer has to be alternated, which can be done by using bit 1 of tile_y as an index.
+ */
+void handleBurgerBackground(uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t buffer[2][5]) {
+	uint8_t i, tile_y;
 
-	SetTile(x,y,space[Tileset]); x++;
-	SetTile(x,y,space[Tileset]); x++;
-	SetTile(x,y,space[Tileset]); x++;
-	SetTile(x,y,space[Tileset]); x++;
-	SetTile(x,y,space[Tileset]); x++;
+	/* Go through all burger component tiles in a row. */
+	for (i=0;i<5;i++) {
+		/* Add tile stomped value to component y position. */
+		tile_y=half_y+(stomped & 0x01);
+		stomped>>=1;
+
+		/* Save/restore is selected by full/half tile. */
+		if (tile_y & 0x01) {
+			/* Half tile. Save. */
+			buffer[(tile_y>>1) & 0x01][i]=getTile(x+i,(tile_y>>1)+1);
+		} else {
+			/* Full tile. Restore. */
+			SetTile(x+i,(tile_y>>1)-1,buffer[(tile_y>>1) & 0x01][i]);
+		}
+	}	
 }
 
 

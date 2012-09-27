@@ -22,6 +22,7 @@
 /* Local Includes */
 #include "draw.h"
 #include "utils.h"
+#include "tiles.h" /* for TILES0_SPACE */
 
 
 /* Start animation phases. */
@@ -44,8 +45,11 @@ uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 uint16_t GameScreenOptions;
-struct { uint8_t component, x, stomped, half_target_y; int8_t half_y; }
-	GameScreenBurgerComponents[SCREEN_BURGER_COMPONENT_MAX];
+struct {
+	uint8_t component, x, stomped, half_target_y;
+	int8_t  half_y;
+	uint8_t background[2][5];
+}	GameScreenBurgerComponents[SCREEN_BURGER_COMPONENT_MAX];
 
 
 /* Pointer to current level description. */
@@ -71,6 +75,7 @@ void selectLevel(uint8_t level) {
 void prepareLevel(void) {
 	const level_item_t *p=LevelDescription;
 	uint8_t c, x, y, component_counter;
+	uint8_t i;
 
 	/* Reset options. */
 	GameScreenOptions=LEVEL_ITEM_OPTION_STOMP_ONCE;
@@ -125,6 +130,12 @@ void prepareLevel(void) {
 				/* Set current y to a negative value for start animation. */
 				GameScreenBurgerComponents[component_counter].half_y =
 					-(((x & 0x03)+1)*4*((LEVEL_ITEM_BURGER_BUNBOTTOM-c)+1));
+
+				/* Clear background buffer. */
+				for (i=0;i<5;i++) {
+					GameScreenBurgerComponents[component_counter].background[0][i]=TILES0_SPACE;
+					GameScreenBurgerComponents[component_counter].background[1][i]=TILES0_SPACE;
+				}	
 
 				/* Next component. */
 				component_counter++;
@@ -238,9 +249,15 @@ void animateLevelStart(void) {
 			if (GameScreenBurgerComponents[component_counter].half_y<2) continue;
 
 			/* Restore screen at old position. */
-			drawBurgerBackground(
+/*			drawBurgerBackground(
 				GameScreenBurgerComponents[component_counter].x,
 				(GameScreenBurgerComponents[component_counter].half_y>>1)-1);
+*/
+			handleBurgerBackground(
+				GameScreenBurgerComponents[component_counter].x,
+				GameScreenBurgerComponents[component_counter].half_y,
+				GameScreenBurgerComponents[component_counter].stomped,
+				GameScreenBurgerComponents[component_counter].background);
 
 			/* Draw burger component at new position. */
 			drawBurgerComponent(
