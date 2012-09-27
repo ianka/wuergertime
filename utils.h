@@ -36,10 +36,4 @@
 uint8_t fastrandom(void);
 
 
-/* Get tile address in vram. */
-static inline uint8_t* GetTileAddress (uint8_t x, uint8_t y) {
-	return &vram[32*y+x];
-}
-
-
 #endif /* UTILS_H */

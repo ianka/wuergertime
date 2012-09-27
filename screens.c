@@ -68,8 +68,12 @@ void prepareLevel(uint8_t length_tweak) {
 				drawShape(x,y,ShapeSignTilesInGame);
 				break;
 			case LEVEL_ITEM_BURGER:
+			case LEVEL_ITEM_BURGER+1:
+			case LEVEL_ITEM_BURGER+2:
+			case LEVEL_ITEM_BURGER+3:
+			case LEVEL_ITEM_BURGER+4:
 				/* Draw burger shape */
-				drawBurgerComponent(x,y,0,0);
+				drawBurgerComponent(x,y,c&7,0x1f);
 				break;
 			default:
 				/* Ladders and floors. */

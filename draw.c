@@ -12,7 +12,7 @@
  */
 
 
-#include <avr/io.h> /* for uint8_t and uint16_t */
+#include <avr/io.h> /* for uint8_t */
 #include <avr/pgmspace.h> /* for PROGMEM */
 
 
@@ -39,16 +39,6 @@
  * FLOOR      | (*)   *      *      *        *          *       .
  *
  */
-
-/* Burger shapes are selected by number. */
-#define SHAPE_BURGER_BUNTOP 0
-#define SHAPE_BURGER_TOMATO 1
-#define SHAPE_BURGER_PATTY 2
-#define SHAPE_BURGER_CHEESESALAD 3
-#define SHAPE_BURGER_BUNBOTTOM 4
-
-
-
 
 /* Half-tiles. */
 #define SHAPE_BURGER_HALFTILE_AIR         0
@@ -195,20 +185,81 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t continued) {
 
 
 /* Draw a burger component. */
-void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint16_t stomped) {
-	uint8_t i, tiley;
+void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t stomped) {
+	uint8_t i, tiley, existing_component=0, upper_combination, lower_combination;
+
+	/* Check current VRAM for lower tile. Has to be air or air combo. */
+	if (Tileset == TILESET_INGAME) {
+		/* Check in-game tile indices. */
+		switch (getTile(x,(yhalf>>1)+1)) {
+			case TILES0_SPACE:
+				existing_component=SHAPE_BURGER_HALFTILE_AIR;
+				break;
+			case TILES0_BURGER_AIR_BUNTOP_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_BUNTOP;
+				break;
+			case TILES0_BURGER_AIR_TOMATO_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_TOMATO;
+				break;
+			case TILES0_BURGER_AIR_PATTY_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_PATTY;
+				break;
+			case TILES0_BURGER_AIR_CHEESESALAD_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_CHEESESALAD;
+				break;
+			case TILES0_BURGER_AIR_BUNBOTTOM_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_BUNBOTTOM;
+				break;
+			case TILES0_FLOOR_MIDDLE:
+				existing_component=SHAPE_BURGER_HALFTILE_FLOOR;
+				break;
+			default:
+				existing_component=SHAPE_BURGER_HALFTILE_FLOOR;
+		}
+	} else {
+		/* Check out-of-game tile indices. */
+		switch (getTile(x,(yhalf>>1)+1)) {
+			case TILES1_SPACE:
+				existing_component=SHAPE_BURGER_HALFTILE_AIR;
+				break;
+			case TILES1_BURGER_AIR_BUNTOP_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_BUNTOP;
+				break;
+			case TILES1_BURGER_AIR_TOMATO_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_TOMATO;
+				break;
+			case TILES1_BURGER_AIR_PATTY_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_PATTY;
+				break;
+			case TILES1_BURGER_AIR_CHEESESALAD_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_CHEESESALAD;
+				break;
+			case TILES1_BURGER_AIR_BUNBOTTOM_LEFT:
+				existing_component=SHAPE_BURGER_HALFTILE_BUNBOTTOM;
+				break;
+			case TILES1_FLOOR_MIDDLE:
+				existing_component=SHAPE_BURGER_HALFTILE_FLOOR;
+				break;
+		}
+	}
+
+	/* Get index of new combination. */
+	upper_combination=pgm_read_byte(&ShapeBurgersHalftiles[SHAPE_BURGER_HALFTILE_AIR][component+SHAPE_BURGER_HALFTILE_BUNTOP]);
+	lower_combination=pgm_read_byte(&ShapeBurgersHalftiles[component+SHAPE_BURGER_HALFTILE_BUNTOP][existing_component]);
 
 	/* Go through all burger component tiles in a row. */
 	for (i=0;i<5;i++) {
 		/* Add tile stomped value to tile y position. */
-		tiley=yhalf+(stomped & 0x03);
-		stomped>>=2;
+		tiley=yhalf+(stomped & 0x01);
+		stomped>>=1;
 
 		/* Now check for "half tile" yhalf value. */
 		if (tiley & 0x01) {
-			/* Half tile. Must arrange overlay. */
-
-
+			/*
+			 *  Two half tiles. Must arrange overlay.
+			 */
+			SetTile(x+i,(tiley>>1),pgm_read_byte(&ShapeBurgers[upper_combination][Tileset].left+i));
+			SetTile(x+i,(tiley>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
 		} else {
 			/* Full tile. Easy! */
 			SetTile(x+i,tiley>>1,pgm_read_byte(&ShapeBurgers[component][Tileset].left+i));
