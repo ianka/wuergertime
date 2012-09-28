@@ -42,6 +42,10 @@ void initInGamePrepareScreen(void) {
 void updateInGamePrepareScreen(void) {
 	/* Start animation. */
 	animateLevelStart();
+
+	/* Change screen when animation is done. */
+	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED+1)
+		ChangeGameScreen((GameScreen & ~GAME_SCREEN_LEVEL_MASK)+GAME_SCREEN_LEVEL_START);
 }
 
 void cleanupInGamePrepareScreen(void) {

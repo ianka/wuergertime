@@ -25,16 +25,6 @@
 #include "tiles.h" /* for TILES0_SPACE */
 
 
-/* Start animation phases. */
-#define LEVEL_START_ANIMATION_FLOORS_ENDED ((SCREEN_WIDTH+10))
-#define LEVEL_START_ANIMATION_LADDERS_ENDED ((LEVEL_START_ANIMATION_FLOORS_ENDED+SCREEN_HEIGHT+10))
-#define LEVEL_START_ANIMATION_SIGNFRAME_ENDED ((LEVEL_START_ANIMATION_LADDERS_ENDED+10))
-#define LEVEL_START_ANIMATION_SIGN_ENDED ((LEVEL_START_ANIMATION_SIGNFRAME_ENDED+63))
-#define LEVEL_START_ANIMATION_SIGN_BLINKCODE 0xff530507
-#define LEVEL_START_ANIMATION_BURGERS_ENDED ((LEVEL_START_ANIMATION_SIGN_ENDED+100))
-#define LEVEL_START_ANIMATION_ENDED LEVEL_START_ANIMATION_BURGERS_ENDED
-
-
 /* Maximum number of burger components per screen. */
 #define SCREEN_BURGER_COMPONENT_MAX 20
 
@@ -161,9 +151,6 @@ void prepareLevel(void) {
 void animateLevelStart(void) {
 	const level_item_t *p=LevelDescription;
 	uint8_t c, x, y, length, pos, component_counter;
-
-	/* Skip if animation is done. */
-	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED+1) return;
 
 	/* Draw level specific screen list. */
 	while ((c=pgm_read_byte(&(p->c))) != 0) {
