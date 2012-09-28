@@ -34,11 +34,14 @@
 
 
 /* Small icons */
-#define TILES0_COOK utile(0,2,0)
-#define TILES0_PEPPERPOT utile(0,3,0)
+#define TILES0_COOK_SMALL utile(0,2,0)
+#define TILES0_PEPPERPOT utile(0,2,1)
 
-#define TILES0_SPATULA_TOP utile(0,2,1)
-#define TILES0_SPATULA_BOTTOM utile(0,3,1)
+#define TILES0_SPATULA_LEFT utile(0,3,0)
+#define TILES0_SPATULA_RIGHT utile(0,3,1)
+
+#define TILES0_COOK_LEFT utile(0,4,0)
+#define TILES0_COOK_RIGHT utile(0,4,1)
 
 #define TILES0_BURGER_DELUXE stile(0,0,15)
 #define TILES1_BURGER_DELUXE stile(1,0,15)
