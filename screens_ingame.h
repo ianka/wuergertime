@@ -16,6 +16,10 @@
 #define SCREENS_INGAME_H
 
 
+void initInGameDescriptionScreen(void);
+void updateInGameDescriptionScreen(void);
+void cleanupInGameDescriptionScreen(void);
+
 void initInGamePrepareScreen(void);
 void updateInGamePrepareScreen(void);
 void cleanupInGamePrepareScreen(void);
@@ -28,10 +32,6 @@ void initInGamePlayScreen(void);
 void updateInGamePlayScreen(void);
 void cleanupInGamePlayScreen(void);
 
-void initInGameLoseScreen(void);
-void updateInGameLoseScreen(void);
-void cleanupInGameLoseScreen(void);
-
 void initInGameHurryScreen(void);
 void updateInGameHurryScreen(void);
 void cleanupInGameHurryScreen(void);
@@ -40,9 +40,16 @@ void initInGameBonusScreen(void);
 void updateInGameBonusScreen(void);
 void cleanupInGameBonusScreen(void);
 
+void initInGameLoseScreen(void);
+void updateInGameLoseScreen(void);
+void cleanupInGameLoseScreen(void);
+
 void initInGameWinScreen(void);
 void updateInGameWinScreen(void);
 void cleanupInGameWinScreen(void);
 
+void initInGameAftermathScreen(void);
+void updateInGameAftermathScreen(void);
+void cleanupInGameAftermathScreen(void);
 
 #endif /* SCREENS_INGAME_H */

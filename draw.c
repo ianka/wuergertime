@@ -233,7 +233,7 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 	uint8_t i, tile_y, existing_component=SHAPE_BURGER_HALFTILE_AIR, upper_combination, lower_combination;
 
 	/* Check current VRAM for lower tile. Has to be air or air combo. */
-	if (Tileset == TILESET_INGAME) {
+	if (Tileset == TILESET0) {
 		/* Check in-game tile indices. */
 		switch (getTile(x,(half_y>>1)+1)) {
 			case TILES0_SPACE:

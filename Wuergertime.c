@@ -41,7 +41,7 @@ int main(void) {
 	initControllers();
 
 	/* Setup game-wide global variables. */
-	Tileset=TILESET_OUTOFGAME;
+	Tileset=TILESET1;
 	GameScreenPrevious=GAME_SCREEN_INVALID;
 	GameScreen=GAME_SCREEN_START;
 	GameScreenAnimationPhase=0;
@@ -72,28 +72,26 @@ int main(void) {
 		} else {
 			/* Changed. Cleanup previous screen. */
 			switch (GameScreenPrevious) {
-				case GAME_SCREEN_DEBUG:         cleanupDebugScreen(); break;
-				case GAME_SCREEN_START:         cleanupStartScreen(); break;
-				case GAME_SCREEN_CREDITS:       cleanupCreditsScreen(); break;
-				case GAME_SCREEN_DEMO:          cleanupDemoScreen(); break;
-				case GAME_SCREEN_HIGHSCORES:    cleanupHighscoresScreen(); break;
-				case GAME_SCREEN_NEW_HIGHSCORE: cleanupNewHighscoreScreen(); break;
-				default:
-					/* Cleanup level screen. */
-					switch (GameScreen & ~GAME_SCREEN_LEVEL_MASK) {
-						case GAME_SCREEN_LEVEL_PREPARE: cleanupInGamePrepareScreen(); break;
-						case GAME_SCREEN_LEVEL_START:   cleanupInGameStartScreen(); break;
-						case GAME_SCREEN_LEVEL_PLAY:    cleanupInGamePlayScreen(); break;
-						case GAME_SCREEN_LEVEL_LOSE:    cleanupInGameLoseScreen(); break;
-						case GAME_SCREEN_LEVEL_HURRY:   cleanupInGameHurryScreen(); break;
-						case GAME_SCREEN_LEVEL_BONUS:   cleanupInGameBonusScreen(); break;
-						case GAME_SCREEN_LEVEL_WIN:     cleanupInGameWinScreen(); break;
-					}
+				case GAME_SCREEN_DEBUG:             cleanupDebugScreen(); break;
+				case GAME_SCREEN_START:             cleanupStartScreen(); break;
+				case GAME_SCREEN_CREDITS:           cleanupCreditsScreen(); break;
+				case GAME_SCREEN_DEMO:              cleanupDemoScreen(); break;
+				case GAME_SCREEN_HIGHSCORES:        cleanupHighscoresScreen(); break;
+				case GAME_SCREEN_NEW_HIGHSCORE:     cleanupNewHighscoreScreen(); break;
+				case GAME_SCREEN_LEVEL_DESCRIPTION: cleanupInGameDescriptionScreen(); break;
+				case GAME_SCREEN_LEVEL_PREPARE:     cleanupInGamePrepareScreen(); break;
+				case GAME_SCREEN_LEVEL_START:       cleanupInGameStartScreen(); break;
+				case GAME_SCREEN_LEVEL_PLAY:        cleanupInGamePlayScreen(); break;
+				case GAME_SCREEN_LEVEL_LOSE:        cleanupInGameLoseScreen(); break;
+				case GAME_SCREEN_LEVEL_HURRY:       cleanupInGameHurryScreen(); break;
+				case GAME_SCREEN_LEVEL_BONUS:       cleanupInGameBonusScreen(); break;
+				case GAME_SCREEN_LEVEL_WIN:         cleanupInGameWinScreen(); break;
+				case GAME_SCREEN_LEVEL_AFTERMATH:   cleanupInGameAftermathScreen(); break;
 			}
 
 			/* Initialize new screen. */
-			/* Default tileset */
-			SetTileset(TILESET_OUTOFGAME);
+			/* Set tileset */
+			SetTileset((GameScreen & GAME_SCREEN_TILESET1)?TILESET1:TILESET0);
 
 			/* Reset animation phase. */
 			GameScreenAnimationPhase=0;
@@ -124,44 +122,45 @@ int main(void) {
 					GameScreenUpdateFunction=&updateNewHighscoreScreen;
 					initNewHighscoreScreen();
 					break;
+				case GAME_SCREEN_LEVEL_DESCRIPTION:
+					GameScreenUpdateFunction=&updateInGameDescriptionScreen;
+					initInGameDescriptionScreen();
+					break;
+				case GAME_SCREEN_LEVEL_PREPARE:
+					GameScreenUpdateFunction=&updateInGamePrepareScreen;
+					initInGamePrepareScreen();
+					break;
+				case GAME_SCREEN_LEVEL_START:
+					GameScreenUpdateFunction=&updateInGameStartScreen;
+					initInGameStartScreen();
+					break;
+				case GAME_SCREEN_LEVEL_PLAY:
+					GameScreenUpdateFunction=&updateInGamePlayScreen;
+					initInGamePlayScreen();
+					break;
+				case GAME_SCREEN_LEVEL_LOSE:
+					GameScreenUpdateFunction=&updateInGameLoseScreen;
+					initInGameLoseScreen();
+					break;
+				case GAME_SCREEN_LEVEL_HURRY:
+					GameScreenUpdateFunction=&updateInGameHurryScreen;
+					initInGameHurryScreen();
+					break;
+				case GAME_SCREEN_LEVEL_BONUS:
+					GameScreenUpdateFunction=&updateInGameBonusScreen;
+					initInGameBonusScreen();
+					break;
+				case GAME_SCREEN_LEVEL_WIN:
+					GameScreenUpdateFunction=&updateInGameWinScreen;
+					initInGameWinScreen();
+					break;
+				case GAME_SCREEN_LEVEL_AFTERMATH:
+					GameScreenUpdateFunction=&updateInGameAftermathScreen;
+					initInGameAftermathScreen();
+					break;
 				default:
-					/* In-game tileset is different. */
-					SetTileset(TILESET_INGAME);
-					
-					/* Initialize level screen. */
-					switch (GameScreen & ~GAME_SCREEN_LEVEL_MASK) {
-						case GAME_SCREEN_LEVEL_PREPARE:
-							GameScreenUpdateFunction=&updateInGamePrepareScreen;
-							initInGamePrepareScreen();
-							break;
-						case GAME_SCREEN_LEVEL_START:
-							GameScreenUpdateFunction=&updateInGameStartScreen;
-							initInGameStartScreen();
-							break;
-						case GAME_SCREEN_LEVEL_PLAY:
-							GameScreenUpdateFunction=&updateInGamePlayScreen;
-							initInGamePlayScreen();
-							break;
-						case GAME_SCREEN_LEVEL_LOSE:
-							GameScreenUpdateFunction=&updateInGameLoseScreen;
-							initInGameLoseScreen();
-							break;
-						case GAME_SCREEN_LEVEL_HURRY:
-							GameScreenUpdateFunction=&updateInGameHurryScreen;
-							initInGameHurryScreen();
-							break;
-						case GAME_SCREEN_LEVEL_BONUS:
-							GameScreenUpdateFunction=&updateInGameBonusScreen;
-							initInGameBonusScreen();
-							break;
-						case GAME_SCREEN_LEVEL_WIN:
-							GameScreenUpdateFunction=&updateInGameWinScreen;
-							initInGameWinScreen();
-							break;
-						default:
-							/* Invalid. Change to debug screen. */
-							ChangeGameScreen(GAME_SCREEN_DEBUG);
-					}
+					/* Invalid. Change to debug screen. */
+					ChangeGameScreen(GAME_SCREEN_DEBUG);
 			}
 
 			/* Screen change done. */

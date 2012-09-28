@@ -42,28 +42,32 @@ struct {
 }	GameScreenBurgerComponents[SCREEN_BURGER_COMPONENT_MAX];
 
 
-/* Pointer to current level description. */
-const level_item_t *LevelDescription;
+/* Lavel number and pointer to current level drawing. */
+uint8_t Level;
+const level_item_t *LevelDrawing;
 
 
-/* Select a level description. */
+/* Select a level. */
 void selectLevel(uint8_t level) {
-	const level_item_t *p=LevelDescriptions;
+	const level_item_t *p=LevelDrawings;
 
-	/* Skip level descriptions to given level */
+	/* Remember level number. */
+	Level=level;
+
+	/* Skip level drawings to given level */
 	while (level--) {
 		while (pgm_read_byte(&(p->c))) p++;
 		p++;
 	}
 
-	/* Remember level description pointer. */
-	LevelDescription=p;
+	/* Remember level drawing pointer. */
+	LevelDrawing=p;
 }
 
 
 /* Prepare current level. */
 void prepareLevel(void) {
-	const level_item_t *p=LevelDescription;
+	const level_item_t *p=LevelDrawing;
 	uint8_t c, x, y, component_counter;
 	uint8_t i;
 
@@ -88,7 +92,7 @@ void prepareLevel(void) {
 				GameScreenOptions=(y<<8)+x;
 				break;
 			case LEVEL_ITEM_BURGER_PLACEHOLDER:
-				/* Skip if too much components in screen description */
+				/* Skip if too much components in level drawing */
 				/* TODO: This should trigger a debug screen instead. */
 				if (component_counter >= SCREEN_BURGER_COMPONENT_MAX) break;
 
@@ -107,7 +111,7 @@ void prepareLevel(void) {
 			case LEVEL_ITEM_BURGER_PATTY:
 			case LEVEL_ITEM_BURGER_CHEESESALAD:
 			case LEVEL_ITEM_BURGER_BUNBOTTOM:
-				/* Skip if too much components in screen description */
+				/* Skip if too much components in level drawing */
 				/* TODO: This should trigger a debug screen instead. */
 				if (component_counter >= SCREEN_BURGER_COMPONENT_MAX) break;
 
@@ -149,7 +153,7 @@ void prepareLevel(void) {
 
 /* Level start animation. */
 void animateLevelStart(void) {
-	const level_item_t *p=LevelDescription;
+	const level_item_t *p=LevelDrawing;
 	uint8_t c, x, y, length, pos, component_counter;
 
 	/* Draw level specific screen list. */

@@ -41,8 +41,8 @@ extern const char Tiles[] PROGMEM;
 
 
 /* Tilesets */
-#define TILESET_INGAME 0
-#define TILESET_OUTOFGAME 1
+#define TILESET0 0
+#define TILESET1 1
 
 
 /* Tileset switch */

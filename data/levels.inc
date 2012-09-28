@@ -25,7 +25,7 @@
 
 
 /* Level descriptions. */
-const level_item_t LevelDescriptions[] PROGMEM={
+const level_item_t LevelDrawings[] PROGMEM={
 /*	{ c: LEVEL_ITEM_OPTIONS, x:LEVEL_ITEM_OPTION_STOMP_ONCE, y:0 },
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:2, y:20 },
 	{ c: LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_CAP_LEFT|30, x:0, y:11 },

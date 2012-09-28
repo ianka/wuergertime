@@ -65,31 +65,38 @@ extern const level_item_t Levels[] PROGMEM;
  *  Game screens numbers. Level screen numbers are composed
  *  from actual level number + in-game screen type.
  */
-#define GAME_LEVELS 32
+#define GAME_LEVELS 100
 
-#define GAME_SCREEN_LEVEL_MASK    0x1f
-#define GAME_SCREEN_LEVEL_PREPARE 0x00
-#define GAME_SCREEN_LEVEL_START   0x20
-#define GAME_SCREEN_LEVEL_PLAY    0x40
-#define GAME_SCREEN_LEVEL_LOSE    0x60
-#define GAME_SCREEN_LEVEL_HURRY   0x80
-#define GAME_SCREEN_LEVEL_BONUS   0xa0
-#define GAME_SCREEN_LEVEL_WIN     0xc0
+#define GAME_SCREEN_INGAME            0x00
+#define GAME_SCREEN_OUTOFGAME         0x80
+#define GAME_SCREEN_TILESET0          0x00
+#define GAME_SCREEN_TILESET1          0x40
 
-#define GAME_SCREEN_DEBUG         0xe0 
-#define GAME_SCREEN_START         0xe1 
-#define GAME_SCREEN_CREDITS       0xe2
-#define GAME_SCREEN_DEMO          0xe3
-#define GAME_SCREEN_HIGHSCORES    0xe4
-#define GAME_SCREEN_NEW_HIGHSCORE 0xe5
-#define GAME_SCREEN_INVALID       0xff 
+#define GAME_SCREEN_LEVEL_DESCRIPTION ((GAME_SCREEN_TILESET1|0))
+#define GAME_SCREEN_LEVEL_PREPARE     ((GAME_SCREEN_TILESET0|1))
+#define GAME_SCREEN_LEVEL_START       ((GAME_SCREEN_TILESET0|2))
+#define GAME_SCREEN_LEVEL_PLAY        ((GAME_SCREEN_TILESET0|3))
+#define GAME_SCREEN_LEVEL_HURRY       ((GAME_SCREEN_TILESET0|4))
+#define GAME_SCREEN_LEVEL_BONUS       ((GAME_SCREEN_TILESET0|5))
+#define GAME_SCREEN_LEVEL_LOSE        ((GAME_SCREEN_TILESET0|6))
+#define GAME_SCREEN_LEVEL_WIN         ((GAME_SCREEN_TILESET0|7))
+#define GAME_SCREEN_LEVEL_AFTERMATH   ((GAME_SCREEN_TILESET1|8))
+
+#define GAME_SCREEN_DEBUG             ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|0))
+#define GAME_SCREEN_START             ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|1))
+#define GAME_SCREEN_CREDITS           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|2))
+#define GAME_SCREEN_DEMO              ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|3))
+#define GAME_SCREEN_HIGHSCORES        ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|4))
+#define GAME_SCREEN_NEW_HIGHSCORE     ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|5))
+#define GAME_SCREEN_INVALID           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|6)) 
 
 
-/* Game screen switch, animation phase and update function pointer. */ 
+/* Game screen switch, level number, animation phase and update function pointer. */ 
 extern uint8_t GameScreenPrevious;
 extern uint8_t GameScreen;
 extern uint16_t GameScreenAnimationPhase;
 extern void (*GameScreenUpdateFunction)(void);
+extern uint8_t Level;
 
 
 /* Switch to new game screen. */

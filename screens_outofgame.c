@@ -104,7 +104,8 @@ void updateStartScreen(void) {
 	switch (checkControllerButtonsPressed(0,BTN_OUTOFGAME)) {
 		case BTN_START:
 			/* Change to level 0 as soon start is pressed. */
-			ChangeGameScreen(0+GAME_SCREEN_LEVEL_PREPARE);
+			selectLevel(0);
+			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
 			break;
 		default:
 			/* Switch to highscore screen after a while. */
