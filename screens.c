@@ -263,7 +263,8 @@ void animateLevelStart(void) {
 				GameScreenBurgerComponents[component_counter].half_y,
 				GameScreenBurgerComponents[component_counter].component
 					-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
-				GameScreenBurgerComponents[component_counter].stomped);
+				GameScreenBurgerComponents[component_counter].stomped,
+				GameScreenBurgerComponents[component_counter].background);
 		}
 	}
 }

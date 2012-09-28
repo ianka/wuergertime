@@ -229,7 +229,7 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 
 
 /* Draw a burger component. */
-void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t stomped) {
+void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t stomped, uint8_t buffer[2][5]) {
 	uint8_t i, tile_y, existing_component=SHAPE_BURGER_HALFTILE_AIR, upper_combination, lower_combination;
 
 	/* Check current VRAM for lower tile. Has to be air or air combo. */
@@ -299,14 +299,14 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 		if (tile_y & 0x01) {
 			/* Two half tiles. Special handling for bun ends inside floor. */
 			if (component == SHAPE_BURGER_BUNTOP) {
-				if ((i==0) && (getTile(x,tile_y>>1) == TILES0_FLOOR_MIDDLE)) {
+				if ((i==0) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
 					SetTile(x,tile_y>>1,TILES0_BURGER_BUNTOP_INFLOOR_LEFT);
 					SetTile(x,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
 
 					/* Next tile. */
 					continue;
 				}
-				if ((i==4) && (getTile(x+4,tile_y>>1) == TILES0_FLOOR_MIDDLE)) {
+				if ((i==4) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
 					SetTile(x+i,tile_y>>1,TILES0_BURGER_BUNTOP_INFLOOR_RIGHT);
 					SetTile(x+i,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
 
@@ -321,13 +321,13 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 		} else {
 			/* Full tile. Special handling for bun ends inside floor. */
 			if (component == SHAPE_BURGER_BUNBOTTOM) {
-				if ((i==0) && (getTile(x,tile_y>>1) == TILES0_FLOOR_MIDDLE)) {
+				if ((i==0) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
 					SetTile(x,tile_y>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_LEFT);
 
 					/* Next tile. */
 					continue;
 				}
-				if ((i==4) && (getTile(x+4,tile_y>>1) == TILES0_FLOOR_MIDDLE)) {
+				if ((i==4) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
 					SetTile(x+i,tile_y>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_RIGHT);
 
 					/* Next tile. */

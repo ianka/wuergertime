@@ -62,7 +62,7 @@ void drawShape(uint8_t x, uint8_t y, const uint8_t *p);
 void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase);
 void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps);
 void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options);
-void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t stomped);
+void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t stomped, uint8_t buffer[2][5]);
 void handleBurgerBackground(uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t buffer[2][5]);
 void drawSoda(uint8_t x, uint8_t y);
 void drawFries(uint8_t x, uint8_t y);
