@@ -20,13 +20,15 @@ INFO=../gameinfo.properties
 ## Kernel settings
 KERNEL_DIR = ../../trunk/kernel
 KERNEL_OPTIONS  = -DVIDEO_MODE=3 -DINTRO_LOGO=0
-#KERNEL_OPTIONS += -DSOUND_CHANNEL_4_ENABLE=0 -DSOUND_CHANNEL_2_ENABLE=1 -DSOUND_CHANNEL_3_ENABLE=1 -DMIXER_CHAN4_TYPE=1
 KERNEL_OPTIONS += -DMAX_SPRITES=20
 KERNEL_OPTIONS += -DRAM_TILES_COUNT=8
+
+#KERNEL_OPTIONS += -DSOUND_CHANNEL_4_ENABLE=0 -DSOUND_CHANNEL_2_ENABLE=1 -DSOUND_CHANNEL_3_ENABLE=1 -DMIXER_CHAN4_TYPE=1
 #KERNEL_OPTIONS  += -DMIXER_WAVES=\"$(MIX_PATH_ESC)\"
 
 ## Options common to compile, link and assembly rules
 COMMON = -mmcu=$(MCU)
+#--verbose
 
 ## Compile options common for all C compilation units.
 CFLAGS = $(COMMON)
@@ -43,7 +45,7 @@ ASMFLAGS += -x assembler-with-cpp -Wa,-gdwarf2
 LDFLAGS = $(COMMON)
 LDFLAGS += -Wl,-Map=$(GAME).map 
 LDFLAGS += -Wl,-gc-sections 
-
+LDFLAGS += -Wl,--section-start,.noinit=0x800100 -Wl,--section-start,.data=0x800500
 
 ## Intel Hex file production flags
 HEX_FLASH_FLAGS = -R .eeprom
