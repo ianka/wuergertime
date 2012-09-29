@@ -300,15 +300,15 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 			/* Two half tiles. Special handling for bun ends inside floor. */
 			if (component == SHAPE_BURGER_BUNTOP) {
 				if ((i==0) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
-					SetTile(x,tile_y>>1,TILES0_BURGER_BUNTOP_INFLOOR_LEFT);
-					SetTile(x,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
+					setTile(x,tile_y>>1,TILES0_BURGER_BUNTOP_INFLOOR_LEFT);
+					setTile(x,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
 
 					/* Next tile. */
 					continue;
 				}
 				if ((i==4) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
-					SetTile(x+i,tile_y>>1,TILES0_BURGER_BUNTOP_INFLOOR_RIGHT);
-					SetTile(x+i,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
+					setTile(x+i,tile_y>>1,TILES0_BURGER_BUNTOP_INFLOOR_RIGHT);
+					setTile(x+i,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
 
 					/* Next tile. */
 					continue;
@@ -316,19 +316,19 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 			}	
 
 			/* Usual half-tiles. */
-			SetTile(x+i,(tile_y>>1),pgm_read_byte(&ShapeBurgers[upper_combination][Tileset].left+i));
-			SetTile(x+i,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
+			setTile(x+i,(tile_y>>1),pgm_read_byte(&ShapeBurgers[upper_combination][Tileset].left+i));
+			setTile(x+i,(tile_y>>1)+1,pgm_read_byte(&ShapeBurgers[lower_combination][Tileset].left+i));
 		} else {
 			/* Full tile. Special handling for bun ends inside floor. */
 			if (component == SHAPE_BURGER_BUNBOTTOM) {
 				if ((i==0) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
-					SetTile(x,tile_y>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_LEFT);
+					setTile(x,tile_y>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_LEFT);
 
 					/* Next tile. */
 					continue;
 				}
 				if ((i==4) && (buffer[(~(tile_y>>1)) & 0x01][i] == TILES0_FLOOR_MIDDLE)) {
-					SetTile(x+i,tile_y>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_RIGHT);
+					setTile(x+i,tile_y>>1,TILES0_BURGER_BUNBOTTOM_INFLOOR_RIGHT);
 
 					/* Next tile. */
 					continue;
@@ -336,7 +336,7 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 			}
 			
 			/* Not a special case. */
-			SetTile(x+i,tile_y>>1,pgm_read_byte(&ShapeBurgers[component][Tileset].left+i));
+			setTile(x+i,tile_y>>1,pgm_read_byte(&ShapeBurgers[component][Tileset].left+i));
 		}	
 	}
 }
@@ -375,7 +375,7 @@ void handleBurgerBackground(uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t 
 			buffer[(tile_y>>1) & 0x01][i]=getTile(x+i,y);
 		} else {
 			/* Full tile. Restore. */
-			SetTile(x+i,(tile_y>>1)-1,buffer[(tile_y>>1) & 0x01][i]);
+			setTile(x+i,(tile_y>>1)-1,buffer[(tile_y>>1) & 0x01][i]);
 		}
 	}	
 }

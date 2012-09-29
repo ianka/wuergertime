@@ -76,4 +76,11 @@ static inline uint8_t getTile(uint8_t x, uint8_t y) {
 }
 
 
+/* Check for valid indices and set tile in VRAM. */
+static inline void setTile(uint8_t x, uint8_t y, uint8_t tile) {
+	if ((x>=SCREEN_WIDTH) || (y>=SCREEN_HEIGHT)) return;
+	SetTile(x,y,tile);
+}
+
+
 #endif /* DRAW_H */
