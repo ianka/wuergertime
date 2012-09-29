@@ -127,7 +127,7 @@ void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
 
 			/* Honor skip tiles. */
 			if ((Tileset==0 && t!=TILES0_SKIP) || (Tileset==1 && t!=TILES1_SKIP))
-				SetTile(x+sx,y+sy,t);
+				setTile(x+sx,y+sy,t);
 		}
 }
 
@@ -157,7 +157,7 @@ void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase) {
 
 			/* Honor skip tiles. */
 			if ((Tileset==0 && t!=TILES0_SKIP) || (Tileset==1 && t!=TILES1_SKIP))
-				SetTile(x+sx,y+sy,t);
+				setTile(x+sx,y+sy,t);
 		}
 }
 
@@ -171,7 +171,7 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 
 	/* Draw left cap if desired. */
 	if (caps & DRAW_OPTION_FLOOR_CAP_LEFT) {
-		SetTile(x,y,floor[Tileset].left);
+		setTile(x,y,floor[Tileset].left);
 		x++;
 		length--;
 	}
@@ -182,7 +182,7 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 	/* Draw right cap if desired. */
 	if (caps & DRAW_OPTION_FLOOR_CAP_RIGHT) {
 		length--;
-		SetTile(x+length,y,floor[Tileset].right);
+		setTile(x+length,y,floor[Tileset].right);
 	}
 
 	/* Draw a floor inbetween. */
@@ -205,12 +205,12 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 		/* No. Draw upper exit. */
 		if (options & DRAW_OPTION_LADDER_CONTINUED) {
 			/* Middle exit for a continued ladder. */
-			SetTile(x,y,ladder_middle[Tileset].left);
-			SetTile(x+1,y,ladder_middle[Tileset].right);
+			setTile(x,y,ladder_middle[Tileset].left);
+			setTile(x+1,y,ladder_middle[Tileset].right);
 		} else {
 			/* Top exit for a starting ladder. */
-			SetTile(x,y,ladder_top[Tileset].left);
-			SetTile(x+1,y,ladder_top[Tileset].right);
+			setTile(x,y,ladder_top[Tileset].left);
+			setTile(x+1,y,ladder_top[Tileset].right);
 		}
 
 		/* Advance one row. */
@@ -218,8 +218,8 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 		length--;
 
 		/* Draw lower exit. */
-		SetTile(x,y+length,ladder_bottom[Tileset].left);
-		SetTile(x+1,y+length,ladder_bottom[Tileset].right);
+		setTile(x,y+length,ladder_bottom[Tileset].left);
+		setTile(x+1,y+length,ladder_bottom[Tileset].right);
 	}
 
 	/* Draw a ladder inbetween. */
@@ -385,10 +385,10 @@ void handleBurgerBackground(uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t 
 void drawSoda(uint8_t x, uint8_t y) {
 	tiles_block_t soda[2]=TILES_COMPOUND(TILES_BLOCK,SODA);
 
-	SetTile(x,y,soda[Tileset].upperleft);
-	SetTile(x+1,y,soda[Tileset].upperright);
-	SetTile(x,y+1,soda[Tileset].lowerleft);
-	SetTile(x+1,y+1,soda[Tileset].lowerright);
+	setTile(x,y,soda[Tileset].upperleft);
+	setTile(x+1,y,soda[Tileset].upperright);
+	setTile(x,y+1,soda[Tileset].lowerleft);
+	setTile(x+1,y+1,soda[Tileset].lowerright);
 }	
 
 
@@ -396,10 +396,10 @@ void drawSoda(uint8_t x, uint8_t y) {
 void drawFries(uint8_t x, uint8_t y) {
 	tiles_block_t fries[2]=TILES_COMPOUND(TILES_BLOCK,FRIES);
 
-	SetTile(x,y,fries[Tileset].upperleft);
-	SetTile(x+1,y,fries[Tileset].upperright);
-	SetTile(x,y+1,fries[Tileset].lowerleft);
-	SetTile(x+1,y+1,fries[Tileset].lowerright);
+	setTile(x,y,fries[Tileset].upperleft);
+	setTile(x+1,y,fries[Tileset].upperright);
+	setTile(x,y+1,fries[Tileset].lowerleft);
+	setTile(x+1,y+1,fries[Tileset].lowerright);
 }
 
 
@@ -407,10 +407,10 @@ void drawFries(uint8_t x, uint8_t y) {
 void drawCrown(uint8_t x, uint8_t y) {
 	tiles_block_t crown[2]=TILES_COMPOUND(TILES_BLOCK,CROWN);
 
-	SetTile(x,y,crown[Tileset].upperleft);
-	SetTile(x+1,y,crown[Tileset].upperright);
-	SetTile(x,y+1,crown[Tileset].lowerleft);
-	SetTile(x+1,y+1,crown[Tileset].lowerright);
+	setTile(x,y,crown[Tileset].upperleft);
+	setTile(x+1,y,crown[Tileset].upperright);
+	setTile(x,y+1,crown[Tileset].lowerleft);
+	setTile(x+1,y+1,crown[Tileset].lowerright);
 }
 
 
@@ -418,10 +418,10 @@ void drawCrown(uint8_t x, uint8_t y) {
 void drawPlate(uint8_t x, uint8_t y) {
 	tiles_burger_t plate[2]=TILES_COMPOUND(TILES_BURGER,PLATE);
 
-	SetTile(x,y,plate[Tileset].left);
-	SetTile(x+1,y,plate[Tileset].middleleft);
-	SetTile(x+2,y,plate[Tileset].middle);
-	SetTile(x+3,y,plate[Tileset].middleright);
-	SetTile(x+4,y,plate[Tileset].right);
+	setTile(x,y,plate[Tileset].left);
+	setTile(x+1,y,plate[Tileset].middleleft);
+	setTile(x+2,y,plate[Tileset].middle);
+	setTile(x+3,y,plate[Tileset].middleright);
+	setTile(x+4,y,plate[Tileset].right);
 }
 
