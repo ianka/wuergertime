@@ -54,6 +54,7 @@ static inline void SetTileset(uint8_t tileset) {
 	Tileset=tileset;
 	SetTileTable(Tiles+(tileset?PIXELS_PER_TILE*UNIQUE_TILES_COUNT:0));
 	SetFontTilesIndex(SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT-RAM_TILES_COUNT+(tileset?0:UNIQUE_TILES_COUNT));
+	//SetFontTilesIndex(SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT+(tileset?0:UNIQUE_TILES_COUNT));
 }
 
 

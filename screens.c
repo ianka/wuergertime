@@ -26,8 +26,9 @@
 
 
 /* Maximum number of burger components per screen. */
-#define SCREEN_BURGER_COMPONENT_MAX 20
-
+#define SCREEN_BURGER_MAX 4
+#define SCREEN_BURGER_COMPONENT_MAX 5
+#define SCREEN_BURGER_INVALID 0xff
 
 /* Game screen switch, animation phase and update function pointer. */ 
 uint8_t GameScreenPrevious;
@@ -36,10 +37,13 @@ uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 uint16_t GameScreenOptions;
 struct {
-	uint8_t component, x, stomped, half_target_y;
-	int8_t  half_y;
-	uint8_t background[2][5];
-}	GameScreenBurgerComponents[SCREEN_BURGER_COMPONENT_MAX];
+	uint8_t x;
+	struct {
+		uint8_t type, stomped, place_y, half_target_y;
+		int8_t  half_y;
+		uint8_t background[2][5];
+	} component[SCREEN_BURGER_COMPONENT_MAX];
+} GameScreenBurger[SCREEN_BURGER_MAX];
 
 
 /* Lavel number and pointer to current level drawing. */
@@ -68,18 +72,20 @@ void selectLevel(uint8_t level) {
 /* Prepare current level. */
 void prepareLevel(void) {
 	const level_item_t *p=LevelDrawing;
-	uint8_t c, x, y, component_counter;
+	uint8_t c, x, y, burger, component;
 	uint8_t i;
 
 	/* Reset options. */
 	GameScreenOptions=LEVEL_ITEM_OPTION_STOMP_ONCE;
 
 	/* Reset burger components. */
-	for (component_counter=0;component_counter<SCREEN_BURGER_COMPONENT_MAX;component_counter++)
-		GameScreenBurgerComponents[component_counter].component=LEVEL_ITEM_INVALID;
+	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+		GameScreenBurger[burger].x=SCREEN_BURGER_INVALID;
+		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+			GameScreenBurger[burger].component[component].type=LEVEL_ITEM_INVALID;
+	}
 
 	/* Go through level specific screen list. */
-	component_counter=0;
 	while ((c=pgm_read_byte(&(p->c))) != 0) {
 		/* Get coordinates */
 		x=pgm_read_byte(&(p->x));
@@ -92,47 +98,56 @@ void prepareLevel(void) {
 				GameScreenOptions=(y<<8)+x;
 				break;
 			case LEVEL_ITEM_BURGER_PLACEHOLDER:
-				/* Skip if too much components in level drawing */
-				/* TODO: This should trigger a debug screen instead. */
-				if (component_counter >= SCREEN_BURGER_COMPONENT_MAX) break;
-
-				/* Remember burger component parameters. */
-				GameScreenBurgerComponents[component_counter].component=c;
-				GameScreenBurgerComponents[component_counter].x=x;
-				GameScreenBurgerComponents[component_counter].stomped=0;
-				GameScreenBurgerComponents[component_counter].half_target_y = y*2-1+GameScreenOptions;
-				GameScreenBurgerComponents[component_counter].half_y = y*2-1+GameScreenOptions;
-
-				/* Next component. */
-				component_counter++;
-				break;
 			case LEVEL_ITEM_BURGER_BUNTOP:
 			case LEVEL_ITEM_BURGER_TOMATO:
 			case LEVEL_ITEM_BURGER_PATTY:
 			case LEVEL_ITEM_BURGER_CHEESESALAD:
 			case LEVEL_ITEM_BURGER_BUNBOTTOM:
-				/* Skip if too much components in level drawing */
-				/* TODO: This should trigger a debug screen instead. */
-				if (component_counter >= SCREEN_BURGER_COMPONENT_MAX) break;
+				/* Get the number of the burger with that x coordinate. */
+				for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+					if (GameScreenBurger[burger].x == x) break;
+				}
 
-				/* Remember burger component parameters. */
-				GameScreenBurgerComponents[component_counter].component=c;
-				GameScreenBurgerComponents[component_counter].x=x;
-				GameScreenBurgerComponents[component_counter].stomped=0;
-				GameScreenBurgerComponents[component_counter].half_target_y = y*2-1+GameScreenOptions;
+				/* Check if there was a burger. */
+				if (burger==SCREEN_BURGER_MAX) {
+					/* No. Get free burger slot. */
+					for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+						if (GameScreenBurger[burger].x == SCREEN_BURGER_INVALID) {
+							/* Allocate burger slot. */
+							GameScreenBurger[burger].x=x;
+							break;
+						}	
+					}
+				}
 
-				/* Set current y to a negative value for start animation. */
-				GameScreenBurgerComponents[component_counter].half_y =
-					-(((x & 0x03)+1)*4*((LEVEL_ITEM_BURGER_BUNBOTTOM-c)+1));
+				/* Check if we have a burger slot now. */
+				if (burger!=SCREEN_BURGER_MAX) {
+					/* Yes. Get free component slot. */
+					for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+						if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) break;
 
-				/* Clear background buffer. */
-				for (i=0;i<5;i++) {
-					GameScreenBurgerComponents[component_counter].background[0][i]=TILES0_SPACE;
-					GameScreenBurgerComponents[component_counter].background[1][i]=TILES0_SPACE;
-				}	
+					/* Check if we have a component slot now. */
+					if (component!=SCREEN_BURGER_COMPONENT_MAX) {
+						/* Yes.	Remember burger component parameters. */
+						GameScreenBurger[burger].component[component].type=c;
+						GameScreenBurger[burger].component[component].stomped=0;
+						GameScreenBurger[burger].component[component].half_target_y = y*2-1+GameScreenOptions;
+						GameScreenBurger[burger].component[component].half_y = y*2-1+GameScreenOptions;
 
-				/* Next component. */
-				component_counter++;
+						/* If not placeholder, do some more initialisations. */
+						if (c != LEVEL_ITEM_BURGER_PLACEHOLDER) {
+							/* Clear background buffer. */
+							for (i=0;i<5;i++) {
+								GameScreenBurger[burger].component[component].background[0][i]=TILES0_SPACE;
+								GameScreenBurger[burger].component[component].background[1][i]=TILES0_SPACE;
+							}	
+
+							/* Set current y to a negative value for start animation. */
+							GameScreenBurger[burger].component[component].half_y =
+								-(((x & 0x03)+1)*4*((LEVEL_ITEM_BURGER_BUNBOTTOM-c)+1));
+						}
+					}
+				}
 				break;
 			case LEVEL_ITEM_SIGN:
 				break;
@@ -143,7 +158,7 @@ void prepareLevel(void) {
 				if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
 				} else {
 				}	
-		}	
+		}
 
 		/* Next element in screen list. */
 		p++;
@@ -154,7 +169,7 @@ void prepareLevel(void) {
 /* Level start animation. */
 void animateLevelStart(void) {
 	const level_item_t *p=LevelDrawing;
-	uint8_t c, x, y, length, pos, component_counter;
+	uint8_t c, x, y, length, pos, burger, component;
 
 	/* Draw level specific screen list. */
 	while ((c=pgm_read_byte(&(p->c))) != 0) {
@@ -227,36 +242,37 @@ void animateLevelStart(void) {
 	/* Animate burgers when sign animation is done. */
 	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_SIGN_ENDED) {
 		/* Go through all prepared burger components. */
-		for (component_counter=0;component_counter<SCREEN_BURGER_COMPONENT_MAX;component_counter++) {
-			/* Break at first invalid component. */
-			if (GameScreenBurgerComponents[component_counter].component == LEVEL_ITEM_INVALID) break;
+		for (burger=0;burger<SCREEN_BURGER_MAX;burger++)
+			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
+				/* Break at first invalid component. */
+				if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) break;
 
-			/* Skip if animation is completed for this component. */
-			if (GameScreenBurgerComponents[component_counter].half_y
-				== GameScreenBurgerComponents[component_counter].half_target_y) continue;
+				/* Skip if animation is completed for this component. */
+				if (GameScreenBurger[burger].component[component].half_y
+					== GameScreenBurger[burger].component[component].half_target_y) continue;
 
-			/* Animate component. Move it down. */
-			GameScreenBurgerComponents[component_counter].half_y++;
+				/* Animate component. Move it down. */
+				GameScreenBurger[burger].component[component].half_y++;
 
-			/* Restore screen at old position. */
-			handleBurgerBackground(
-				GameScreenBurgerComponents[component_counter].x,
-				GameScreenBurgerComponents[component_counter].half_y,
-				GameScreenBurgerComponents[component_counter].stomped,
-				GameScreenBurgerComponents[component_counter].background);
+				/* Restore screen at old position. */
+				handleBurgerBackground(
+					GameScreenBurger[burger].x,
+					GameScreenBurger[burger].component[component].half_y,
+					GameScreenBurger[burger].component[component].stomped,
+					GameScreenBurger[burger].component[component].background);
 
-			/* Skip if half_y position is still negative. */
-			if (GameScreenBurgerComponents[component_counter].half_y<0) continue;
+				/* Skip if half_y position is still negative. */
+				if (GameScreenBurger[burger].component[component].half_y<0) continue;
 
-			/* Draw burger component at new position. */
-			drawBurgerComponent(
-				GameScreenBurgerComponents[component_counter].x,
-				GameScreenBurgerComponents[component_counter].half_y,
-				GameScreenBurgerComponents[component_counter].component
-					-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
-				GameScreenBurgerComponents[component_counter].stomped,
-				GameScreenBurgerComponents[component_counter].background);
-		}
+				/* Draw burger component at new position. */
+				drawBurgerComponent(
+					GameScreenBurger[burger].x,
+					GameScreenBurger[burger].component[component].half_y,
+					GameScreenBurger[burger].component[component].type
+						-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
+					GameScreenBurger[burger].component[component].stomped,
+					GameScreenBurger[burger].component[component].background);
+			}
 	}
 }
 
