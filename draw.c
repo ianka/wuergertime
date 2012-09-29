@@ -359,24 +359,30 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
  * When tile_y is even, background at tile_y-2 has to be restored.
  * Save buffer has to be alternated, which can be done by using bit 1 of tile_y as an index.
  */
+void handleBurgerBackgroundTile(uint8_t index, uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t buffer[2][5]) {
+	uint8_t y, tile_y;
+
+	/* Add tile stomped value to component y position. */
+	tile_y=half_y+((stomped>>index) & 0x01);
+
+	/* Save/restore is selected by full/half tile. */
+	if (tile_y & 0x01) {
+		/* Half tile. Save. */
+		y=(tile_y>>1)+1; if (y>=SCREEN_HEIGHT) y=0;
+		buffer[(tile_y>>1) & 0x01][index]=getTile(x+index,y);
+	} else {
+		/* Full tile. Restore. */
+		setTile(x+index,(tile_y>>1)-1,buffer[(tile_y>>1) & 0x01][index]);
+	}
+
+}
+
 void handleBurgerBackground(uint8_t x, uint8_t half_y, uint8_t stomped, uint8_t buffer[2][5]) {
-	uint8_t i, y, tile_y;
+	uint8_t i;
 
 	/* Go through all burger component tiles in a row. */
 	for (i=0;i<5;i++) {
-		/* Add tile stomped value to component y position. */
-		tile_y=half_y+(stomped & 0x01);
-		stomped>>=1;
-
-		/* Save/restore is selected by full/half tile. */
-		if (tile_y & 0x01) {
-			/* Half tile. Save. */
-			y=(tile_y>>1)+1; if (y>=SCREEN_HEIGHT) y=0;
-			buffer[(tile_y>>1) & 0x01][i]=getTile(x+i,y);
-		} else {
-			/* Full tile. Restore. */
-			setTile(x+i,(tile_y>>1)-1,buffer[(tile_y>>1) & 0x01][i]);
-		}
+		handleBurgerBackgroundTile(i, x, half_y, stomped, buffer);
 	}	
 }
 

@@ -277,3 +277,43 @@ void animateLevelStart(void) {
 }
 
 
+/* Stomp onto a tile. */
+void stomp(uint8_t x, uint8_t y) {
+	uint8_t burger_x, burger, component;
+
+	/* Check which burger. */
+	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+		burger_x=GameScreenBurger[burger].x;
+		if ((x >= burger_x) && (x < burger_x+5)) {
+			/* Burger selected. Check if on a component. */
+			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+				if ((GameScreenBurger[burger].component[component].half_y>>1) == y) {
+					/* Component found. Stomp tile.*/
+					GameScreenBurger[burger].component[component].stomped|=1<<(x-burger_x);
+
+					/* Check if completely stomped. */
+					if (GameScreenBurger[burger].component[component].stomped == 0x1f) {
+						/* Reset and increase half_y instead. */
+						GameScreenBurger[burger].component[component].stomped=0;
+						GameScreenBurger[burger].component[component].half_y++;
+					}
+
+					/* Restore screen at old position. */
+					handleBurgerBackgroundTile(x-burger_x,
+						GameScreenBurger[burger].x,
+						GameScreenBurger[burger].component[component].half_y,
+						GameScreenBurger[burger].component[component].stomped,
+						GameScreenBurger[burger].component[component].background);
+
+					/* Draw burger component at new position. */
+					drawBurgerComponent(
+						GameScreenBurger[burger].x,
+						GameScreenBurger[burger].component[component].half_y,
+						GameScreenBurger[burger].component[component].type
+							-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
+						GameScreenBurger[burger].component[component].stomped,
+						GameScreenBurger[burger].component[component].background);
+				}
+		}
+	}
+}

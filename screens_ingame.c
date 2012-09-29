@@ -70,6 +70,23 @@ void cleanupInGamePrepareScreen(void) {
  *     + Bonus reset
  */
 void initInGameStartScreen(void) {
+	stomp(2,2);
+	stomp(3,2);
+	stomp(4,2);
+	stomp(5,2);
+	stomp(6,2);
+
+	stomp(2,3);
+	stomp(3,3);
+	stomp(4,3);
+	stomp(5,3);
+	stomp(6,3);
+
+	stomp(2,3);
+	stomp(3,3);
+	stomp(4,3);
+	stomp(5,3);
+	stomp(6,3);
 }
 
 void updateInGameStartScreen(void) {
