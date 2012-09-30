@@ -132,7 +132,7 @@ void prepareLevel(void) {
 						/* Yes.	Remember burger component parameters. */
 						GameScreenBurger[burger].component[component].type=c;
 						GameScreenBurger[burger].component[component].stomped=0;
-						GameScreenBurger[burger].component[component].half_place_y = y*2-1+GameScreenOptions;
+						GameScreenBurger[burger].component[component].half_place_y = y*2+GameScreenOptions;
 						GameScreenBurger[burger].component[component].half_y = GameScreenBurger[burger].component[component].half_place_y;
 						GameScreenBurger[burger].component[component].half_target_y = GameScreenBurger[burger].component[component].half_place_y;
 
@@ -187,15 +187,15 @@ void animateBurgers(void) {
 			/* Animate component. Move it down. */
 			p->half_y++;
 
+			/* Skip if half_y position is still negative. */
+			if (p->half_y<-1) continue;
+
 			/* Restore screen at old position. */
 			handleBurgerBackground(
 				GameScreenBurger[burger].x,
 				p->half_y,
 				p->stomped,
 				p->background);
-
-			/* Skip if half_y position is still negative. */
-			if (p->half_y<0) continue;
 
 			/* Draw burger component at new position. */
 			drawBurgerComponent(

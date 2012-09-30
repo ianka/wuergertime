@@ -29,7 +29,7 @@ KERNEL_OPTIONS += -DRAM_TILES_COUNT=20
 #KERNEL_OPTIONS  += -DMIXER_WAVES=\"$(MIX_PATH_ESC)\"
 
 ## Options common to compile, link and assembly rules
-COMMON = -mmcu=$(MCU)
+COMMON = -mmcu=$(MCU) -DDEBUG
 #--verbose
 
 ## Compile options common for all C compilation units.

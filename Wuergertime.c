@@ -31,6 +31,12 @@
 #include "screens_ingame.h"
 
 
+/*
+ *  Debugging.
+ */
+#ifdef DEBUG
+uint8_t DebugSingleStepAnimation;
+#endif
 
 
 /*
@@ -41,6 +47,9 @@ int main(void) {
 	initControllers();
 
 	/* Setup game-wide global variables. */
+#ifdef DEBUG
+	DebugSingleStepAnimation=0;
+#endif	
 	Tileset=TILESET1;
 	GameScreenPrevious=GAME_SCREEN_INVALID;
 	GameScreen=GAME_SCREEN_START;
@@ -65,7 +74,26 @@ int main(void) {
 			GameScreenUpdateFunction();
 
 			/* Next animation phase. */
-			GameScreenAnimationPhase++;
+#ifdef DEBUG
+			if (!DebugSingleStepAnimation)
+#endif
+				GameScreenAnimationPhase++;
+
+#ifdef DEBUG
+			/* Check for single step animation. */
+			switch (checkControllerButtonsPressed(0,BTN_SL)) {
+				case BTN_SL:
+					/* Activate single step	animation, if not yet activated. */
+					DebugSingleStepAnimation=1;
+					
+					/* Animate a single step. */
+					GameScreenAnimationPhase++;
+
+					/* Print animation phase. */
+					PrintInt(29,0,GameScreenAnimationPhase,1);
+					break;
+			}
+#endif
 
 			/* Wait for next frame (let the interrupt kernel work). */
 			WaitVsync(1);

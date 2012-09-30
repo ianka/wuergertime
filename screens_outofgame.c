@@ -101,7 +101,7 @@ void updateStartScreen(void) {
 	}
 
 	/* Check buttons. */
-	switch (checkControllerButtonsPressed(0,BTN_OUTOFGAME)) {
+	switch (checkControllerButtonsPressed(0,BTN_START)) {
 		case BTN_START:
 			/* Change to level 0 as soon start is pressed. */
 			selectLevel(0);
