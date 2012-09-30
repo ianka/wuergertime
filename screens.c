@@ -374,7 +374,7 @@ void stomp(uint8_t x, uint8_t y) {
 						p->background);
 
 					/* Draw burger component at new position. */
-					drawBurgerComponent(
+					drawBurgerComponentTile(x-burger_x,
 						GameScreenBurger[burger].x,
 						p->half_y,
 						p->type-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,

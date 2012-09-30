@@ -79,28 +79,20 @@ void initInGameStartScreen(void) {
 	stomp(2,7);
 	stomp(3,7);
 	stomp(4,7);
-	stomp(5,3);
-	stomp(6,3);
+	stomp(5,7);
+	stomp(6,7);
 
-#if 0
+
 	stomp(2,2);
 	stomp(3,2);
 	stomp(4,2);
 	stomp(5,2);
 	stomp(6,2);
 
-	stomp(2,3);
 	stomp(3,3);
 	stomp(4,3);
 	stomp(5,3);
 	stomp(6,3);
-
-	stomp(2,3);
-	stomp(3,3);
-	stomp(4,3);
-	stomp(5,3);
-	stomp(6,3);
-#endif	
 }
 
 void updateInGameStartScreen(void) {
