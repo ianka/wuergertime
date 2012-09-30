@@ -90,6 +90,7 @@ void initInGameStartScreen(void) {
 }
 
 void updateInGameStartScreen(void) {
+	animateBurgers();
 }
 
 void cleanupInGameStartScreen(void) {

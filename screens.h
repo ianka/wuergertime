@@ -107,6 +107,7 @@ static inline void ChangeGameScreen(uint8_t screen) {
 
 void selectLevel(uint8_t level);
 void prepareLevel(void);
+void animateBurgers(void);
 void animateLevelStart(void);
 void stomp(uint8_t x, uint8_t y);
 

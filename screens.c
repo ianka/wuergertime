@@ -36,13 +36,14 @@ uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 uint16_t GameScreenOptions;
+typedef struct {
+	uint8_t type, stomped, half_place_y, half_target_y;
+	int8_t  half_y;
+	uint8_t background[2][5];
+} burger_component_t;
 struct {
 	uint8_t x;
-	struct {
-		uint8_t type, stomped, place_y, half_target_y;
-		int8_t  half_y;
-		uint8_t background[2][5];
-	} component[SCREEN_BURGER_COMPONENT_MAX];
+	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
 
 
@@ -131,8 +132,9 @@ void prepareLevel(void) {
 						/* Yes.	Remember burger component parameters. */
 						GameScreenBurger[burger].component[component].type=c;
 						GameScreenBurger[burger].component[component].stomped=0;
-						GameScreenBurger[burger].component[component].half_target_y = y*2-1+GameScreenOptions;
-						GameScreenBurger[burger].component[component].half_y = y*2-1+GameScreenOptions;
+						GameScreenBurger[burger].component[component].half_place_y = y*2-1+GameScreenOptions;
+						GameScreenBurger[burger].component[component].half_y = GameScreenBurger[burger].component[component].half_place_y;
+						GameScreenBurger[burger].component[component].half_target_y = GameScreenBurger[burger].component[component].half_place_y;
 
 						/* If not placeholder, do some more initialisations. */
 						if (c != LEVEL_ITEM_BURGER_PLACEHOLDER) {
@@ -166,10 +168,50 @@ void prepareLevel(void) {
 }
 
 
+/* Burger animation. */
+void animateBurgers(void) {
+	uint8_t burger, component;
+	burger_component_t *p;
+
+	/* Go through all prepared burger components. */
+	for (burger=0;burger<SCREEN_BURGER_MAX;burger++)
+		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
+			p=&(GameScreenBurger[burger].component[component]);
+
+			/* Break at first invalid component. */
+			if (p->type == LEVEL_ITEM_INVALID) break;
+
+			/* Skip if animation is completed for this component. */
+			if (p->half_y == p->half_target_y) continue;
+
+			/* Animate component. Move it down. */
+			p->half_y++;
+
+			/* Restore screen at old position. */
+			handleBurgerBackground(
+				GameScreenBurger[burger].x,
+				p->half_y,
+				p->stomped,
+				p->background);
+
+			/* Skip if half_y position is still negative. */
+			if (p->half_y<0) continue;
+
+			/* Draw burger component at new position. */
+			drawBurgerComponent(
+				GameScreenBurger[burger].x,
+				p->half_y,
+				p->type-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
+				p->stomped,
+				p->background);
+		}
+}
+
+
 /* Level start animation. */
 void animateLevelStart(void) {
 	const level_item_t *p=LevelDrawing;
-	uint8_t c, x, y, length, pos, burger, component;
+	uint8_t c, x, y, length, pos;
 
 	/* Draw level specific screen list. */
 	while ((c=pgm_read_byte(&(p->c))) != 0) {
@@ -240,46 +282,15 @@ void animateLevelStart(void) {
 	}
 
 	/* Animate burgers when sign animation is done. */
-	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_SIGN_ENDED) {
-		/* Go through all prepared burger components. */
-		for (burger=0;burger<SCREEN_BURGER_MAX;burger++)
-			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
-				/* Break at first invalid component. */
-				if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) break;
-
-				/* Skip if animation is completed for this component. */
-				if (GameScreenBurger[burger].component[component].half_y
-					== GameScreenBurger[burger].component[component].half_target_y) continue;
-
-				/* Animate component. Move it down. */
-				GameScreenBurger[burger].component[component].half_y++;
-
-				/* Restore screen at old position. */
-				handleBurgerBackground(
-					GameScreenBurger[burger].x,
-					GameScreenBurger[burger].component[component].half_y,
-					GameScreenBurger[burger].component[component].stomped,
-					GameScreenBurger[burger].component[component].background);
-
-				/* Skip if half_y position is still negative. */
-				if (GameScreenBurger[burger].component[component].half_y<0) continue;
-
-				/* Draw burger component at new position. */
-				drawBurgerComponent(
-					GameScreenBurger[burger].x,
-					GameScreenBurger[burger].component[component].half_y,
-					GameScreenBurger[burger].component[component].type
-						-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
-					GameScreenBurger[burger].component[component].stomped,
-					GameScreenBurger[burger].component[component].background);
-			}
-	}
+	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_SIGN_ENDED)
+		animateBurgers();
 }
 
 
 /* Stomp onto a tile. */
 void stomp(uint8_t x, uint8_t y) {
 	uint8_t burger_x, burger, component;
+	burger_component_t *p, *q;
 
 	/* Check which burger. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
@@ -288,31 +299,55 @@ void stomp(uint8_t x, uint8_t y) {
 			/* Burger selected. Check if on a component. */
 			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
 				if ((GameScreenBurger[burger].component[component].half_y>>1) == y) {
-					/* Component found. Stomp tile.*/
-					GameScreenBurger[burger].component[component].stomped|=1<<(x-burger_x);
+					/* Component found. */ 
+					p=&(GameScreenBurger[burger].component[component]);
+
+					/* Stomp tile.*/
+					p->stomped|=1<<(x-burger_x);
 
 					/* Check if completely stomped. */
-					if (GameScreenBurger[burger].component[component].stomped == 0x1f) {
-						/* Reset and increase half_y instead. */
-						GameScreenBurger[burger].component[component].stomped=0;
-						GameScreenBurger[burger].component[component].half_y++;
+					if (p->stomped == 0x1f) {
+						/* Yes. Reset and increase half_y instead. */
+						p->stomped=0;
+						p->half_y++;
+
+						/* No falling animation by default. */
+						p->half_target_y = p->half_y;
+
+						/* Check if the component should fall now. */
+						if (!(p->half_y & 0x01)) {
+							/* Full tile. Check tile above leftmost tile. */
+							if (getTile(burger_x,(p->half_y>>1)-1) == TILES0_FLOOR_MIDDLE) {
+								/* Floor is just above this burger component. Fall! */
+								if (component>0) {
+									/* There could be a component below. Check. */
+									q=&(GameScreenBurger[burger].component[component-1]);
+										p->half_target_y=q->half_place_y;
+									if (q->type != LEVEL_ITEM_INVALID) {
+										/* There is a component below. Fall to its place. */
+									} {
+										/* No component below. Fall to bottom of screen. */
+//										p->half_target_y=SCREEN_HEIGHT*2-2;
+									}
+								}	
+							}
+						}
 					}
 
 					/* Restore screen at old position. */
 					handleBurgerBackgroundTile(x-burger_x,
 						GameScreenBurger[burger].x,
-						GameScreenBurger[burger].component[component].half_y,
-						GameScreenBurger[burger].component[component].stomped,
-						GameScreenBurger[burger].component[component].background);
+						p->half_y,
+						p->stomped,
+						p->background);
 
 					/* Draw burger component at new position. */
 					drawBurgerComponent(
 						GameScreenBurger[burger].x,
-						GameScreenBurger[burger].component[component].half_y,
-						GameScreenBurger[burger].component[component].type
-							-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
-						GameScreenBurger[burger].component[component].stomped,
-						GameScreenBurger[burger].component[component].background);
+						p->half_y,
+						p->type-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
+						p->stomped,
+						p->background);
 				}
 		}
 	}
