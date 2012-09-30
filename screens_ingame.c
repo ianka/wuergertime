@@ -43,12 +43,12 @@ void cleanupInGameDescriptionScreen(void) {
  *    + Burger positions are being reset
  */
 void initInGamePrepareScreen(void) {
-	/* Prepare level by description. */
-	prepareLevel();
-
 	/* Fade into clear screen */
 	clearScreen();
 	FadeIn(1,0);
+
+	/* Prepare level by description. */
+	prepareLevel();
 }
 
 void updateInGamePrepareScreen(void) {
@@ -70,6 +70,19 @@ void cleanupInGamePrepareScreen(void) {
  *     + Bonus reset
  */
 void initInGameStartScreen(void) {
+	stomp(2,6);
+	stomp(3,6);
+	stomp(4,6);
+	stomp(5,6);
+	stomp(6,6);
+
+	stomp(2,7);
+	stomp(3,7);
+	stomp(4,7);
+	stomp(5,3);
+	stomp(6,3);
+
+#if 0
 	stomp(2,2);
 	stomp(3,2);
 	stomp(4,2);
@@ -87,6 +100,7 @@ void initInGameStartScreen(void) {
 	stomp(4,3);
 	stomp(5,3);
 	stomp(6,3);
+#endif	
 }
 
 void updateInGameStartScreen(void) {

@@ -29,6 +29,8 @@
 #define SCREEN_BURGER_MAX 4
 #define SCREEN_BURGER_COMPONENT_MAX 5
 #define SCREEN_BURGER_INVALID 0xff
+#define SCREEN_BURGER_PLACE_FREE 0xfe
+#define SCREEN_BURGER_PLACE_INVALID 0xff
 
 /* Game screen switch, animation phase and update function pointer. */ 
 uint8_t GameScreenPrevious;
@@ -36,13 +38,19 @@ uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 uint16_t GameScreenOptions;
+
 typedef struct {
-	uint8_t type, stomped, half_place_y, half_target_y;
+	int8_t  half_y;
+	uint8_t occupied_by;
+} burger_component_place_t;
+typedef struct {
+	uint8_t type, stomped, half_target_y;
 	int8_t  half_y;
 	uint8_t background[2][5];
 } burger_component_t;
 struct {
 	uint8_t x;
+	burger_component_place_t place[SCREEN_BURGER_COMPONENT_MAX];
 	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
 
@@ -73,17 +81,19 @@ void selectLevel(uint8_t level) {
 /* Prepare current level. */
 void prepareLevel(void) {
 	const level_item_t *p=LevelDrawing;
-	uint8_t c, x, y, burger, component;
+	uint8_t c, x, y, burger, place, component;
 	uint8_t i;
 
 	/* Reset options. */
 	GameScreenOptions=LEVEL_ITEM_OPTION_STOMP_ONCE;
 
-	/* Reset burger components. */
+	/* Reset burgers. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
 		GameScreenBurger[burger].x=SCREEN_BURGER_INVALID;
-		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
-			GameScreenBurger[burger].component[component].type=LEVEL_ITEM_INVALID;
+		for (place=0;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+			GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_INVALID;
+			GameScreenBurger[burger].component[place].type=LEVEL_ITEM_INVALID;
+		}
 	}
 
 	/* Go through level specific screen list. */
@@ -123,21 +133,31 @@ void prepareLevel(void) {
 
 				/* Check if we have a burger slot now. */
 				if (burger!=SCREEN_BURGER_MAX) {
-					/* Yes. Get free component slot. */
+					/* Yes. Get next place slot. */
+					for (place=0;place<SCREEN_BURGER_COMPONENT_MAX;place++)
+						if (GameScreenBurger[burger].place[place].occupied_by == SCREEN_BURGER_PLACE_INVALID) break;
+
+					/* Get a free component slot. */
 					for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
 						if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) break;
 
-					/* Check if we have a component slot now. */
-					if (component!=SCREEN_BURGER_COMPONENT_MAX) {
-						/* Yes.	Remember burger component parameters. */
-						GameScreenBurger[burger].component[component].type=c;
-						GameScreenBurger[burger].component[component].stomped=0;
-						GameScreenBurger[burger].component[component].half_place_y = y*2+GameScreenOptions;
-						GameScreenBurger[burger].component[component].half_y = GameScreenBurger[burger].component[component].half_place_y;
-						GameScreenBurger[burger].component[component].half_target_y = GameScreenBurger[burger].component[component].half_place_y;
+					/* Check if we have a place slot now. */
+					/* component don't need to be tested, it's always <= place */
+					if (place!=SCREEN_BURGER_COMPONENT_MAX) {
+						/* Yes.	Remember burger place parameters. */
+						GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
+						GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
 
-						/* If not placeholder, do some more initialisations. */
+						/* If not placeholder, do component initialisations. */
 						if (c != LEVEL_ITEM_BURGER_PLACEHOLDER) {
+							GameScreenBurger[burger].place[place].occupied_by=component;
+							GameScreenBurger[burger].component[component].type=c;
+							GameScreenBurger[burger].component[component].stomped=0;
+							GameScreenBurger[burger].component[component].half_y=
+								GameScreenBurger[burger].place[place].half_y;
+							GameScreenBurger[burger].component[component].half_target_y=
+								GameScreenBurger[burger].place[place].half_y;
+
 							/* Clear background buffer. */
 							for (i=0;i<5;i++) {
 								GameScreenBurger[burger].component[component].background[0][i]=TILES0_SPACE;
@@ -288,7 +308,7 @@ void animateLevelStart(void) {
 
 /* Stomp onto a tile. */
 void stomp(uint8_t x, uint8_t y) {
-	uint8_t burger_x, burger, component;
+	uint8_t burger_x, burger, component, component_below, place;
 	burger_component_t *p, *q;
 
 	/* Check which burger. */
@@ -318,15 +338,28 @@ void stomp(uint8_t x, uint8_t y) {
 							/* Full tile. Check tile above leftmost tile. */
 							if (getTile(burger_x,(p->half_y>>1)-1) == TILES0_FLOOR_MIDDLE) {
 								/* Floor is just above this burger component. Fall! */
-								if (component>0) {
-									/* There could be a component below. Check. */
-									q=&(GameScreenBurger[burger].component[component-1]);
-										p->half_target_y=q->half_place_y;
-									if (q->type != LEVEL_ITEM_INVALID) {
-										/* There is a component below. Fall to its place. */
-									} {
-										/* No component below. Fall to bottom of screen. */
-//										p->half_target_y=SCREEN_HEIGHT*2-2;
+								/* Get place of current component. */
+								for (place=1;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+									if (GameScreenBurger[burger].place[place].occupied_by == component) {
+										/* Place found. Mark as free. */
+										GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
+										
+										/* Get component on place below. */
+										component_below=GameScreenBurger[burger].place[place-1].occupied_by;
+										if (component_below == SCREEN_BURGER_PLACE_FREE) {
+											/* Place below is free. */
+											/* Set target coordinate. */
+											p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
+										} else {	
+											/* Place below is occupied. Get component. */
+											q=&(GameScreenBurger[burger].component[component_below]);
+
+											/* Set target coordinate. */
+											p->half_target_y=q->half_y-2;
+										}
+
+										/* Break loop. */
+										break;
 									}
 								}	
 							}

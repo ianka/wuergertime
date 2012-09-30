@@ -83,7 +83,7 @@ const level_item_t LevelDrawings[] PROGMEM={
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:2, y:19 },
 	{ c: LEVEL_ITEM_BURGER_CHEESESALAD, x:2, y:15 },
 	{ c: LEVEL_ITEM_BURGER_PATTY, x:2, y:11 },
-	{ c: LEVEL_ITEM_BURGER_PLACEHOLDER, x:2, y:6 },
+	{ c: LEVEL_ITEM_BURGER_TOMATO, x:2, y:6 },
 	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:2, y:2 },
 
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:9, y:19 },
