@@ -24,7 +24,7 @@
 
 
 /* Sign used in start screen. */
-const uint8_t ShapeSignTilesOutOfGame[] PROGMEM={
+const uint8_t ShapeSignOutOfGame[] PROGMEM={
 	12, /* Width */
 	5, /* Height */
 
@@ -116,9 +116,9 @@ const uint8_t ShapeSignTilesOutOfGame[] PROGMEM={
 
 
 /* Sign used in-game. */
-const uint8_t ShapeSignTilesInGame[] PROGMEM={
+const uint8_t ShapeSignInGame[] PROGMEM={
 	12, /* Width */
-	6, /* Height */
+	5, /* Height */
 
 	/* Line 0 */
 	TILES0_SIGN_TOP,
@@ -204,30 +204,13 @@ const uint8_t ShapeSignTilesInGame[] PROGMEM={
 
 	TILES0_SPACE,
 	TILES0_SIGN_LEFT,
-
-	/* Line 5 */
-	TILES0_SIGNPOST_RIGHT,
-	TILES0_SKIP,
-
-	TILES0_SKIP,
-	TILES0_SKIP,
-	TILES0_SKIP,
-	TILES0_SIGNPOST_RIGHT,
-
-	TILES0_SKIP,
-	TILES0_SKIP,
-	TILES0_SIGNPOST_LEFT,
-	TILES0_SKIP,
-
-	TILES0_SKIP,
-	TILES0_SIGNPOST_LEFT,
 };
 
 
 /* Sign used for level start animation. */
 const uint8_t ShapeSignLevelStart[] PROGMEM={
 	12, /* Width */
-	6, /* Height */
+	5, /* Height */
 
 	/* Line 0 */
 	TILES0_SIGN_TOP,
@@ -313,23 +296,6 @@ const uint8_t ShapeSignLevelStart[] PROGMEM={
 
 	TILES0_SPACE,
 	TILES0_SIGN_LEFT,
-
-	/* Line 5 */
-	TILES0_SIGNPOST_RIGHT,
-	TILES0_SKIP,
-
-	TILES0_SKIP,
-	TILES0_SKIP,
-	TILES0_SKIP,
-	TILES0_SIGNPOST_RIGHT,
-
-	TILES0_SKIP,
-	TILES0_SKIP,
-	TILES0_SIGNPOST_LEFT,
-	TILES0_SKIP,
-
-	TILES0_SKIP,
-	TILES0_SIGNPOST_LEFT,
 };
 
 
@@ -612,25 +578,25 @@ const uint8_t ShapeFoodTruck[] PROGMEM={
 	TILES1_SPACE,
 
 	/* Line 13 */
-	TILES1_FLOOR_MIDDLE,
-	TILES1_FLOOR_MIDDLE,
-	TILES1_FLOOR_MIDDLE,
-	TILES1_SIGNPOST_RIGHT,
+	TILES1_SPACE,
+	TILES1_SPACE,
+	TILES1_SPACE,
+	TILES1_SIGN_RIGHT,
 
-	TILES1_FLOOR_MIDDLE,
-	TILES1_FLOOR_MIDDLE,
+	TILES1_SPACE,
+	TILES1_SPACE,
 	TILES1_FOODTRUCK_WHEEL_LOWER_LEFT,
 	TILES1_FOODTRUCK_WHEEL_LOWER_RIGHT,
 	
 	TILES1_FOODTRUCK_WHEEL_LOWER_LEFT,
 	TILES1_FOODTRUCK_WHEEL_LOWER_RIGHT,
-	TILES1_FLOOR_MIDDLE,
-	TILES1_FLOOR_MIDDLE,
+	TILES1_SPACE,
+	TILES1_SPACE,
 
-	TILES1_SIGNPOST_LEFT,
-	TILES1_FLOOR_MIDDLE,
-	TILES1_FLOOR_MIDDLE,
-	TILES1_FLOOR_MIDDLE,
+	TILES1_SIGN_LEFT,
+	TILES1_SPACE,
+	TILES1_SPACE,
+	TILES1_SPACE,
 };
 
 #endif /* SHAPES_INC */

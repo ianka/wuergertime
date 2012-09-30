@@ -89,12 +89,12 @@ const tiles_burger_t ShapeBurgers[26][2] PROGMEM={
 	TILES_COMPOUND(TILES_BURGER,BURGER_BUNTOP_PATTY),
 
 	TILES_COMPOUND(TILES_BURGER,BURGER_PATTY_BUNBOTTOM),
-	TILES_COMPOUND(TILES_BURGER,BURGER_BUNTOP_FLOOR),
-	TILES_COMPOUND(TILES_BURGER,BURGER_TOMATO_FLOOR),
-	TILES_COMPOUND(TILES_BURGER,BURGER_PATTY_FLOOR),
-	TILES_COMPOUND(TILES_BURGER,BURGER_CHEESESALAD_FLOOR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_FLOOR_BUNTOP),
+	TILES_COMPOUND(TILES_BURGER,BURGER_FLOOR_TOMATO),
+	TILES_COMPOUND(TILES_BURGER,BURGER_FLOOR_PATTY),
+	TILES_COMPOUND(TILES_BURGER,BURGER_FLOOR_CHEESESALAD),
 
-	TILES_COMPOUND(TILES_BURGER,BURGER_BUNBOTTOM_FLOOR),
+	TILES_COMPOUND(TILES_BURGER,BURGER_FLOOR_BUNBOTTOM),
 };
 
 
@@ -192,32 +192,42 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
 
 /* Draw a ladder */
 void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
+	uint8_t floor[2]=TILES(FLOOR_MIDDLE);
 	tiles_duo_t ladder[2]=TILES_COMPOUND(TILES_DUO,LADDER);
 	tiles_duo_t ladder_top[2]=TILES_COMPOUND(TILES_DUO,LADDER_TOP);
-	tiles_duo_t ladder_middle[2]=TILES_COMPOUND(TILES_DUO,LADDER_MIDDLE);
+	tiles_duo_t ladder_top_floorend[2]=TILES_COMPOUND(TILES_DUO,LADDER_TOP_FLOOREND);
+	tiles_duo_t ladder_top_uponly[2]=TILES_COMPOUND(TILES_DUO,LADDER_TOP_UPONLY);
 	tiles_duo_t ladder_bottom[2]=TILES_COMPOUND(TILES_DUO,LADDER_BOTTOM);
 
 	/* Skip zero length ladder. */
 	if (!length) return;
 
-	/* Ladder to bottom? */
-	if (!(options & DRAW_OPTION_LADDER_TOBOTTOM)) {
-		/* No. Draw upper exit. */
-		if (options & DRAW_OPTION_LADDER_CONTINUED) {
-			/* Middle exit for a continued ladder. */
-			setTile(x,y,ladder_middle[Tileset].left);
-			setTile(x+1,y,ladder_middle[Tileset].right);
-		} else {
-			/* Top exit for a starting ladder. */
-			setTile(x,y,ladder_top[Tileset].left);
-			setTile(x+1,y,ladder_top[Tileset].right);
-		}
+	/* Draw upper exit. */
+	if (options & DRAW_OPTION_LADDER_UPONLY) {
+		/* One-way ladder top. */
+		setTile(x,y,ladder_top_uponly[Tileset].left);
+		setTile(x+1,y,ladder_top_uponly[Tileset].right);
+	} else {
+		/* Normal ladder top. */
+		/* Check if floor end where top is going to be placed. */
+		if (getTile(x,y) == floor[Tileset])
+				setTile(x,y,ladder_top[Tileset].left);
+			else	
+				setTile(x,y,ladder_top_floorend[Tileset].left);
 
-		/* Advance one row. */
-		y++;
-		length--;
+		if (getTile(x+1,y) == floor[Tileset])
+				setTile(x+1,y,ladder_top[Tileset].right);
+			else	
+				setTile(x+1,y,ladder_top_floorend[Tileset].right);
+	}
 
-		/* Draw lower exit. */
+	/* Advance one row. */
+	y++;
+	length--;
+
+	/* Continued ladder? */
+	if (!(options & DRAW_OPTION_LADDER_CONTINUED)) {
+		/* No. Draw lower exit. */
 		setTile(x,y+length,ladder_bottom[Tileset].left);
 		setTile(x+1,y+length,ladder_bottom[Tileset].right);
 	}

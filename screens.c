@@ -243,7 +243,7 @@ void animateLevelStart(void) {
 						if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGN_ENDED) {
 							/* Blinking sign animation */
 							if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>1,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
-									drawShape(x,y,ShapeSignTilesInGame);
+									drawShape(x,y,ShapeSignInGame);
 								else
 									drawShape(x,y,ShapeSignLevelStart);
 						}
@@ -259,11 +259,10 @@ void animateLevelStart(void) {
 				if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
 					/* Ladder. Animate drawing it when floor animation is done. */
 					if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_FLOORS_ENDED) {
-						length=min(c & LEVEL_ITEM_LADDER_LENGTH,
-							(GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED)>>1);
+						length=(GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED)>>1;
 						pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
-						drawLadder(x,pos,length,
-							(length==(c & LEVEL_ITEM_LADDER_LENGTH))?c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_TOBOTTOM):c & LEVEL_ITEM_LADDER_TOBOTTOM);
+						if ((length <= (c & LEVEL_ITEM_LADDER_LENGTH)) && ((GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED) & 0x01))
+							drawLadder(x,pos,length,c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_UPONLY));
 					}	
 				} else {
 					/* Floor. Animate width. */

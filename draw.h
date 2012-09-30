@@ -29,7 +29,7 @@
 #define DRAW_OPTION_FLOOR_CAP_LEFT LEVEL_ITEM_FLOOR_CAP_LEFT
 #define DRAW_OPTION_FLOOR_CAP_RIGHT LEVEL_ITEM_FLOOR_CAP_RIGHT
 #define DRAW_OPTION_LADDER_CONTINUED LEVEL_ITEM_LADDER_CONTINUED
-#define DRAW_OPTION_LADDER_TOBOTTOM LEVEL_ITEM_LADDER_TOBOTTOM
+#define DRAW_OPTION_LADDER_UPONLY LEVEL_ITEM_LADDER_UPONLY
 
 
 /* Burger shapes are selected by number. */
@@ -41,8 +41,8 @@
 
 
 /* Other shapes are selected by pointer. */
-extern const uint8_t ShapeSignTilesOutOfGame[] PROGMEM;
-extern const uint8_t ShapeSignTilesInGame[] PROGMEM;
+extern const uint8_t ShapeSignInGame[] PROGMEM;
+extern const uint8_t ShapeSignOutOfGame[] PROGMEM;
 extern const uint8_t ShapeSignLevelStart[] PROGMEM;
 extern const uint8_t ShapeFoodTruck[] PROGMEM;
 

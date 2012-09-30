@@ -69,8 +69,8 @@ void initStartScreen(void) {
 	FadeIn(1,0);
 
 	/* Draw picture */
-	drawFloor(0,19,SCREEN_WIDTH,0);
-	drawShape(7,1,ShapeSignTilesOutOfGame);
+	drawFloor(0,20,SCREEN_WIDTH,0);
+	drawShape(7,1,ShapeSignOutOfGame);
 	drawShape(5,6,ShapeFoodTruck);
 
 	/* Draw credits and licensing strings. */
