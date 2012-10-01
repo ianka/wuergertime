@@ -324,48 +324,6 @@ void stomp(uint8_t x, uint8_t y) {
 					/* Stomp tile.*/
 					p->stomped|=1<<(x-burger_x);
 
-					/* Check if completely stomped. */
-					if (p->stomped == 0x1f) {
-						/* Yes. Reset and increase half_y instead. */
-						p->stomped=0;
-						p->half_y++;
-
-						/* No falling animation by default. */
-						p->half_target_y = p->half_y;
-
-						/* Check if the component should fall now. */
-						if (!(p->half_y & 0x01)) {
-							/* Full tile. Check tile above leftmost tile. */
-							if (getTile(burger_x,(p->half_y>>1)-1) == TILES0_FLOOR_MIDDLE) {
-								/* Floor is just above this burger component. Fall! */
-								/* Get place of current component. */
-								for (place=1;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
-									if (GameScreenBurger[burger].place[place].occupied_by == component) {
-										/* Place found. Mark as free. */
-										GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
-										
-										/* Get component on place below. */
-										component_below=GameScreenBurger[burger].place[place-1].occupied_by;
-										if (component_below == SCREEN_BURGER_PLACE_FREE) {
-											/* Place below is free. */
-											/* Set target coordinate. */
-											p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
-										} else {	
-											/* Place below is occupied. Get component. */
-											q=&(GameScreenBurger[burger].component[component_below]);
-
-											/* Set target coordinate. */
-											p->half_target_y=q->half_y-2;
-										}
-
-										/* Break loop. */
-										break;
-									}
-								}	
-							}
-						}
-					}
-
 					/* Restore screen at old position. */
 					handleBurgerBackgroundTile(x-burger_x,
 						GameScreenBurger[burger].x,
@@ -380,6 +338,53 @@ void stomp(uint8_t x, uint8_t y) {
 						p->type-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
 						p->stomped,
 						p->background);
+
+					/* Check if completely stomped. */
+					if (p->stomped == 0x1f) {
+						/* Yes. Reset and increase half_y instead. */
+						p->stomped=0;
+						p->half_y++;
+
+						/* No falling animation by default. */
+						p->half_target_y = p->half_y;
+
+						/* Check if the component should fall now. */
+						if (p->half_y & 0x01) {
+							/* Full tile. Check leftmost tile. */
+							switch (getTile(burger_x,(p->half_y>>1))) {
+								case TILES0_BURGER_FLOOR_BUNTOP_LEFT:
+								case TILES0_BURGER_FLOOR_TOMATO_LEFT:
+								case TILES0_BURGER_FLOOR_PATTY_LEFT:
+								case TILES0_BURGER_FLOOR_CHEESESALAD_LEFT:
+								case TILES0_BURGER_FLOOR_BUNBOTTOM_LEFT:
+									/* Floor is just above this burger component. Fall! */
+									/* Get place of current component. */
+									for (place=1;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+										if (GameScreenBurger[burger].place[place].occupied_by == component) {
+											/* Place found. Mark as free. */
+											GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
+											
+											/* Get component on place below. */
+											component_below=GameScreenBurger[burger].place[place-1].occupied_by;
+											if (component_below == SCREEN_BURGER_PLACE_FREE) {
+												/* Place below is free. */
+												/* Set target coordinate. */
+												p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
+											} else {	
+												/* Place below is occupied. Get component. */
+												q=&(GameScreenBurger[burger].component[component_below]);
+
+												/* Set target coordinate. */
+												p->half_target_y=q->half_y-2;
+											}
+
+											/* Break loop. */
+											break;
+										}
+									}
+							}
+						}
+					}
 				}
 		}
 	}

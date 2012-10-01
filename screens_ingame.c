@@ -82,7 +82,7 @@ void initInGameStartScreen(void) {
 	stomp(5,7);
 	stomp(6,7);
 
-
+#if 0
 	stomp(2,2);
 	stomp(3,2);
 	stomp(4,2);
@@ -93,6 +93,7 @@ void initInGameStartScreen(void) {
 	stomp(4,3);
 	stomp(5,3);
 	stomp(6,3);
+#endif	
 }
 
 void updateInGameStartScreen(void) {
