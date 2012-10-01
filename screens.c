@@ -29,6 +29,7 @@
 #define SCREEN_BURGER_MAX 4
 #define SCREEN_BURGER_COMPONENT_MAX 5
 #define SCREEN_BURGER_INVALID 0xff
+#define SCREEN_BURGER_OCCUPIED_MASK 0x0f
 #define SCREEN_BURGER_PLACE_FREE 0xfe
 #define SCREEN_BURGER_PLACE_INVALID 0xff
 
@@ -282,7 +283,7 @@ void animateLevelStart(void) {
 						length=(GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED)>>1;
 						pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
 						if ((length <= (c & LEVEL_ITEM_LADDER_LENGTH)) && ((GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED) & 0x01))
-							drawLadder(x,pos,length,c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_UPONLY));
+							drawLadder(x,pos,length,(length==1)?c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_UPONLY):(c& LEVEL_ITEM_LADDER_UPONLY)|LEVEL_ITEM_LADDER_CONTINUED);
 					}	
 				} else {
 					/* Floor. Animate width. */
@@ -360,7 +361,8 @@ void stomp(uint8_t x, uint8_t y) {
 									/* Floor is just above this burger component. Fall! */
 									/* Get place of current component. */
 									for (place=1;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
-										if (GameScreenBurger[burger].place[place].occupied_by == component) {
+										if ((GameScreenBurger[burger].place[place].occupied_by & SCREEN_BURGER_OCCUPIED_MASK)
+											== component) {
 											/* Place found. Mark as free. */
 											GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
 											
