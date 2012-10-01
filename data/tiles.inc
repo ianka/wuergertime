@@ -92,23 +92,23 @@
 
 
 /* Plate and sign frame */
-#define TILES0_PLATE_LEFT stile(0,6,13)
-#define TILES0_PLATE_MIDDLELEFT stile(0,7,12)
+#define TILES0_PLATE_LEFT stile(0,7,13)
+#define TILES0_PLATE_MIDDLELEFT stile(0,8,12)
 #define TILES0_PLATE_MIDDLE TILES0_PLATE_MIDDLELEFT /* same */
 #define TILES0_PLATE_MIDDLERIGHT TILES0_PLATE_MIDDLELEFT /* same */
-#define TILES0_PLATE_RIGHT stile(0,6,14)
-#define TILES1_PLATE_LEFT stile(1,6,13)
-#define TILES1_PLATE_MIDDLELEFT stile(1,7,12)
+#define TILES0_PLATE_RIGHT stile(0,7,14)
+#define TILES1_PLATE_LEFT stile(1,7,13)
+#define TILES1_PLATE_MIDDLELEFT stile(1,8,12)
 #define TILES1_PLATE_MIDDLE TILES1_PLATE_MIDDLELEFT /* same */
 #define TILES1_PLATE_MIDDLERIGHT TILES1_PLATE_MIDDLELEFT /* same */
-#define TILES1_PLATE_RIGHT stile(1,6,14)
+#define TILES1_PLATE_RIGHT stile(1,7,14)
 
-#define TILES0_SIGN_LEFT stile(0,6,12)
-#define TILES0_SIGN_RIGHT stile(0,6,15)
-#define TILES0_SIGN_TOP stile(0,7,13)
-#define TILES1_SIGN_LEFT stile(1,6,12)
-#define TILES1_SIGN_RIGHT stile(1,6,15)
-#define TILES1_SIGN_TOP stile(1,7,13)
+#define TILES0_SIGN_LEFT stile(0,7,12)
+#define TILES0_SIGN_RIGHT stile(0,7,15)
+#define TILES0_SIGN_TOP stile(0,8,13)
+#define TILES1_SIGN_LEFT stile(1,7,12)
+#define TILES1_SIGN_RIGHT stile(1,7,15)
+#define TILES1_SIGN_TOP stile(1,8,13)
 
 
 /* Texts */
@@ -123,15 +123,15 @@
 #define TILES0_TODO_LEFT stile(0,4,8)
 #define TILES0_TODO_RIGHT stile(0,5,8)
 
-#define TILES0_OPEN_ON_LEFT stile(0,6,3)
-#define TILES0_OPEN_ON_RIGHT stile(0,6,5)
-#define TILES1_OPEN_ON_LEFT stile(1,6,3)
-#define TILES1_OPEN_ON_RIGHT stile(1,6,5)
+#define TILES0_OPEN_ON_LEFT stile(0,7,3)
+#define TILES0_OPEN_ON_RIGHT stile(0,7,5)
+#define TILES1_OPEN_ON_LEFT stile(1,7,3)
+#define TILES1_OPEN_ON_RIGHT stile(1,7,5)
 
-#define TILES0_OPEN_OFF_LEFT stile(0,6,6)
-#define TILES0_OPEN_OFF_RIGHT stile(0,6,7)
-#define TILES1_OPEN_OFF_LEFT stile(1,6,6)
-#define TILES1_OPEN_OFF_RIGHT stile(1,6,7)
+#define TILES0_OPEN_OFF_LEFT stile(0,7,6)
+#define TILES0_OPEN_OFF_RIGHT stile(0,7,7)
+#define TILES1_OPEN_OFF_LEFT stile(1,7,6)
+#define TILES1_OPEN_OFF_RIGHT stile(1,7,7)
 
 #define TILES0_SCORE_LEFT utile(0,3,13)
 #define TILES0_SCORE_MIDDLE utile(0,3,14)
