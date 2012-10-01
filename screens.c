@@ -29,9 +29,13 @@
 #define SCREEN_BURGER_MAX 4
 #define SCREEN_BURGER_COMPONENT_MAX 5
 #define SCREEN_BURGER_INVALID 0xff
-#define SCREEN_BURGER_OCCUPIED_MASK 0x0f
-#define SCREEN_BURGER_PLACE_FREE 0xfe
-#define SCREEN_BURGER_PLACE_INVALID 0xff
+#define SCREEN_BURGER_OCCUPIED_HAT_SHIFT 4
+#define SCREEN_BURGER_OCCUPIED_MASK   0x0f
+#define SCREEN_BURGER_PLACE_INVALID   0xee
+#define SCREEN_BURGER_PLACE_FREE_BODY 0x0f
+#define SCREEN_BURGER_PLACE_FREE_HAT  0xf0
+#define SCREEN_BURGER_PLACE_FREE      ((SCREEN_BURGER_PLACE_FREE_BODY|SCREEN_BURGER_PLACE_FREE_HAT))
+
 
 /* Game screen switch, animation phase and update function pointer. */ 
 uint8_t GameScreenPrevious;
@@ -88,7 +92,7 @@ void prepareLevel(void) {
 	/* Reset options. */
 	GameScreenOptions=LEVEL_ITEM_OPTION_STOMP_ONCE;
 
-	/* Reset burgers. */
+	/* Reset burgers. Places in a burger are counted from bottom to top. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
 		GameScreenBurger[burger].x=SCREEN_BURGER_INVALID;
 		for (place=0;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
@@ -307,10 +311,98 @@ void animateLevelStart(void) {
 }
 
 
+/* Drop a component. */
+void dropComponent(uint8_t burger, uint8_t component) {
+	uint8_t component_below, place;
+	burger_component_t *p, *q;
+
+	/* Shortcut pointer to current component. */
+	p=&(GameScreenBurger[burger].component[component]);
+
+	/* Get place of current component. */
+	for (place=1;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+		if ((GameScreenBurger[burger].place[place].occupied_by & SCREEN_BURGER_OCCUPIED_MASK)
+			== component) {
+			/* Place found. Mark as free. */
+			GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
+			
+			/* Get component on place below. */
+			component_below=GameScreenBurger[burger].place[place-1].occupied_by;
+			if (component_below == SCREEN_BURGER_PLACE_FREE) {
+				/* Place below is free. */
+				/* Set target coordinate. */
+				p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
+			} else {	
+				/* Place below is occupied. Get component. */
+				q=&(GameScreenBurger[burger].component[component_below]);
+
+				/* Set target coordinate. */
+				p->half_target_y=q->half_y-2;
+
+				/* Remember current component soon being a "hat" for the component_below. */
+				GameScreenBurger[burger].place[place-1].occupied_by|=component<<SCREEN_BURGER_OCCUPIED_HAT_SHIFT;
+			}
+
+			/* Break loop. */
+			break;
+		}
+	}
+}
+
+
+/*
+ *  Search a move components which have other components as a "hat".
+ *  This introduces chain reaction falling of components.
+ */
+void dropHattedComponents(void) {
+	uint8_t burger, place, body, hat;
+	burger_component_t *p, *q;
+
+	/* Go through all places. Places in a burger are counted from bottom to top. */
+	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+		for (place=0;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+			/* End burger if no places left. */
+			if (place == SCREEN_BURGER_PLACE_INVALID) break;
+
+			/* Skip this place if not "hatted". */
+			hat=GameScreenBurger[burger].place[place].occupied_by >> SCREEN_BURGER_OCCUPIED_HAT_SHIFT;
+			if (hat == SCREEN_BURGER_PLACE_FREE_BODY) continue;
+
+			/* A hat has been annouced. Skip if still flying. */
+			body=GameScreenBurger[burger].place[place].occupied_by & SCREEN_BURGER_OCCUPIED_MASK;
+			p=&(GameScreenBurger[burger].component[hat]);
+			q=&(GameScreenBurger[burger].component[body]);
+			if (p->half_y != q->half_y-2) continue;
+			
+			/* Move hat half a tile up to make it jump. */
+			p->half_y--;
+			drawBurgerComponent(GameScreenBurger[burger].x,
+				p->half_y,
+				p->type-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
+				p->stomped,
+				p->background);
+
+			/* Set target coordinate for hat to drop it to the place of the body. */
+			p->half_target_y=GameScreenBurger[burger].place[place].half_y;
+
+			/* Reset stomping for component under the hat. */
+			q->stomped=0;
+			q->half_y++;
+
+			/* Drop component under the hat. */
+			dropComponent(burger, body);
+
+			/* Mark the place being occupied by the former hat. */
+			GameScreenBurger[burger].place[place].occupied_by=hat|SCREEN_BURGER_PLACE_FREE_HAT;
+		}
+	}
+}
+
+
 /* Stomp onto a tile. */
 void stomp(uint8_t x, uint8_t y) {
-	uint8_t burger_x, burger, component, component_below, place;
-	burger_component_t *p, *q;
+	uint8_t burger_x, burger, component;
+	burger_component_t *p;
 
 	/* Check which burger. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
@@ -358,32 +450,8 @@ void stomp(uint8_t x, uint8_t y) {
 								case TILES0_BURGER_FLOOR_PATTY_LEFT:
 								case TILES0_BURGER_FLOOR_CHEESESALAD_LEFT:
 								case TILES0_BURGER_FLOOR_BUNBOTTOM_LEFT:
-									/* Floor is just above this burger component. Fall! */
-									/* Get place of current component. */
-									for (place=1;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
-										if ((GameScreenBurger[burger].place[place].occupied_by & SCREEN_BURGER_OCCUPIED_MASK)
-											== component) {
-											/* Place found. Mark as free. */
-											GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
-											
-											/* Get component on place below. */
-											component_below=GameScreenBurger[burger].place[place-1].occupied_by;
-											if (component_below == SCREEN_BURGER_PLACE_FREE) {
-												/* Place below is free. */
-												/* Set target coordinate. */
-												p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
-											} else {	
-												/* Place below is occupied. Get component. */
-												q=&(GameScreenBurger[burger].component[component_below]);
-
-												/* Set target coordinate. */
-												p->half_target_y=q->half_y-2;
-											}
-
-											/* Break loop. */
-											break;
-										}
-									}
+									/* Floor is just above this burger component. Drop it! */
+									dropComponent(burger, component);
 							}
 						}
 					}

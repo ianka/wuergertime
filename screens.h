@@ -109,6 +109,9 @@ void selectLevel(uint8_t level);
 void prepareLevel(void);
 void animateBurgers(void);
 void animateLevelStart(void);
+void dropComponent(uint8_t burger, uint8_t component);
+void dropHattedComponents(void);
 void stomp(uint8_t x, uint8_t y);
+
 
 #endif /* SCREENS_H */

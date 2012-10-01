@@ -70,7 +70,7 @@ void cleanupInGamePrepareScreen(void) {
  *     + Bonus reset
  */
 void initInGameStartScreen(void) {
-#if 0
+
 	stomp(2,6);
 	stomp(3,6);
 	stomp(4,6);
@@ -78,11 +78,7 @@ void initInGameStartScreen(void) {
 	stomp(6,6);
 
 	stomp(2,7);
-	stomp(3,7);
-	stomp(4,7);
-	stomp(5,7);
 	stomp(6,7);
-#endif	
 
 	stomp(2,2);
 	stomp(3,2);
@@ -98,6 +94,7 @@ void initInGameStartScreen(void) {
 }
 
 void updateInGameStartScreen(void) {
+	dropHattedComponents();
 	animateBurgers();
 }
 
