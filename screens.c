@@ -161,7 +161,7 @@ void prepareLevel(void) {
 
 						/* If not plate or placeholder, do component initialisations. */
 						if ((c != LEVEL_ITEM_PLATE) && (c != LEVEL_ITEM_BURGER_PLACEHOLDER)) {
-							GameScreenBurger[burger].place[place].occupied_by=component;
+							GameScreenBurger[burger].place[place].occupied_by=component|SCREEN_BURGER_PLACE_FREE_HAT;
 							GameScreenBurger[burger].component[component].type=c;
 							GameScreenBurger[burger].component[component].stomped=0;
 							GameScreenBurger[burger].component[component].half_y=
@@ -331,8 +331,8 @@ void dropComponent(uint8_t burger, uint8_t component) {
 			GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
 			
 			/* Get component on place below. */
-			component_below=GameScreenBurger[burger].place[place-1].occupied_by;
-			if (component_below == SCREEN_BURGER_PLACE_FREE) {
+			component_below=GameScreenBurger[burger].place[place-1].occupied_by & SCREEN_BURGER_OCCUPIED_MASK;
+			if (component_below == SCREEN_BURGER_PLACE_FREE_BODY) {
 				/* Place below is free. */
 				/* Set target coordinate. */
 				p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
@@ -343,7 +343,7 @@ void dropComponent(uint8_t burger, uint8_t component) {
 					 *  Yes. The plate is always "free" to circumvent the "hat" mechanism.
 					 *  Instead, the place is adjusted for each component dropped to it.
 					 */
-					GameScreenBurger[burger].place[0].half_y--;
+					GameScreenBurger[burger].place[0].half_y-=2;
 				} else {
 					/* No. Mark it as being occupied by the current component. */
 					GameScreenBurger[burger].place[place-1].occupied_by=component|SCREEN_BURGER_PLACE_FREE_HAT;
@@ -356,7 +356,8 @@ void dropComponent(uint8_t burger, uint8_t component) {
 				p->half_target_y=q->half_y-2;
 
 				/* Remember current component soon being a "hat" for the component_below. */
-				GameScreenBurger[burger].place[place-1].occupied_by|=component<<SCREEN_BURGER_OCCUPIED_HAT_SHIFT;
+				GameScreenBurger[burger].place[place-1].occupied_by=
+					component_below|(component<<SCREEN_BURGER_OCCUPIED_HAT_SHIFT);
 			}
 
 			/* Break loop. */
@@ -388,7 +389,7 @@ void dropHattedComponents(void) {
 			body=GameScreenBurger[burger].place[place].occupied_by & SCREEN_BURGER_OCCUPIED_MASK;
 			p=&(GameScreenBurger[burger].component[hat]);
 			q=&(GameScreenBurger[burger].component[body]);
-			if (p->half_y != q->half_y-2) continue;
+			if (p->half_y != (q->half_y-2)) continue;
 			
 			/* Move hat half a tile up to make it jump. */
 			p->half_y--;

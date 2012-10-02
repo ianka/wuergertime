@@ -71,16 +71,12 @@ void cleanupInGamePrepareScreen(void) {
  *     + Bonus reset
  */
 void initInGameStartScreen(void) {
+}
 
-	stomp(2,6);
-	stomp(3,6);
-	stomp(4,6);
-	stomp(5,6);
-	stomp(6,6);
-
-	stomp(2,7);
-	stomp(6,7);
-
+void updateInGameStartScreen(void) {
+	/* Check buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_A|BTN_B)) {
+		case BTN_A:
 	stomp(2,2);
 	stomp(3,2);
 	stomp(4,2);
@@ -92,12 +88,20 @@ void initInGameStartScreen(void) {
 	stomp(2,3);
 	stomp(6,3);
 	stomp(5,3);
-}
 
-void updateInGameStartScreen(void) {
-	/* Check buttons. */
-	switch (checkControllerButtonsPressed(0,BTN_A)) {
-		case BTN_A:
+	stomp(2,11);
+	stomp(3,11);
+	stomp(4,11);
+	stomp(5,11);
+	stomp(6,11);
+
+	stomp(3,12);
+	stomp(4,12);
+	stomp(2,12);
+	stomp(6,12);
+	stomp(5,12);
+			break;
+		case BTN_B:
 	stomp(2,6);
 	stomp(3,6);
 	stomp(4,6);
