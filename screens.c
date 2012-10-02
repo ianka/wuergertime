@@ -199,7 +199,7 @@ void prepareLevel(void) {
 
 /* Burger animation. */
 void animateBurgers(void) {
-	uint8_t burger, component;
+	uint8_t burger, component,i ;
 	burger_component_t *p;
 
 	/* Go through all prepared burger components. */
@@ -210,8 +210,19 @@ void animateBurgers(void) {
 			/* Break at first invalid component. */
 			if (p->type == LEVEL_ITEM_INVALID) break;
 
-			/* Skip if animation is completed for this component. */
-			if (p->half_y == p->half_target_y) continue;
+			/* Animation completed for this component? */
+			if (p->half_y == p->half_target_y) {
+				/* Yes. Stop at half tile? */
+				if (p->half_y & 0x01) {
+					/* Yes. Clear background line to avoid a graphics bug on next drop. */
+					for (i=0;i<5;i++) {
+						p->background[(~(p->half_y>>1)) & 0x01][i]=TILES0_SPACE;
+					}
+				}	
+
+				/* Skip other steps. */
+				continue;
+			}	
 
 			/* Animate component. Move it down. */
 			p->half_y++;

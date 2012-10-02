@@ -95,11 +95,18 @@ void updateInGameStartScreen(void) {
 	stomp(5,11);
 	stomp(6,11);
 
+	stomp(2,12);
+	stomp(3,12);
+	stomp(4,12);
+	stomp(5,12);
+	stomp(6,12);
+#if 0
 	stomp(3,12);
 	stomp(4,12);
 	stomp(2,12);
 	stomp(6,12);
 	stomp(5,12);
+#endif	
 			break;
 		case BTN_B:
 	stomp(2,6);
