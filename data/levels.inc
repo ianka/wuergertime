@@ -80,32 +80,32 @@ const level_item_t LevelDrawings[] PROGMEM={
 
 	{ c: LEVEL_ITEM_SIGN, x:9, y:0 },
 
+	{ c: LEVEL_ITEM_PLATE, x:2, y:27 },
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:2, y:19 },
 	{ c: LEVEL_ITEM_BURGER_CHEESESALAD, x:2, y:15 },
 	{ c: LEVEL_ITEM_BURGER_PATTY, x:2, y:11 },
 	{ c: LEVEL_ITEM_BURGER_TOMATO, x:2, y:6 },
 	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:2, y:2 },
 
+	{ c: LEVEL_ITEM_PLATE, x:9, y:27 },
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:9, y:19 },
 	{ c: LEVEL_ITEM_BURGER_CHEESESALAD, x:9, y:15 },
 	{ c: LEVEL_ITEM_BURGER_PATTY, x:9, y:11 },
 	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:9, y:7 },
 
+	{ c: LEVEL_ITEM_PLATE, x:16, y:27 },
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:16, y:19 },
 	{ c: LEVEL_ITEM_BURGER_PATTY, x:16, y:15 },
 	{ c: LEVEL_ITEM_BURGER_TOMATO, x:16, y:11 },
 	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:16, y:7 },
 
+	{ c: LEVEL_ITEM_PLATE, x:23, y:27 },
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:23, y:19 },
 	{ c: LEVEL_ITEM_BURGER_PLACEHOLDER, x:23, y:15 },
 	{ c: LEVEL_ITEM_BURGER_PATTY, x:23, y:11 },
 	{ c: LEVEL_ITEM_BURGER_PLACEHOLDER, x:23, y:7 },
 	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:23, y:3 },
 
-	{ c: LEVEL_ITEM_PLATE, x:2, y:27 },
-	{ c: LEVEL_ITEM_PLATE, x:9, y:27 },
-	{ c: LEVEL_ITEM_PLATE, x:16, y:27 },
-	{ c: LEVEL_ITEM_PLATE, x:23, y:27 },
 	{ c: 0 },
 
 	/* Level 1 */

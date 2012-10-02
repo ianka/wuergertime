@@ -19,6 +19,7 @@
 #include "screens.h"
 #include "draw.h"
 #include "tiles.h"
+#include "controllers.h"
 
 
 /*
@@ -94,6 +95,24 @@ void initInGameStartScreen(void) {
 }
 
 void updateInGameStartScreen(void) {
+	/* Check buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_A)) {
+		case BTN_A:
+	stomp(2,6);
+	stomp(3,6);
+	stomp(4,6);
+	stomp(5,6);
+	stomp(6,6);
+
+	stomp(2,7);
+	stomp(3,7);
+	stomp(4,7);
+	stomp(5,7);
+	stomp(6,7);
+			break;
+	}
+
+
 	dropHattedComponents();
 	animateBurgers();
 }

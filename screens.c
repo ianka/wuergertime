@@ -28,6 +28,7 @@
 /* Maximum number of burger components per screen. */
 #define SCREEN_BURGER_MAX 4
 #define SCREEN_BURGER_COMPONENT_MAX 5
+#define SCREEN_BURGER_PLACE_MAX ((SCREEN_BURGER_COMPONENT_MAX+1))
 #define SCREEN_BURGER_INVALID 0xff
 #define SCREEN_BURGER_OCCUPIED_HAT_SHIFT 4
 #define SCREEN_BURGER_OCCUPIED_MASK   0x0f
@@ -55,7 +56,7 @@ typedef struct {
 } burger_component_t;
 struct {
 	uint8_t x;
-	burger_component_place_t place[SCREEN_BURGER_COMPONENT_MAX];
+	burger_component_place_t place[SCREEN_BURGER_PLACE_MAX];
 	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
 
@@ -95,10 +96,10 @@ void prepareLevel(void) {
 	/* Reset burgers. Places in a burger are counted from bottom to top. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
 		GameScreenBurger[burger].x=SCREEN_BURGER_INVALID;
-		for (place=0;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+		for (place=0;place<SCREEN_BURGER_PLACE_MAX;place++)
 			GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_INVALID;
-			GameScreenBurger[burger].component[place].type=LEVEL_ITEM_INVALID;
-		}
+		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+			GameScreenBurger[burger].component[component].type=LEVEL_ITEM_INVALID;
 	}
 
 	/* Go through level specific screen list. */
@@ -113,6 +114,7 @@ void prepareLevel(void) {
 				/* Use x and y values as option field. */
 				GameScreenOptions=(y<<8)+x;
 				break;
+			case LEVEL_ITEM_PLATE:
 			case LEVEL_ITEM_BURGER_PLACEHOLDER:
 			case LEVEL_ITEM_BURGER_BUNTOP:
 			case LEVEL_ITEM_BURGER_TOMATO:
@@ -139,7 +141,7 @@ void prepareLevel(void) {
 				/* Check if we have a burger slot now. */
 				if (burger!=SCREEN_BURGER_MAX) {
 					/* Yes. Get next place slot. */
-					for (place=0;place<SCREEN_BURGER_COMPONENT_MAX;place++)
+					for (place=0;place<SCREEN_BURGER_PLACE_MAX;place++)
 						if (GameScreenBurger[burger].place[place].occupied_by == SCREEN_BURGER_PLACE_INVALID) break;
 
 					/* Get a free component slot. */
@@ -148,13 +150,17 @@ void prepareLevel(void) {
 
 					/* Check if we have a place slot now. */
 					/* component don't need to be tested, it's always <= place */
-					if (place!=SCREEN_BURGER_COMPONENT_MAX) {
+					if (place != SCREEN_BURGER_PLACE_MAX) {
 						/* Yes.	Remember burger place parameters. */
-						GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
 						GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
+						GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
 
-						/* If not placeholder, do component initialisations. */
-						if (c != LEVEL_ITEM_BURGER_PLACEHOLDER) {
+						/* Special handling for plate. */
+						if (c == LEVEL_ITEM_PLATE)
+							GameScreenBurger[burger].place[place].half_y-=3;
+
+						/* If not plate or placeholder, do component initialisations. */
+						if ((c != LEVEL_ITEM_PLATE) && (c != LEVEL_ITEM_BURGER_PLACEHOLDER)) {
 							GameScreenBurger[burger].place[place].occupied_by=component;
 							GameScreenBurger[burger].component[component].type=c;
 							GameScreenBurger[burger].component[component].stomped=0;
@@ -177,8 +183,6 @@ void prepareLevel(void) {
 				}
 				break;
 			case LEVEL_ITEM_SIGN:
-				break;
-			case LEVEL_ITEM_PLATE:
 				break;
 			default:
 				/* Ladders and floors. */
@@ -320,7 +324,7 @@ void dropComponent(uint8_t burger, uint8_t component) {
 	p=&(GameScreenBurger[burger].component[component]);
 
 	/* Get place of current component. */
-	for (place=1;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+	for (place=1;place<SCREEN_BURGER_PLACE_MAX;place++) {
 		if ((GameScreenBurger[burger].place[place].occupied_by & SCREEN_BURGER_OCCUPIED_MASK)
 			== component) {
 			/* Place found. Mark as free. */
@@ -332,6 +336,18 @@ void dropComponent(uint8_t burger, uint8_t component) {
 				/* Place below is free. */
 				/* Set target coordinate. */
 				p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
+
+				/* Plate below? */
+				if (place == 1) {
+					/*
+					 *  Yes. The plate is always "free" to circumvent the "hat" mechanism.
+					 *  Instead, the place is adjusted for each component dropped to it.
+					 */
+					GameScreenBurger[burger].place[0].half_y--;
+				} else {
+					/* No. Mark it as being occupied by the current component. */
+					GameScreenBurger[burger].place[place-1].occupied_by=component|SCREEN_BURGER_PLACE_FREE_HAT;
+				}
 			} else {	
 				/* Place below is occupied. Get component. */
 				q=&(GameScreenBurger[burger].component[component_below]);
@@ -360,7 +376,7 @@ void dropHattedComponents(void) {
 
 	/* Go through all places. Places in a burger are counted from bottom to top. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
-		for (place=0;place<SCREEN_BURGER_COMPONENT_MAX;place++) {
+		for (place=0;place<SCREEN_BURGER_PLACE_MAX;place++) {
 			/* End burger if no places left. */
 			if (place == SCREEN_BURGER_PLACE_INVALID) break;
 
@@ -409,7 +425,7 @@ void stomp(uint8_t x, uint8_t y) {
 		burger_x=GameScreenBurger[burger].x;
 		if ((x >= burger_x) && (x < burger_x+5)) {
 			/* Burger selected. Check if on a component. */
-			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+			for (component=0;component<SCREEN_BURGER_PLACE_MAX;component++)
 				if ((GameScreenBurger[burger].component[component].half_y>>1) == y) {
 					/* Component found. */ 
 					p=&(GameScreenBurger[burger].component[component]);
