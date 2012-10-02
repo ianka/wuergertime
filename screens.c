@@ -329,7 +329,7 @@ void animateLevelStart(void) {
 
 /* Drop a component. */
 void dropComponent(uint8_t burger, uint8_t component) {
-	uint8_t component_below, place;
+	uint8_t component_below, place, i;
 	burger_component_t *p, *q;
 
 	/* Shortcut pointer to current component. */
@@ -341,6 +341,10 @@ void dropComponent(uint8_t burger, uint8_t component) {
 			== component) {
 			/* Place found. Mark as free. */
 			GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
+
+			/* Clear background behind component. */
+			for(i=0;i<5;i++)
+				p->background[((p->half_y)>>1) & 0x01][i]=TILES0_SPACE;
 			
 			/* Get component on place below. */
 			component_below=GameScreenBurger[burger].place[place-1].occupied_by & SCREEN_BURGER_OCCUPIED_MASK;
@@ -416,8 +420,7 @@ void dropHattedComponents(void) {
 
 			/* Reset stomping for component under the hat. */
 			q->stomped=0;
-			if (q->half_y & 0x01)
-				q->half_y++;
+			q->half_y++;
 
 			/* Drop component under the hat. */
 			dropComponent(burger, body);
