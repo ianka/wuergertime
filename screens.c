@@ -199,7 +199,7 @@ void prepareLevel(void) {
 
 /* Burger animation. */
 void animateBurgers(void) {
-	uint8_t burger, component,i ;
+	uint8_t burger, component, i;
 	burger_component_t *p;
 
 	/* Go through all prepared burger components. */
@@ -415,7 +415,8 @@ void dropHattedComponents(void) {
 
 			/* Reset stomping for component under the hat. */
 			q->stomped=0;
-			q->half_y++;
+			if (q->half_y & 0x01)
+				q->half_y++;
 
 			/* Drop component under the hat. */
 			dropComponent(burger, body);
