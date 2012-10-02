@@ -19,8 +19,8 @@
 
 
 /* Placeholder tile. Not space but "!" so we can see problems. */
-#define TILES0_INVALID stile(0,6,1)
-#define TILES1_INVALID stile(1,6,1)
+#define TILES0_INVALID stile(0,7,1)
+#define TILES1_INVALID stile(1,7,1)
 
 
 /* Skip tile. Background is retained when painting shapes. */
