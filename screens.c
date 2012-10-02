@@ -153,11 +153,12 @@ void prepareLevel(void) {
 					if (place != SCREEN_BURGER_PLACE_MAX) {
 						/* Yes.	Remember burger place parameters. */
 						GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
-						GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
 
-						/* Special handling for plate. */
+						/* Set y coordinate. Special handling for plate. */
 						if (c == LEVEL_ITEM_PLATE)
-							GameScreenBurger[burger].place[place].half_y-=3;
+								GameScreenBurger[burger].place[place].half_y = y*2-2;
+							else	
+								GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
 
 						/* If not plate or placeholder, do component initialisations. */
 						if ((c != LEVEL_ITEM_PLATE) && (c != LEVEL_ITEM_BURGER_PLACEHOLDER)) {
