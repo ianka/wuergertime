@@ -56,6 +56,10 @@ struct {
 } GameSpriteSlots[SPRITE_SLOTS_MAX];
 
 
+/* Megasprite numbers. */
+uint8_t PlayerSprite;
+
+
 /* Reset sprite slots. */
 void resetSpriteSlots(void) {
 	uint8_t i;
@@ -115,15 +119,7 @@ void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
 			i=slot*4;
 
 			/* Place tiles, honor mirroring. */
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)^(flags & SPRITE_FLAGS_DIRECTION_RIGHT)?SPRITE_FLIP_X:0;
-			sprites[i].x=x;
-			sprites[i].y=y;
-			p++;
-			i++;
 			x+=8;
-
 			tile=pgm_read_byte(p);
 			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
 			sprites[i].flags=(tile & SPRITE_MIRROR)^(flags & SPRITE_FLAGS_DIRECTION_RIGHT)?SPRITE_FLIP_X:0;
@@ -132,6 +128,15 @@ void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
 			p++;
 			i++;
 			x-=8;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=(tile & SPRITE_MIRROR)^(flags & SPRITE_FLAGS_DIRECTION_RIGHT)?SPRITE_FLIP_X:0;
+			sprites[i].x=x;
+			sprites[i].y=y;
+			p++;
+			i++;
+			x+=8;
 			y+=8;
 
 			tile=pgm_read_byte(p);
@@ -141,7 +146,7 @@ void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
 			sprites[i].y=y;
 			p++;
 			i++;
-			x+=8;
+			x-=8;
 
 			tile=pgm_read_byte(p);
 			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
