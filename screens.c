@@ -199,11 +199,12 @@ void prepareLevel(void) {
 
 
 /* Burger animation. */
-void animateBurgers(void) {
-	uint8_t burger, component, i;
+uint8_t animateBurgers(void) {
+	uint8_t burger, component, i, animated;
 	burger_component_t *p;
 
 	/* Go through all prepared burger components. */
+	animated=0;
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++)
 		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
 			p=&(GameScreenBurger[burger].component[component]);
@@ -225,7 +226,10 @@ void animateBurgers(void) {
 				continue;
 			}	
 
-			/* Animate component. Move it down. */
+			/* Animate component. Remember. */
+			animated++;
+			
+			/* Move it down. */
 			p->half_y++;
 
 			/* Skip if half_y position is still negative. */
@@ -246,6 +250,9 @@ void animateBurgers(void) {
 				p->stomped,
 				p->background);
 		}
+
+	/* Return numberof animated components. */
+	return animated;
 }
 
 
