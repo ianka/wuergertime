@@ -449,7 +449,7 @@ void stomp(uint8_t x, uint8_t y) {
 		burger_x=GameScreenBurger[burger].x;
 		if ((x >= burger_x) && (x < burger_x+5)) {
 			/* Burger selected. Check if on a component. */
-			for (component=0;component<SCREEN_BURGER_PLACE_MAX;component++)
+			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
 				if ((GameScreenBurger[burger].component[component].half_y>>1) == y) {
 					/* Component found. */ 
 					p=&(GameScreenBurger[burger].component[component]);
