@@ -19,6 +19,7 @@
 #include "screens.h"
 #include "draw.h"
 #include "tiles.h"
+#include "sprites.h"
 #include "controllers.h"
 
 
@@ -53,8 +54,8 @@ void initInGamePrepareScreen(void) {
 }
 
 void updateInGamePrepareScreen(void) {
-	/* Start animation. */
-		animateLevelStart();
+	/* Level build animation. */
+	animateLevelStart();
 
 	/* Change screen when animation is done. */
 	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED+1)
@@ -71,87 +72,20 @@ void cleanupInGamePrepareScreen(void) {
  *     + Bonus reset
  */
 void initInGameStartScreen(void) {
-	stomp(4,7);
-	stomp(5,7);
+	/* Reset controllers. */
+	resetControllers();
 
-	stomp(2,12);
-	stomp(3,12);
-	stomp(4,12);
-	stomp(5,12);
-	stomp(6,12);
+	/* Reset sprites. */
+	resetSpriteSlots();
+	PlayerSprite=occupySpriteSlot();
 }
 
 void updateInGameStartScreen(void) {
-	/* Check buttons. */
-	switch (checkControllerButtonsPressed(0,BTN_A|BTN_B)) {
-		case BTN_A:
-	stomp(2,2);
-	stomp(3,2);
-	stomp(4,2);
-	stomp(5,2);
-	stomp(6,2);
-
-	stomp(2,2);
-	stomp(3,2);
-	stomp(4,2);
-	stomp(5,2);
-	stomp(6,2);
-
-	stomp(3,3);
-	stomp(4,3);
-	stomp(2,3);
-	stomp(6,3);
-	stomp(5,3);
-
-	stomp(2,11);
-	stomp(3,11);
-	stomp(4,11);
-	stomp(5,11);
-	stomp(6,11);
-
-	stomp(2,11);
-	stomp(3,11);
-	stomp(4,11);
-	stomp(5,11);
-	stomp(6,11);
-
-	stomp(2,12);
-	stomp(3,12);
-	stomp(4,12);
-	stomp(5,12);
-	stomp(6,12);
-#if 0
-	stomp(3,12);
-	stomp(4,12);
-	stomp(2,12);
-	stomp(6,12);
-	stomp(5,12);
-#endif	
-			break;
-		case BTN_B:
-	stomp(2,6);
-	stomp(3,6);
-	stomp(4,6);
-	stomp(5,6);
-	stomp(6,6);
-
-	stomp(2,6);
-	stomp(3,6);
-	stomp(4,6);
-	stomp(5,6);
-	stomp(6,6);
-
-	stomp(2,7);
-	stomp(3,7);
-	stomp(4,7);
-	stomp(5,7);
-	stomp(6,7);
-			break;
-	}
-
-
+	/* Burger drop animation. */
+	/* Change screen when animation is done. */
 	dropHattedComponents();
-	animateBurgers();
+	if (!animateBurgers())
+		ChangeGameScreen(GAME_SCREEN_LEVEL_PLAY);
 }
 
 void cleanupInGameStartScreen(void) {
@@ -161,10 +95,88 @@ void cleanupInGameStartScreen(void) {
 /*
  *  The play screen is showed when the actual game is happening.
  */
+#define PLAYER_DIRECTION_NONE  0
+#define PLAYER_DIRECTION_LEFT  1
+#define PLAYER_DIRECTION_RIGHT 2
+#define PLAYER_DIRECTION_UP    3
+#define PLAYER_DIRECTION_DOWN  4
+uint8_t PlayerDirection;
+
 void initInGamePlayScreen(void) {
+	PlayerDirection=PLAYER_DIRECTION_RIGHT;
+	placeSprite(PlayerSprite,100,64,SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
 }
 
+
 void updateInGamePlayScreen(void) {
+	SetTile(0,0,getSpriteFloorTile(PlayerSprite));
+	SetTile(1,0,getSpriteFloorDirectionTile(PlayerSprite));
+	SetTile(2,0,getSpriteLadderTile(PlayerSprite));
+
+	/* Stomp tile under player sprite. */
+	stompUnderSprite(PlayerSprite);
+
+	/* Burger drop animation. */
+	dropHattedComponents();
+	animateBurgers();
+
+	/* Check pressed buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_LEFT|BTN_RIGHT)) {
+		case BTN_LEFT:
+			/* Change direction on floor if player direction is currently right. */
+			if (PlayerDirection == PLAYER_DIRECTION_RIGHT) {
+				/* Remember new direction. */
+				PlayerDirection=PLAYER_DIRECTION_LEFT;
+				
+				/* Change sprite direction. */
+				changeSpriteDirection(PlayerSprite,SPRITE_FLAGS_DIRECTION_LEFT);
+			}
+			break;	
+		case BTN_RIGHT:
+			/* Change direction on floor if player direction is currently left. */
+			if (PlayerDirection == PLAYER_DIRECTION_LEFT) {
+				/* Remember new direction. */
+				PlayerDirection=PLAYER_DIRECTION_RIGHT;
+				
+				/* Change sprite direction. */
+				changeSpriteDirection(PlayerSprite,SPRITE_FLAGS_DIRECTION_RIGHT);
+			}	
+			break;
+	}
+
+	/* Walk into current direction, if any button but the opposite is held. */
+	switch (PlayerDirection) {
+		case PLAYER_DIRECTION_LEFT:
+			if (checkControllerButtonsHeld(0,BTN_LEFT|BTN_UP|BTN_DOWN)) {
+				/* Check the floor tile for anything that should stop us. */
+				switch (getSpriteFloorTile(PlayerSprite)) {
+					case TILES0_FLOOR_LEFT:
+					case TILES0_LADDER_TOP_FLOOREND_LEFT:
+					case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
+						/* No move. */
+						break;
+					default:
+						/* Move! */
+						moveSprite(PlayerSprite,-2,0);
+				}
+			}	
+			break;
+		case PLAYER_DIRECTION_RIGHT:
+			if (checkControllerButtonsHeld(0,BTN_RIGHT|BTN_UP|BTN_DOWN)) {
+				/* Check the floor tile for anything that should stop us. */
+				switch (getSpriteFloorTile(PlayerSprite)) {
+					case TILES0_FLOOR_RIGHT:
+					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+					case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
+						/* No move. */
+						break;
+					default:
+						/* Move! */
+						moveSprite(PlayerSprite,2,0);
+				}
+			}	
+			break;
+	}
 }
 
 void cleanupInGamePlayScreen(void) {

@@ -18,7 +18,9 @@
 
 
 /* Local includes. */
+#include "draw.h" /* for getTile */
 #include "tiles.h"
+#include "screens.h" /* for stomp() */
 #include "data/sprites.inc"
 
 
@@ -98,61 +100,52 @@ void freeSpriteSlot(uint8_t slot) {
 }
 
 
-/* Place a sprite somewhere. */
-void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
-	uint8_t tile,i;
+/* Update sprite on screen. */
+void updateSprite(uint8_t slot) {
+	uint8_t tile, i, view_right;
 	const uint8_t *p;
 
-	/* Remember position and flags. */
-	GameSpriteSlots[slot].x=x;
-	GameSpriteSlots[slot].y=y;
-	GameSpriteSlots[slot].flags=flags;
-
 	/* Setup kernel sprites according to flags. */
-	switch (flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
+	switch (GameSpriteSlots[slot].flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
 		case SPRITE_FLAGS_TYPE_SCORE:
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
 			/* Get address of first tile number for given animation step. */
-			p=&SpriteAnimationCookSide[GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK][0];
+			p=&SpriteAnimationCookSide[(GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK) % SPRITE_ANIMATION_COOK_SIDE_MAX][0];
 			i=slot*4;
+			view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
 
 			/* Place tiles, honor mirroring. */
-			x+=8;
 			tile=pgm_read_byte(p);
 			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)^(flags & SPRITE_FLAGS_DIRECTION_RIGHT)?SPRITE_FLIP_X:0;
-			sprites[i].x=x;
-			sprites[i].y=y;
+			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-(view_right?0:8);
+			sprites[i].y=GameSpriteSlots[slot].y-16;
 			p++;
 			i++;
-			x-=8;
 
 			tile=pgm_read_byte(p);
 			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)^(flags & SPRITE_FLAGS_DIRECTION_RIGHT)?SPRITE_FLIP_X:0;
-			sprites[i].x=x;
-			sprites[i].y=y;
+			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-(view_right?8:0);
+			sprites[i].y=GameSpriteSlots[slot].y-16;
 			p++;
 			i++;
-			x+=8;
-			y+=8;
 
 			tile=pgm_read_byte(p);
 			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)^(flags & SPRITE_FLAGS_DIRECTION_RIGHT)?SPRITE_FLIP_X:0;
-			sprites[i].x=x;
-			sprites[i].y=y;
+			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-(view_right?0:8);
+			sprites[i].y=GameSpriteSlots[slot].y-8;
 			p++;
 			i++;
-			x-=8;
 
 			tile=pgm_read_byte(p);
 			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)^(flags & SPRITE_FLAGS_DIRECTION_RIGHT)?SPRITE_FLIP_X:0;
-			sprites[i].x=x;
-			sprites[i].y=y;
+			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-(view_right?8:0);
+			sprites[i].y=GameSpriteSlots[slot].y-8;
 
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
@@ -169,8 +162,68 @@ void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
 }
 
 
-/* Move/Animate a sprite. */
-void moveSprite(uint8_t slot, int8_t x, uint8_t y) {
+/* Place a sprite somewhere. */
+void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
+	/* Remember position and flags. */
+	GameSpriteSlots[slot].x=x;
+	GameSpriteSlots[slot].y=y;
+	GameSpriteSlots[slot].flags=flags;
+
+	/* Update sprite. */
+	updateSprite(slot);
 }
 
 
+/* Move a sprite. */
+void moveSprite(uint8_t slot, int8_t x, int8_t y) {
+	/* Remember new position. */
+	GameSpriteSlots[slot].x+=x;
+	GameSpriteSlots[slot].y+=y;
+
+	/* Next animation step. */
+	GameSpriteSlots[slot].flags=(GameSpriteSlots[slot].flags & ~SPRITE_FLAGS_ANIMATION_MASK) | ((GameSpriteSlots[slot].flags+1) & SPRITE_FLAGS_ANIMATION_MASK);
+
+	/* Update sprite. */
+	updateSprite(slot);
+}
+
+
+/* Change sprite direction. */
+void changeSpriteDirection(uint8_t slot, uint8_t direction) {
+	/* Remember updated direction, reset animation. */
+	GameSpriteSlots[slot].flags=(GameSpriteSlots[slot].flags & ~(SPRITE_FLAGS_DIRECTION_MASK|SPRITE_FLAGS_ANIMATION_MASK)) | (direction & SPRITE_FLAGS_DIRECTION_MASK);
+
+	/* Update sprite. */
+	updateSprite(slot);
+}
+
+
+/* Get tile index for tile under sprite foot. */
+uint8_t getSpriteFloorTile(uint8_t slot) {
+	return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+}
+
+
+/* Get tile index for tile in sprite direction. */
+uint8_t getSpriteFloorDirectionTile(uint8_t slot) {
+	switch (GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) {
+		case SPRITE_FLAGS_DIRECTION_LEFT:
+			return getTile((GameSpriteSlots[slot].x>>3)-1,GameSpriteSlots[slot].y>>3);
+		case SPRITE_FLAGS_DIRECTION_RIGHT:
+			return getTile((GameSpriteSlots[slot].x>>3)+1,GameSpriteSlots[slot].y>>3);
+		default:	
+			return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+	}
+}
+
+
+/* Get tile index for tile behind sprite. */
+uint8_t getSpriteLadderTile(uint8_t slot) {
+	return getTile(GameSpriteSlots[slot].x>>3,(GameSpriteSlots[slot].y>>3)-1);
+}
+
+
+/* Try to stomp the tile under the sprite. */
+void stompUnderSprite(uint8_t slot) {
+	stomp(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+}

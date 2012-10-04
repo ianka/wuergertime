@@ -39,14 +39,13 @@
 uint8_t DebugSingleStepAnimation;
 #endif
 
-uint8_t PlayerSprite;
 
 /*
  *  Main funcion
  */
 int main(void) {
 	/* Game-wide initialisation */
-	initControllers();
+	resetControllers();
 
 	/* Setup game-wide global variables. */
 #ifdef DEBUG
@@ -63,12 +62,7 @@ int main(void) {
 	StartSong(song_drmario_main);
 
 	/* Setup video. */
-
-	/* Setup sprites. */
 	SetSpritesTileTable(SpriteTiles);
-	resetSpriteSlots();
-	PlayerSprite=occupySpriteSlot();
-	placeSprite(PlayerSprite,100,48,SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT);
 
 	/* Main loop */
 	for (;;) {
@@ -97,7 +91,7 @@ int main(void) {
 					GameScreenAnimationPhase++;
 
 					/* Print animation phase. */
-					PrintInt(29,0,GameScreenAnimationPhase,1);
+					PrintInt(29,27,GameScreenAnimationPhase,1);
 					break;
 			}
 #endif

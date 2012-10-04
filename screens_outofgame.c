@@ -38,7 +38,7 @@ const char TextGPL[] PROGMEM = "TERMS OF GNU GPL V3";
  *  The debug screen is showed when all else fails.
  */
 void initDebugScreen(void) {
-	uint8_t x,y;
+	uint8_t x, y;
 
 	FadeIn(1,0);
 	clearScreen();

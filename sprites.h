@@ -66,6 +66,12 @@ void resetSpriteSlots(void);
 uint8_t occupySpriteSlot(void);
 void freeSpriteSlot(uint8_t slot);
 void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags);
+void moveSprite(uint8_t slot, int8_t x, int8_t y); 
+void changeSpriteDirection(uint8_t slot, uint8_t direction);
+uint8_t getSpriteFloorTile(uint8_t slot);
+uint8_t getSpriteFloorDirectionTile(uint8_t slot);
+uint8_t getSpriteLadderTile(uint8_t slot);
+void stompUnderSprite(uint8_t slot);
 
 
 #endif /* SPRITES_H */
