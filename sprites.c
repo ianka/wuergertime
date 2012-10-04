@@ -146,9 +146,42 @@ void updateSprite(uint8_t slot) {
 			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
 			sprites[i].x=GameSpriteSlots[slot].x-(view_right?8:0);
 			sprites[i].y=GameSpriteSlots[slot].y-8;
-
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
+			/* Get address of first tile number for given animation step. */
+			p=&SpriteAnimationCookLadder[(GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
+			i=slot*4;
+
+			/* Place tiles, honor mirroring. */
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-8;
+			sprites[i].y=GameSpriteSlots[slot].y-16;
+			p++;
+			i++;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x;
+			sprites[i].y=GameSpriteSlots[slot].y-16;
+			p++;
+			i++;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-8;
+			sprites[i].y=GameSpriteSlots[slot].y-8;
+			p++;
+			i++;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x;
+			sprites[i].y=GameSpriteSlots[slot].y-8;
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_FACING:
 			break;
@@ -176,6 +209,9 @@ void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
 
 /* Move a sprite. */
 void moveSprite(uint8_t slot, int8_t x, int8_t y) {
+	/* Skip if horizontal position is not within boundaries. */
+	if ((GameSpriteSlots[slot].x+x<8) || (GameSpriteSlots[slot].x+x>(SCREEN_WIDTH<<3)-8)) return;
+
 	/* Remember new position. */
 	GameSpriteSlots[slot].x+=x;
 	GameSpriteSlots[slot].y+=y;
@@ -198,11 +234,20 @@ void changeSpriteDirection(uint8_t slot, uint8_t direction) {
 }
 
 
+/* Get coordinates of sprite. */
+uint8_t getSpriteX(uint8_t slot) {
+	return GameSpriteSlots[slot].x;
+}
+
+uint8_t getSpriteY(uint8_t slot) {
+	return GameSpriteSlots[slot].y;
+}
+
+
 /* Get tile index for tile under sprite foot. */
 uint8_t getSpriteFloorTile(uint8_t slot) {
 	return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
 }
-
 
 /* Get tile index for tile in sprite direction. */
 uint8_t getSpriteFloorDirectionTile(uint8_t slot) {
@@ -217,9 +262,15 @@ uint8_t getSpriteFloorDirectionTile(uint8_t slot) {
 }
 
 
+/* Get tile index for floor tile when going up on a ladder. */
+uint8_t getSpriteLadderTopTile(uint8_t slot) {
+	return getTile(GameSpriteSlots[slot].x>>3,((GameSpriteSlots[slot].y-1)>>3)+1);
+}
+
+
 /* Get tile index for tile behind sprite. */
 uint8_t getSpriteLadderTile(uint8_t slot) {
-	return getTile(GameSpriteSlots[slot].x>>3,(GameSpriteSlots[slot].y>>3)-1);
+	return getTile(GameSpriteSlots[slot].x>>3,(GameSpriteSlots[slot].y-1)>>3);
 }
 
 
