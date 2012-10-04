@@ -27,7 +27,7 @@
 #define BTN_ALL ((BTN_UP|BTN_DOWN|BTN_LEFT|BTN_RIGHT|BTN_A|BTN_B|BTN_X|BTN_Y|BTN_SR|BTN_SL|BTN_START|BTN_SELECT))
 
 
-void initControllers(void);
+void resetControllers(void);
 void sampleControllers(void);
 uint16_t checkControllerButtonsHeld(uint16_t n, uint16_t mask);
 uint16_t checkControllerButtonsPressed(uint16_t n, uint16_t mask);

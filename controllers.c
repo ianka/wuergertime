@@ -20,8 +20,8 @@
 struct { uint16_t current, previous, held, pressed, released; } controllers[2];
 
 
-/* Init controller struct. */
-void initControllers(void) {
+/* Reset controller struct. */
+void resetControllers(void) {
 	uint16_t i;
 
 	for (i=0;i<2;i++) {
