@@ -71,6 +71,14 @@ void cleanupInGamePrepareScreen(void) {
  *     + Bonus reset
  */
 void initInGameStartScreen(void) {
+	stomp(4,7);
+	stomp(5,7);
+
+	stomp(2,12);
+	stomp(3,12);
+	stomp(4,12);
+	stomp(5,12);
+	stomp(6,12);
 }
 
 void updateInGameStartScreen(void) {
@@ -83,11 +91,23 @@ void updateInGameStartScreen(void) {
 	stomp(5,2);
 	stomp(6,2);
 
+	stomp(2,2);
+	stomp(3,2);
+	stomp(4,2);
+	stomp(5,2);
+	stomp(6,2);
+
 	stomp(3,3);
 	stomp(4,3);
 	stomp(2,3);
 	stomp(6,3);
 	stomp(5,3);
+
+	stomp(2,11);
+	stomp(3,11);
+	stomp(4,11);
+	stomp(5,11);
+	stomp(6,11);
 
 	stomp(2,11);
 	stomp(3,11);
@@ -109,6 +129,12 @@ void updateInGameStartScreen(void) {
 #endif	
 			break;
 		case BTN_B:
+	stomp(2,6);
+	stomp(3,6);
+	stomp(4,6);
+	stomp(5,6);
+	stomp(6,6);
+
 	stomp(2,6);
 	stomp(3,6);
 	stomp(4,6);

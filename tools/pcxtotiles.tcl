@@ -26,7 +26,7 @@ if {($bpp != 8) || ($ncp != 1)} {
 }
 
 ## Output header.
-puts "const char Tiles\[\] PROGMEM={"
+puts "const char [lindex $argv 0]\[\] PROGMEM={"
 
 ## Read until all tile lines are read.
 set linenumber 0

@@ -25,6 +25,7 @@
 #include "utils.h"
 #include "controllers.h"
 #include "tiles.h"
+#include "sprites.h"
 #include "draw.h"
 #include "screens.h"
 #include "screens_outofgame.h"
@@ -38,6 +39,7 @@
 uint8_t DebugSingleStepAnimation;
 #endif
 
+uint8_t PlayerSprite;
 
 /*
  *  Main funcion
@@ -61,7 +63,12 @@ int main(void) {
 	StartSong(song_drmario_main);
 
 	/* Setup video. */
-//	clearScreen();
+
+	/* Setup sprites. */
+	SetSpritesTileTable(SpriteTiles);
+	resetSpriteSlots();
+	PlayerSprite=occupySpriteSlot();
+	placeSprite(PlayerSprite,100,48,SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT);
 
 	/* Main loop */
 	for (;;) {

@@ -22,7 +22,7 @@ KERNEL_DIR = ../../trunk/kernel
 KERNEL_OPTIONS  = -DVIDEO_MODE=3 -DINTRO_LOGO=0
 KERNEL_OPTIONS += -DSOUND_MIXER=1
 KERNEL_OPTIONS += -DSCROLLING=0
-KERNEL_OPTIONS += -DMAX_SPRITES=20
+KERNEL_OPTIONS += -DMAX_SPRITES=24
 KERNEL_OPTIONS += -DRAM_TILES_COUNT=32
 
 #KERNEL_OPTIONS += -DSOUND_CHANNEL_4_ENABLE=0 -DSOUND_CHANNEL_2_ENABLE=1 -DSOUND_CHANNEL_3_ENABLE=1 -DMIXER_CHAN4_TYPE=1
@@ -58,7 +58,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o utils.o controllers.o tiles.o draw.o screens.o screens_ingame.o screens_outofgame.o $(GAME).o
+OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o utils.o controllers.o tiles.o draw.o sprites.o screens.o screens_ingame.o screens_outofgame.o $(GAME).o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -69,7 +69,7 @@ INCLUDES = -I"$(KERNEL_DIR)"
 
 
 ## Build
-all: $(TARGET) ../data/tiles0.inc $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
+all: $(TARGET) ../data/tiles0.inc ../data/sprites0.inc $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
 
 
 ## Compile Kernel files
@@ -91,7 +91,9 @@ uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c
 
 ## Convert tilesets.
 ../data/tiles0.inc: ../data/tiles.pcx
-	../tools/pcxtotiles.tcl <$^ >$@
+	../tools/pcxtotiles.tcl Tiles <$^ >$@
+../data/sprites0.inc: ../data/sprites.pcx
+	../tools/pcxtotiles.tcl SpriteTiles <$^ >$@
 
 
 ## Compile game sources
@@ -102,6 +104,9 @@ utils.o: ../utils.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 controllers.o: ../controllers.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+sprites.o: ../sprites.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 tiles.o: ../tiles.c
