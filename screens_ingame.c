@@ -78,6 +78,12 @@ void initInGameStartScreen(void) {
 	/* Reset sprites. */
 	resetSpriteSlots();
 	PlayerSprite=occupySpriteSlot();
+#if 0
+	stomp(2,20);
+	stomp(3,20);
+	stomp(4,20);
+	stomp(5,20);
+#endif	
 }
 
 void updateInGameStartScreen(void) {
@@ -104,19 +110,19 @@ uint8_t PlayerDirection;
 
 void initInGamePlayScreen(void) {
 	PlayerDirection=PLAYER_DIRECTION_RIGHT;
-	placeSprite(PlayerSprite,100,64,SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
+	placeSprite(PlayerSprite,120,64,SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
 }
 
 
 void updateInGamePlayScreen(void) {
 	uint8_t directional_buttons_held;
 
-	SetTile(0,0,getSpriteFloorTile(PlayerSprite));
-	SetTile(1,0,getSpriteFloorDirectionTile(PlayerSprite));
-	SetTile(2,0,getSpriteLadderTile(PlayerSprite));
+	SetTile(27,0,getSpriteFloorTile(PlayerSprite));
+	SetTile(28,0,getSpriteFloorDirectionTile(PlayerSprite));
+	SetTile(29,0,getSpriteLadderTile(PlayerSprite));
 
 	/* Stomp tile under player sprite. */
-//	stompUnderSprite(PlayerSprite);
+	stompUnderSprite(PlayerSprite);
 
 	/* Burger drop animation. */
 	dropHattedComponents();

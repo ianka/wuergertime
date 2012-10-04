@@ -17,8 +17,8 @@
 
 
 /* Sound effects */
-#include "data/drmario_music.inc"
-#include "data/patches.inc"
+//#include "data/drmario_music.inc"
+//#include "data/patches.inc"
 
 
 /* Local headers */
@@ -58,8 +58,8 @@ int main(void) {
 	GameScreenUpdateFunction=NULL; /* This will be set correctly below. */
 
 	/* Setup audio. */
-	InitMusicPlayer(patches);
-	StartSong(song_drmario_main);
+//	InitMusicPlayer(patches);
+//	StartSong(song_drmario_main);
 
 	/* Setup video. */
 	SetSpritesTileTable(SpriteTiles);
