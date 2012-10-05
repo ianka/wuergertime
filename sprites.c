@@ -276,5 +276,6 @@ uint8_t getSpriteLadderTile(uint8_t slot) {
 
 /* Try to stomp the tile under the sprite. */
 void stompUnderSprite(uint8_t slot) {
-	stomp(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+	if (!(stomp(GameSpriteSlots[slot].x>>3,(GameSpriteSlots[slot].y>>3)-1)))
+		stomp(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
 }

@@ -121,9 +121,6 @@ void updateInGamePlayScreen(void) {
 	SetTile(28,0,getSpriteFloorDirectionTile(PlayerSprite));
 	SetTile(29,0,getSpriteLadderTile(PlayerSprite));
 
-	/* Stomp tile under player sprite. */
-	stompUnderSprite(PlayerSprite);
-
 	/* Burger drop animation. */
 	dropHattedComponents();
 	animateBurgers();
@@ -257,6 +254,9 @@ void updateInGamePlayScreen(void) {
 					default:
 						/* Move! */
 						moveSprite(PlayerSprite,-2,0);
+
+						/* Stomp tile under player sprite. */
+						stompUnderSprite(PlayerSprite);
 				}
 			}	
 			break;
@@ -272,6 +272,9 @@ void updateInGamePlayScreen(void) {
 					default:
 						/* Move! */
 						moveSprite(PlayerSprite,2,0);
+
+						/* Stomp tile under player sprite. */
+						stompUnderSprite(PlayerSprite);
 				}
 			}	
 			break;
@@ -287,6 +290,9 @@ void updateInGamePlayScreen(void) {
 					default:
 						/* Move! */
 						moveSprite(PlayerSprite,0,2);
+
+						/* Stomp tile under player sprite. */
+						stompUnderSprite(PlayerSprite);
 				}
 			}	
 			break;
@@ -305,12 +311,18 @@ void updateInGamePlayScreen(void) {
 							case TILES0_LADDER_MUSTARDED_CLEANED_RIGHT:
 								/* No. Move! */
 								moveSprite(PlayerSprite,0,-2);
+
+								/* Stomp tile under player sprite. */
+								stompUnderSprite(PlayerSprite);
 								break;
 						}
 						break;
 					default:
 						/* Move! */
 						moveSprite(PlayerSprite,0,-2);
+
+						/* Stomp tile under player sprite. */
+						stompUnderSprite(PlayerSprite);
 				}
 			}	
 			break;
