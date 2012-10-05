@@ -142,6 +142,10 @@ void updateInGamePlayScreen(void) {
 			if (!(getSpriteY(PlayerSprite) & 0x07)) {
 				/* On an exact tile coordinate. Check floor. */
 				switch (getSpriteFloorTile(PlayerSprite)) {
+					case TILES0_LADDER_TOP_LEFT:
+					case TILES0_LADDER_TOP_FLOOREND_LEFT:
+					case TILES0_LADDER_BOTTOM_LEFT:
+					case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
 					case TILES0_LADDER_TOP_RIGHT:
 					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
 					case TILES0_LADDER_BOTTOM_RIGHT:
@@ -172,6 +176,10 @@ void updateInGamePlayScreen(void) {
 			if (!(getSpriteY(PlayerSprite) & 0x07)) {
 				/* On an exact tile coordinate. Check floor. */
 				switch (getSpriteFloorTile(PlayerSprite)) {
+					case TILES0_LADDER_TOP_LEFT:
+					case TILES0_LADDER_TOP_FLOOREND_LEFT:
+					case TILES0_LADDER_BOTTOM_LEFT:
+					case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
 					case TILES0_LADDER_TOP_RIGHT:
 					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
 					case TILES0_LADDER_BOTTOM_RIGHT:
