@@ -54,7 +54,7 @@ const uint8_t SpriteAnimationCookLadder[SPRITE_ANIMATION_COOK_LADDER_MAX][4] PRO
 /* Megasprite slots. */
 struct {
 	uint8_t x, y;
-	uint8_t flags;
+	uint16_t flags;
 } GameSpriteSlots[SPRITE_SLOTS_MAX];
 
 
@@ -112,7 +112,7 @@ void updateSprite(uint8_t slot) {
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
 			/* Get address of first tile number for given animation step. */
-			p=&SpriteAnimationCookSide[(GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK) % SPRITE_ANIMATION_COOK_SIDE_MAX][0];
+			p=&SpriteAnimationCookSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_SIDE_MAX][0];
 			i=slot*4;
 			view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
 
@@ -149,7 +149,7 @@ void updateSprite(uint8_t slot) {
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
 			/* Get address of first tile number for given animation step. */
-			p=&SpriteAnimationCookLadder[(GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
+			p=&SpriteAnimationCookLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
 			i=slot*4;
 
 			/* Place tiles, honor mirroring. */
@@ -196,7 +196,7 @@ void updateSprite(uint8_t slot) {
 
 
 /* Place a sprite somewhere. */
-void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags) {
+void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint16_t flags) {
 	/* Remember position and flags. */
 	GameSpriteSlots[slot].x=x;
 	GameSpriteSlots[slot].y=y;

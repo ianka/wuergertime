@@ -41,14 +41,14 @@ extern const char SpriteTiles[] PROGMEM;
 #define SPRITE_SLOTS_MAX              6
 #define SPRITE_SLOTS_FULL             SPRITE_SLOTS_MAX
 #define SPRITE_FLAGS_FREE_SLOT        0x00
-#define SPRITE_FLAGS_ANIMATION_MASK   0x07
-#define SPRITE_FLAGS_DIRECTION_SHIFT  3
+#define SPRITE_FLAGS_ANIMATION_MASK   0x0f
+#define SPRITE_FLAGS_DIRECTION_SHIFT  4
 #define SPRITE_FLAGS_DIRECTION_MASK   ((0x03<<SPRITE_FLAGS_DIRECTION_SHIFT))
 #define SPRITE_FLAGS_DIRECTION_LEFT   ((0<<SPRITE_FLAGS_DIRECTION_SHIFT)) 
 #define SPRITE_FLAGS_DIRECTION_RIGHT  ((1<<SPRITE_FLAGS_DIRECTION_SHIFT))
 #define SPRITE_FLAGS_DIRECTION_LADDER ((2<<SPRITE_FLAGS_DIRECTION_SHIFT))
 #define SPRITE_FLAGS_DIRECTION_FACING ((3<<SPRITE_FLAGS_DIRECTION_SHIFT))
-#define SPRITE_FLAGS_TYPE_SHIFT       5 
+#define SPRITE_FLAGS_TYPE_SHIFT       8 
 #define SPRITE_FLAGS_TYPE_MASK        ((0x07<<SPRITE_FLAGS_TYPE_SHIFT))
 #define SPRITE_FLAGS_TYPE_SCORE       ((0<<SPRITE_FLAGS_TYPE_SHIFT))
 #define SPRITE_FLAGS_TYPE_COOK        ((1<<SPRITE_FLAGS_TYPE_SHIFT))
@@ -65,7 +65,7 @@ extern uint8_t PlayerSprite;
 void resetSpriteSlots(void);
 uint8_t occupySpriteSlot(void);
 void freeSpriteSlot(uint8_t slot);
-void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint8_t flags);
+void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint16_t flags);
 void moveSprite(uint8_t slot, int8_t x, int8_t y); 
 void changeSpriteDirection(uint8_t slot, uint8_t direction);
 uint8_t getSpriteX(uint8_t slot);
