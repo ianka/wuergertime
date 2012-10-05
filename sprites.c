@@ -246,14 +246,19 @@ uint8_t getSpriteY(uint8_t slot) {
 
 /* Get tile index for tile under sprite foot. */
 uint8_t getSpriteFloorTile(uint8_t slot) {
-	return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+	switch (GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) {
+		case SPRITE_FLAGS_DIRECTION_LEFT:
+			return getTile(((GameSpriteSlots[slot].x-1)>>3),GameSpriteSlots[slot].y>>3);
+		default:	
+			return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+	}
 }
 
 /* Get tile index for tile in sprite direction. */
 uint8_t getSpriteFloorDirectionTile(uint8_t slot) {
 	switch (GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) {
 		case SPRITE_FLAGS_DIRECTION_LEFT:
-			return getTile((GameSpriteSlots[slot].x>>3)-1,GameSpriteSlots[slot].y>>3);
+			return getTile(((GameSpriteSlots[slot].x-1)>>3)-1,GameSpriteSlots[slot].y>>3);
 		case SPRITE_FLAGS_DIRECTION_RIGHT:
 			return getTile((GameSpriteSlots[slot].x>>3)+1,GameSpriteSlots[slot].y>>3);
 		default:	

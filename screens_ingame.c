@@ -117,9 +117,10 @@ void initInGamePlayScreen(void) {
 void updateInGamePlayScreen(void) {
 	uint8_t directional_buttons_held;
 
-	SetTile(27,0,getSpriteFloorTile(PlayerSprite));
-	SetTile(28,0,getSpriteFloorDirectionTile(PlayerSprite));
-	SetTile(29,0,getSpriteLadderTile(PlayerSprite));
+SetTile(27,0,getSpriteFloorTile(PlayerSprite));
+SetTile(28,0,getSpriteFloorDirectionTile(PlayerSprite));
+SetTile(29,0,getSpriteLadderTile(PlayerSprite));
+PrintInt(10,0,getSpriteX(PlayerSprite),1);
 
 	/* Burger drop animation. */
 	dropHattedComponents();
@@ -207,13 +208,27 @@ void updateInGamePlayScreen(void) {
 			if (!(getSpriteX(PlayerSprite) & 0x07)) {
 				/* On an exact tile coordinate. Check floor. */
 				switch (getSpriteFloorTile(PlayerSprite)) {
+					case TILES0_LADDER_TOP_LEFT:
+					case TILES0_LADDER_TOP_FLOOREND_LEFT:
+						/* Check if we are currently moving left. */
+						if (PlayerDirection == PLAYER_DIRECTION_LEFT) {
+							/* Yes. Remember new direction. */
+							PlayerDirection=PLAYER_DIRECTION_DOWN;
+
+							/* Change sprite direction. */
+							changeSpriteDirection(PlayerSprite,SPRITE_FLAGS_DIRECTION_LADDER);
+						}
+						break;
 					case TILES0_LADDER_TOP_RIGHT:
 					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-						/* Remember new direction. */
-						PlayerDirection=PLAYER_DIRECTION_DOWN;
+						/* Check if we are currently moving right . */
+						if (PlayerDirection == PLAYER_DIRECTION_RIGHT) {
+							/* Yes. Remember new direction. */
+							PlayerDirection=PLAYER_DIRECTION_DOWN;
 
-						/* Change sprite direction. */
-						changeSpriteDirection(PlayerSprite,SPRITE_FLAGS_DIRECTION_LADDER);
+							/* Change sprite direction. */
+							changeSpriteDirection(PlayerSprite,SPRITE_FLAGS_DIRECTION_LADDER);
+						}	
 						break;
 					default:
 						/* Not on a top. */
