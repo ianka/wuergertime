@@ -142,6 +142,10 @@ PrintInt(10,0,getSpriteX(PlayerSprite),1);
 	directional_buttons_held=checkControllerButtonsHeld(0,BTN_DIRECTIONS);
 	switch (directional_buttons_held) {
 		case BTN_LEFT:
+			/* Skip if we already are on our way left. */
+			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_LEFT)
+				break;
+
 			/* Change direction on floor if player direction is currently right. */
 			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_RIGHT) {
 				/* Remember new direction. */
@@ -176,6 +180,10 @@ PrintInt(10,0,getSpriteX(PlayerSprite),1);
 			}
 			break;	
 		case BTN_RIGHT:
+			/* Skip if we already are on our way right. */
+			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_RIGHT)
+				break;
+
 			/* Change direction on floor if player direction is currently left. */
 			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_LEFT) {
 				/* Remember new direction. */
@@ -210,6 +218,10 @@ PrintInt(10,0,getSpriteX(PlayerSprite),1);
 			}	
 			break;
 		case BTN_DOWN:
+			/* Skip if we already are on our way down. */
+			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_DOWN)
+				break;
+
 			/* Change direction on ladder if player direction is currently up. */
 			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_UP) {
 				/* Remember new direction. */
@@ -249,6 +261,10 @@ PrintInt(10,0,getSpriteX(PlayerSprite),1);
 			}
 			break;
 		case BTN_UP:
+			/* Skip if we already are on our way up. */
+			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_UP)
+				break;
+			
 			/* Change direction on ladder if player direction is currently down. */
 			if ((PlayerFlags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_DOWN) {
 				/* Remember new direction. */
