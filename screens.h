@@ -4,7 +4,7 @@
  *  Copyright (C) 2012 by Jan Kandziora <jjj@gmx.de>
  *  licensed under the GNU GPL v3 or later
  *
- *  see https://github.com/janka/wuergertime
+ *  see https://github.com/ianka/wuergertime
  *
  * ---------------------------------------------------
  *
