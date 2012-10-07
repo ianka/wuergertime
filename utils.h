@@ -20,6 +20,10 @@
 #include <avr/io.h> /* for uint8_t */
 
 
+/* Common types. */
+typedef	struct { uint8_t x, y; } position_t;
+
+
 /* Max and min macros. */
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \

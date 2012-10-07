@@ -20,6 +20,7 @@
 /* Local includes. */
 #include "draw.h" /* for getTile */
 #include "tiles.h"
+#include "player.h"
 #include "screens.h" /* for stomp() */
 #include "data/sprites.inc"
 
@@ -56,10 +57,6 @@ struct {
 	uint8_t x, y;
 	uint16_t flags;
 } GameSpriteSlots[SPRITE_SLOTS_MAX];
-
-
-/* Megasprite numbers. */
-uint8_t PlayerSprite;
 
 
 /* Reset sprite slots. */

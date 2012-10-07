@@ -58,10 +58,6 @@ extern const char SpriteTiles[] PROGMEM;
 #define SPRITE_FLAGS_TYPE_MRMUSTARD   ((5<<SPRITE_FLAGS_TYPE_SHIFT))
 
 
-/* Megasprite numbers. */
-extern uint8_t PlayerSprite;
-
-
 void resetSpriteSlots(void);
 uint8_t occupySpriteSlot(void);
 void freeSpriteSlot(uint8_t slot);

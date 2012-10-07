@@ -35,7 +35,7 @@ const uint8_t LevelDrawings[] PROGMEM={
 
 const level_item_t LevelComponents[] PROGMEM={
 	/* Component block 1 */
-	LEVEL_COMPONENT_PLAYER(15,8,),
+	LEVEL_COMPONENT_PLAYER(15,8),
 
 	LEVEL_COMPONENT_OPTIONS(LEVEL_ITEM_OPTION_STOMP_TWICE),
 

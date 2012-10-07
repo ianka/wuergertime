@@ -58,7 +58,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o utils.o controllers.o tiles.o draw.o sprites.o screens.o screens_ingame.o screens_outofgame.o $(GAME).o
+OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o utils.o controllers.o tiles.o draw.o sprites.o player.o screens.o screens_ingame.o screens_outofgame.o $(GAME).o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -107,6 +107,9 @@ controllers.o: ../controllers.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 sprites.o: ../sprites.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+player.o: ../player.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 tiles.o: ../tiles.c

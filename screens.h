@@ -20,6 +20,10 @@
 #include <avr/pgmspace.h> /* for PROGMEM */
 
 
+/* Local includes. */
+#include "utils.h"
+
+
 /* Items in levels. */
 #define LEVEL_ITEM_INVALID              0x00
 #define LEVEL_ITEM_BURGER_PLACEHOLDER   0x80
@@ -46,7 +50,6 @@
 #define LEVEL_ITEM_FLOOR_LENGTH         0x1f 
 
 
-typedef	struct { uint8_t x, y; } position_t;
 typedef struct {
 	uint8_t component;
 	union {
@@ -119,7 +122,6 @@ extern uint8_t GameScreen;
 extern uint16_t GameScreenAnimationPhase;
 extern void (*GameScreenUpdateFunction)(void);
 extern uint8_t Level;
-extern position_t PlayerStartPosition;
 
 
 /* Switch to new game screen. */

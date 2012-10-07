@@ -22,6 +22,7 @@
 /* Local Includes */
 #include "draw.h"
 #include "utils.h"
+#include "player.h"
 #include "tiles.h" /* for TILES0_SPACE */
 
 
@@ -44,7 +45,6 @@ uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 uint16_t GameScreenOptions;
-position_t PlayerStartPosition;
 
 typedef struct {
 	int8_t  half_y;
@@ -125,8 +125,8 @@ void prepareLevel(void) {
 			/* Check for type of level item. */
 			switch (c) {
 				case LEVEL_ITEM_PLAYER:
-					PlayerStartPosition.x=x;
-					PlayerStartPosition.y=y;
+					Player.start_position.x=x;
+					Player.start_position.y=y;
 					break;
 				case LEVEL_ITEM_OPTIONS:
 					/* Use x and y values as option field. */
