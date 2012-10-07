@@ -110,21 +110,21 @@ void prepareLevel(void) {
 
 		/* Skip to selected drawing components block. */
 		while (--b) {
-			while (pgm_read_byte(&(q->c))) q++;
+			while (pgm_read_byte(&(q->component))) q++;
 			q++;
 		}
 
 		/* Go through all drawing components in that block. */
-		while ((c=pgm_read_byte(&(q->c)))) {
+		while ((c=pgm_read_byte(&(q->component)))) {
 			/* Get coordinates */
-			x=pgm_read_byte(&(q->x));
-			y=pgm_read_byte(&(q->y));
+			x=pgm_read_byte(&(q->position.x));
+			y=pgm_read_byte(&(q->position.y));
 
 			/* Check for type of level item. */
 			switch (c) {
 				case LEVEL_ITEM_OPTIONS:
 					/* Use x and y values as option field. */
-					GameScreenOptions=(y<<8)+x;
+					GameScreenOptions=pgm_read_word(&(q->options));
 					break;
 				case LEVEL_ITEM_PLATE:
 				case LEVEL_ITEM_BURGER_PLACEHOLDER:
@@ -285,15 +285,15 @@ void animateLevelStart(void) {
 
 		/* Skip to selected drawing components block. */
 		while (--b) {
-			while (pgm_read_byte(&(q->c))) q++;
+			while (pgm_read_byte(&(q->component))) q++;
 			q++;
 		}
 
 		/* Go through all drawing components in that block. */
-		while ((c=pgm_read_byte(&(q->c))) != 0) {
+		while ((c=pgm_read_byte(&(q->component))) != 0) {
 			/* Get coordinates */
-			x=pgm_read_byte(&(q->x));
-			y=pgm_read_byte(&(q->y));
+			x=pgm_read_byte(&(q->position.x));
+			y=pgm_read_byte(&(q->position.y));
 
 			/* Check for type of level item. */
 			switch (c) {

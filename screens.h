@@ -44,7 +44,24 @@
 #define LEVEL_ITEM_FLOOR_CAP_BOTH       ((LEVEL_ITEM_FLOOR_CAP_LEFT|LEVEL_ITEM_FLOOR_CAP_RIGHT))
 #define LEVEL_ITEM_FLOOR_LENGTH         0x1f 
 
-typedef struct { uint8_t c, x, y; } PROGMEM level_item_t;
+
+typedef struct {
+	uint8_t component;
+	union {
+		struct { uint8_t x, y; } position;
+		uint16_t options;
+	};	
+} PROGMEM level_item_t;
+
+
+/* Level components. */
+#define LEVEL_COMPONENT_END { component: 0 }
+#define LEVEL_COMPONENT_OPTIONS(opts) { component: LEVEL_ITEM_OPTIONS, { options: opts } }
+#define LEVEL_COMPONENT_FLOOR(xc,yc,len,opts) { component: ((LEVEL_ITEM_FLOOR|len|opts)), { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_LADDER(xc,yc,len,opts) { component: ((LEVEL_ITEM_LADDER|len|opts)), { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_PLATE(xc,yc) { component: LEVEL_ITEM_PLATE, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_BURGER(type,xc,yc) { component: LEVEL_ITEM_BURGER_ ## type, { position: { x: xc, y: yc } } }
 
 
 /* Levels */
