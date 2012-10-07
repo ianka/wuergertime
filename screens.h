@@ -48,7 +48,8 @@ typedef struct { uint8_t c, x, y; } PROGMEM level_item_t;
 
 
 /* Levels */
-extern const level_item_t Levels[] PROGMEM;
+extern const uint8_t LevelDrawings[] PROGMEM;
+extern const level_item_t LevelComponents[] PROGMEM;
 
 
 /* Start animation phases. */

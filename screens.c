@@ -63,19 +63,19 @@ struct {
 
 /* Lavel number and pointer to current level drawing. */
 uint8_t Level;
-const level_item_t *LevelDrawing;
+const uint8_t *LevelDrawing;
 
 
 /* Select a level. */
 void selectLevel(uint8_t level) {
-	const level_item_t *p=LevelDrawings;
+	const uint8_t *p=LevelDrawings;
 
 	/* Remember level number. */
 	Level=level;
 
 	/* Skip level drawings to given level */
 	while (level--) {
-		while (pgm_read_byte(&(p->c))) p++;
+		while (pgm_read_byte(&p)) p++;
 		p++;
 	}
 
@@ -86,8 +86,9 @@ void selectLevel(uint8_t level) {
 
 /* Prepare current level. */
 void prepareLevel(void) {
-	const level_item_t *p=LevelDrawing;
-	uint8_t c, x, y, burger, place, component;
+	const uint8_t *p=LevelDrawing;
+	const level_item_t *q;
+	uint8_t b, c, x, y, burger, place, component;
 	uint8_t i;
 
 	/* Reset options. */
@@ -103,96 +104,111 @@ void prepareLevel(void) {
 	}
 
 	/* Go through level specific screen list. */
-	while ((c=pgm_read_byte(&(p->c))) != 0) {
-		/* Get coordinates */
-		x=pgm_read_byte(&(p->x));
-		y=pgm_read_byte(&(p->y));
+	while ((b=pgm_read_byte(p))) {
+		/* Start at first component block. */
+		q=LevelComponents;
 
-		/* Check for type of level item. */
-		switch (c) {
-			case LEVEL_ITEM_OPTIONS:
-				/* Use x and y values as option field. */
-				GameScreenOptions=(y<<8)+x;
-				break;
-			case LEVEL_ITEM_PLATE:
-			case LEVEL_ITEM_BURGER_PLACEHOLDER:
-			case LEVEL_ITEM_BURGER_BUNTOP:
-			case LEVEL_ITEM_BURGER_TOMATO:
-			case LEVEL_ITEM_BURGER_PATTY:
-			case LEVEL_ITEM_BURGER_CHEESESALAD:
-			case LEVEL_ITEM_BURGER_BUNBOTTOM:
-				/* Get the number of the burger with that x coordinate. */
-				for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
-					if (GameScreenBurger[burger].x == x) break;
-				}
-
-				/* Check if there was a burger. */
-				if (burger==SCREEN_BURGER_MAX) {
-					/* No. Get free burger slot. */
-					for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
-						if (GameScreenBurger[burger].x == SCREEN_BURGER_INVALID) {
-							/* Allocate burger slot. */
-							GameScreenBurger[burger].x=x;
-							break;
-						}	
-					}
-				}
-
-				/* Check if we have a burger slot now. */
-				if (burger!=SCREEN_BURGER_MAX) {
-					/* Yes. Get next place slot. */
-					for (place=0;place<SCREEN_BURGER_PLACE_MAX;place++)
-						if (GameScreenBurger[burger].place[place].occupied_by == SCREEN_BURGER_PLACE_INVALID) break;
-
-					/* Get a free component slot. */
-					for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
-						if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) break;
-
-					/* Check if we have a place slot now. */
-					/* component don't need to be tested, it's always <= place */
-					if (place != SCREEN_BURGER_PLACE_MAX) {
-						/* Yes.	Remember burger place parameters. */
-						GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
-
-						/* Set y coordinate. Special handling for plate. */
-						if (c == LEVEL_ITEM_PLATE)
-								GameScreenBurger[burger].place[place].half_y = y*2-2;
-							else	
-								GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
-
-						/* If not plate or placeholder, do component initialisations. */
-						if ((c != LEVEL_ITEM_PLATE) && (c != LEVEL_ITEM_BURGER_PLACEHOLDER)) {
-							GameScreenBurger[burger].place[place].occupied_by=component|SCREEN_BURGER_PLACE_FREE_HAT;
-							GameScreenBurger[burger].component[component].type=c;
-							GameScreenBurger[burger].component[component].stomped=0;
-							GameScreenBurger[burger].component[component].half_y=
-								GameScreenBurger[burger].place[place].half_y;
-							GameScreenBurger[burger].component[component].half_target_y=
-								GameScreenBurger[burger].place[place].half_y;
-
-							/* Clear background buffer. */
-							for (i=0;i<5;i++) {
-								GameScreenBurger[burger].component[component].background[0][i]=TILES0_SPACE;
-								GameScreenBurger[burger].component[component].background[1][i]=TILES0_SPACE;
-							}	
-
-							/* Set current y to a negative value for start animation. */
-							GameScreenBurger[burger].component[component].half_y =
-								-(((x & 0x03)+1)*4*((LEVEL_ITEM_BURGER_BUNBOTTOM-c)+1));
-						}
-					}
-				}
-				break;
-			case LEVEL_ITEM_SIGN:
-				break;
-			default:
-				/* Ladders and floors. */
-				if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
-				} else {
-				}	
+		/* Skip to selected drawing components block. */
+		while (--b) {
+			while (pgm_read_byte(&(q->c))) q++;
+			q++;
 		}
 
-		/* Next element in screen list. */
+		/* Go through all drawing components in that block. */
+		while ((c=pgm_read_byte(&(q->c)))) {
+			/* Get coordinates */
+			x=pgm_read_byte(&(q->x));
+			y=pgm_read_byte(&(q->y));
+
+			/* Check for type of level item. */
+			switch (c) {
+				case LEVEL_ITEM_OPTIONS:
+					/* Use x and y values as option field. */
+					GameScreenOptions=(y<<8)+x;
+					break;
+				case LEVEL_ITEM_PLATE:
+				case LEVEL_ITEM_BURGER_PLACEHOLDER:
+				case LEVEL_ITEM_BURGER_BUNTOP:
+				case LEVEL_ITEM_BURGER_TOMATO:
+				case LEVEL_ITEM_BURGER_PATTY:
+				case LEVEL_ITEM_BURGER_CHEESESALAD:
+				case LEVEL_ITEM_BURGER_BUNBOTTOM:
+					/* Get the number of the burger with that x coordinate. */
+					for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+						if (GameScreenBurger[burger].x == x) break;
+					}
+
+					/* Check if there was a burger. */
+					if (burger==SCREEN_BURGER_MAX) {
+						/* No. Get free burger slot. */
+						for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+							if (GameScreenBurger[burger].x == SCREEN_BURGER_INVALID) {
+								/* Allocate burger slot. */
+								GameScreenBurger[burger].x=x;
+								break;
+							}	
+						}
+					}
+
+					/* Check if we have a burger slot now. */
+					if (burger!=SCREEN_BURGER_MAX) {
+						/* Yes. Get next place slot. */
+						for (place=0;place<SCREEN_BURGER_PLACE_MAX;place++)
+							if (GameScreenBurger[burger].place[place].occupied_by == SCREEN_BURGER_PLACE_INVALID) break;
+
+						/* Get a free component slot. */
+						for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+							if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) break;
+
+						/* Check if we have a place slot now. */
+						/* component don't need to be tested, it's always <= place */
+						if (place != SCREEN_BURGER_PLACE_MAX) {
+							/* Yes.	Remember burger place parameters. */
+							GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
+
+							/* Set y coordinate. Special handling for plate. */
+							if (c == LEVEL_ITEM_PLATE)
+									GameScreenBurger[burger].place[place].half_y = y*2-2;
+								else	
+									GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
+
+							/* If not plate or placeholder, do component initialisations. */
+							if ((c != LEVEL_ITEM_PLATE) && (c != LEVEL_ITEM_BURGER_PLACEHOLDER)) {
+								GameScreenBurger[burger].place[place].occupied_by=component|SCREEN_BURGER_PLACE_FREE_HAT;
+								GameScreenBurger[burger].component[component].type=c;
+								GameScreenBurger[burger].component[component].stomped=0;
+								GameScreenBurger[burger].component[component].half_y=
+									GameScreenBurger[burger].place[place].half_y;
+								GameScreenBurger[burger].component[component].half_target_y=
+									GameScreenBurger[burger].place[place].half_y;
+
+								/* Clear background buffer. */
+								for (i=0;i<5;i++) {
+									GameScreenBurger[burger].component[component].background[0][i]=TILES0_SPACE;
+									GameScreenBurger[burger].component[component].background[1][i]=TILES0_SPACE;
+								}	
+
+								/* Set current y to a negative value for start animation. */
+								GameScreenBurger[burger].component[component].half_y =
+									-(((x & 0x03)+1)*4*((LEVEL_ITEM_BURGER_BUNBOTTOM-c)+1));
+							}
+						}
+					}
+					break;
+				case LEVEL_ITEM_SIGN:
+					break;
+				default:
+					/* Ladders and floors. */
+					if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
+					} else {
+					}	
+			}
+
+			/* Next element in drawing component. */
+			q++;
+		}
+
+		/* Next block. */
 		p++;
 	}	
 }
@@ -258,73 +274,89 @@ uint8_t animateBurgers(void) {
 
 /* Level start animation. */
 void animateLevelStart(void) {
-	const level_item_t *p=LevelDrawing;
-	uint8_t c, x, y, length, pos;
+	const uint8_t *p=LevelDrawing;
+	const level_item_t *q;
+	uint8_t b, c, x, y, length, pos;
 
-	/* Draw level specific screen list. */
-	while ((c=pgm_read_byte(&(p->c))) != 0) {
-		/* Get coordinates */
-		x=pgm_read_byte(&(p->x));
-		y=pgm_read_byte(&(p->y));
+	/* Go through level specific screen list. */
+	while ((b=pgm_read_byte(p))) {
+		/* Start at first component block. */
+		q=LevelComponents;
 
-		/* Check for type of level item. */
-		switch (c) {
-			case LEVEL_ITEM_OPTIONS:
-				/* Do not draw anything. */
-				break;
-			case LEVEL_ITEM_BURGER_PLACEHOLDER:
-			case LEVEL_ITEM_BURGER_BUNTOP:
-			case LEVEL_ITEM_BURGER_TOMATO:
-			case LEVEL_ITEM_BURGER_PATTY:
-			case LEVEL_ITEM_BURGER_CHEESESALAD:
-			case LEVEL_ITEM_BURGER_BUNBOTTOM:
-				/* Do not draw anything. */
-				break;
-			case LEVEL_ITEM_SIGN:
-				/* Draw sign shape when ladder animation is done */
-				if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_LADDERS_ENDED) {
-					/* Draw animated sign. */
-					if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGNFRAME_ENDED) {
-						/* Signframe animation. */
-						drawShapeAnimated(x,y,ShapeSignLevelStart,(GameScreenAnimationPhase-LEVEL_START_ANIMATION_LADDERS_ENDED));
-					}	else {
-						if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGN_ENDED) {
-							/* Blinking sign animation */
-							if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>1,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
-									drawShape(x,y,ShapeSignInGame);
-								else
-									drawShape(x,y,ShapeSignLevelStart);
+		/* Skip to selected drawing components block. */
+		while (--b) {
+			while (pgm_read_byte(&(q->c))) q++;
+			q++;
+		}
+
+		/* Go through all drawing components in that block. */
+		while ((c=pgm_read_byte(&(q->c))) != 0) {
+			/* Get coordinates */
+			x=pgm_read_byte(&(q->x));
+			y=pgm_read_byte(&(q->y));
+
+			/* Check for type of level item. */
+			switch (c) {
+				case LEVEL_ITEM_OPTIONS:
+					/* Do not draw anything. */
+					break;
+				case LEVEL_ITEM_BURGER_PLACEHOLDER:
+				case LEVEL_ITEM_BURGER_BUNTOP:
+				case LEVEL_ITEM_BURGER_TOMATO:
+				case LEVEL_ITEM_BURGER_PATTY:
+				case LEVEL_ITEM_BURGER_CHEESESALAD:
+				case LEVEL_ITEM_BURGER_BUNBOTTOM:
+					/* Do not draw anything. */
+					break;
+				case LEVEL_ITEM_SIGN:
+					/* Draw sign shape when ladder animation is done */
+					if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_LADDERS_ENDED) {
+						/* Draw animated sign. */
+						if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGNFRAME_ENDED) {
+							/* Signframe animation. */
+							drawShapeAnimated(x,y,ShapeSignLevelStart,(GameScreenAnimationPhase-LEVEL_START_ANIMATION_LADDERS_ENDED));
+						}	else {
+							if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGN_ENDED) {
+								/* Blinking sign animation */
+								if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>1,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
+										drawShape(x,y,ShapeSignInGame);
+									else
+										drawShape(x,y,ShapeSignLevelStart);
+							}
+						}
+					}	
+					break;
+				case LEVEL_ITEM_PLATE:
+					/* Draw sign shape */
+					drawPlate(x,y);
+					break;
+				default:
+					/* Ladders and floors. */
+					if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
+						/* Ladder. Animate drawing it when floor animation is done. */
+						if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_FLOORS_ENDED) {
+							length=(GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED)>>1;
+							pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
+							if ((length <= (c & LEVEL_ITEM_LADDER_LENGTH)) && ((GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED) & 0x01))
+								drawLadder(x,pos,length,(length==1)?c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_UPONLY):(c& LEVEL_ITEM_LADDER_UPONLY)|LEVEL_ITEM_LADDER_CONTINUED);
+						}	
+					} else {
+						/* Floor. Animate width. */
+						if (GameScreenAnimationPhase <= LEVEL_START_ANIMATION_FLOORS_ENDED) {
+							length=min(c & LEVEL_ITEM_FLOOR_LENGTH,GameScreenAnimationPhase);
+							pos=x+((c & LEVEL_ITEM_FLOOR_LENGTH)-length)/2;
+
+							/* Draw it. */
+							drawFloor(pos,y,length,((pos==0)||(pos+length == SCREEN_WIDTH))?c & LEVEL_ITEM_FLOOR_CAP_BOTH:LEVEL_ITEM_FLOOR_CAP_BOTH);
 						}
 					}
-				}	
-				break;
-			case LEVEL_ITEM_PLATE:
-				/* Draw sign shape */
-				drawPlate(x,y);
-				break;
-			default:
-				/* Ladders and floors. */
-				if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
-					/* Ladder. Animate drawing it when floor animation is done. */
-					if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_FLOORS_ENDED) {
-						length=(GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED)>>1;
-						pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
-						if ((length <= (c & LEVEL_ITEM_LADDER_LENGTH)) && ((GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED) & 0x01))
-							drawLadder(x,pos,length,(length==1)?c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_UPONLY):(c& LEVEL_ITEM_LADDER_UPONLY)|LEVEL_ITEM_LADDER_CONTINUED);
-					}	
-				} else {
-					/* Floor. Animate width. */
-					if (GameScreenAnimationPhase <= LEVEL_START_ANIMATION_FLOORS_ENDED) {
-						length=min(c & LEVEL_ITEM_FLOOR_LENGTH,GameScreenAnimationPhase);
-						pos=x+((c & LEVEL_ITEM_FLOOR_LENGTH)-length)/2;
+			}	
 
-						/* Draw it. */
-						drawFloor(pos,y,length,((pos==0)||(pos+length == SCREEN_WIDTH))?c & LEVEL_ITEM_FLOOR_CAP_BOTH:LEVEL_ITEM_FLOOR_CAP_BOTH);
-					}
-				}
-		}	
+			/* Next element in drawing component. */
+			q++;
+		}
 
-		/* Next element in screen list. */
+		/* Next block. */
 		p++;
 	}
 

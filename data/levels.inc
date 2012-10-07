@@ -25,7 +25,15 @@
 
 
 /* Level descriptions. */
-const level_item_t LevelDrawings[] PROGMEM={
+const uint8_t LevelDrawings[] PROGMEM={
+	/* Level 0 */
+	1, 2, 0,
+
+	/* End of level drawings */
+	0
+};
+
+const level_item_t LevelComponents[] PROGMEM={
 /*
 	{ c: LEVEL_ITEM_OPTIONS, x:LEVEL_ITEM_OPTION_STOMP_ONCE, y:0 },
 	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:2, y:9 },
@@ -38,8 +46,7 @@ const level_item_t LevelDrawings[] PROGMEM={
 	{ c: LEVEL_ITEM_BURGER_BUNTOP, x:2, y:3 },
 	{ c: 0 },
 */	
-
-	/* Level 0 */
+	/* Drawing block 1 */
 	{ c: LEVEL_ITEM_OPTIONS, x:LEVEL_ITEM_OPTION_STOMP_TWICE, y:0 },
 //	{ c: LEVEL_ITEM_PLAYER, x:14, y:4 },
 
@@ -81,7 +88,9 @@ const level_item_t LevelDrawings[] PROGMEM={
 	{ c: LEVEL_ITEM_LADDER|4, x:28, y:16 },
 
 	{ c: LEVEL_ITEM_SIGN, x:9, y:0 },
+	{ c: 0 },
 
+	/* Drawing block 2 */
 	{ c: LEVEL_ITEM_PLATE, x:2, y:27 },
 	{ c: LEVEL_ITEM_BURGER_BUNBOTTOM, x:2, y:19 },
 	{ c: LEVEL_ITEM_BURGER_CHEESESALAD, x:2, y:15 },
@@ -110,7 +119,7 @@ const level_item_t LevelDrawings[] PROGMEM={
 
 	{ c: 0 },
 
-	/* Level 1 */
+	/* Drawing block 3 */
 	{ c: LEVEL_ITEM_FLOOR|3, x:0, y:3 },
 	{ c: LEVEL_ITEM_FLOOR|1, x:0, y:6 },
 	{ c: LEVEL_ITEM_FLOOR|5, x:0, y:9 },
