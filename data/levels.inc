@@ -34,8 +34,8 @@ const uint8_t LevelDrawings[] PROGMEM={
 };
 
 const level_item_t LevelComponents[] PROGMEM={
-	/* Drawing block 1 */
-//	{ component: LEVEL_ITEM_PLAYER, position.x:14, position.y:4 },
+	/* Component block 1 */
+	LEVEL_COMPONENT_PLAYER(15,8,),
 
 	LEVEL_COMPONENT_OPTIONS(LEVEL_ITEM_OPTION_STOMP_TWICE),
 
@@ -51,7 +51,7 @@ const level_item_t LevelComponents[] PROGMEM={
 
 	LEVEL_COMPONENT_END,
 
-	/* Drawing block 2 */
+	/* Component block 2 */
 	LEVEL_COMPONENT_LADDER( 0, 3, 4,LEVEL_ITEM_LADDER_CONTINUED),
 	LEVEL_COMPONENT_LADDER( 0, 7, 5,LEVEL_ITEM_LADDER_CONTINUED),
 	LEVEL_COMPONENT_LADDER( 0,12, 4,LEVEL_ITEM_LADDER_CONTINUED),
@@ -82,7 +82,7 @@ const level_item_t LevelComponents[] PROGMEM={
 
 	LEVEL_COMPONENT_END,
 
-	/* Drawing block 3 */
+	/* Component block 3 */
 	LEVEL_COMPONENT_SIGN(9,0),
 
 	LEVEL_COMPONENT_PLATE(2,27),

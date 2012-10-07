@@ -30,10 +30,11 @@
 #define LEVEL_ITEM_BURGER_BUNBOTTOM     0x85
 #define LEVEL_ITEM_PLATE                0x86
 #define LEVEL_ITEM_SIGN                 0x87
-#define LEVEL_ITEM_OPTIONS              0xa0
+#define LEVEL_ITEM_OPTIONS              0x90
 #define LEVEL_ITEM_OPTION_STOMP_ONCE    0x02
 #define LEVEL_ITEM_OPTION_STOMP_TWICE   0x01
 #define LEVEL_ITEM_OPTION_STOMP_THREETIMES 0x00
+#define LEVEL_ITEM_PLAYER               0x91
 #define LEVEL_ITEM_LADDER               0xc0
 #define LEVEL_ITEM_LADDER_UPONLY        0x10
 #define LEVEL_ITEM_LADDER_CONTINUED     0x20
@@ -45,18 +46,21 @@
 #define LEVEL_ITEM_FLOOR_LENGTH         0x1f 
 
 
+typedef	struct { uint8_t x, y; } position_t;
 typedef struct {
 	uint8_t component;
 	union {
-		struct { uint8_t x, y; } position;
+		position_t position;
 		uint16_t options;
 	};	
 } PROGMEM level_item_t;
 
 
+
 /* Level components. */
 #define LEVEL_COMPONENT_END { component: 0 }
 #define LEVEL_COMPONENT_OPTIONS(opts) { component: LEVEL_ITEM_OPTIONS, { options: opts } }
+#define LEVEL_COMPONENT_PLAYER(xc,yc) { component: LEVEL_ITEM_PLAYER, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_FLOOR(xc,yc,len,opts) { component: ((LEVEL_ITEM_FLOOR|len|opts)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_LADDER(xc,yc,len,opts) { component: ((LEVEL_ITEM_LADDER|len|opts)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }
@@ -115,6 +119,7 @@ extern uint8_t GameScreen;
 extern uint16_t GameScreenAnimationPhase;
 extern void (*GameScreenUpdateFunction)(void);
 extern uint8_t Level;
+extern position_t PlayerStartPosition;
 
 
 /* Switch to new game screen. */

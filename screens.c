@@ -44,6 +44,7 @@ uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 uint16_t GameScreenOptions;
+position_t PlayerStartPosition;
 
 typedef struct {
 	int8_t  half_y;
@@ -59,6 +60,7 @@ struct {
 	burger_component_place_t place[SCREEN_BURGER_PLACE_MAX];
 	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
+
 
 
 /* Lavel number and pointer to current level drawing. */
@@ -122,6 +124,10 @@ void prepareLevel(void) {
 
 			/* Check for type of level item. */
 			switch (c) {
+				case LEVEL_ITEM_PLAYER:
+					PlayerStartPosition.x=x;
+					PlayerStartPosition.y=y;
+					break;
 				case LEVEL_ITEM_OPTIONS:
 					/* Use x and y values as option field. */
 					GameScreenOptions=pgm_read_word(&(q->options));
@@ -297,6 +303,7 @@ void animateLevelStart(void) {
 
 			/* Check for type of level item. */
 			switch (c) {
+				case LEVEL_ITEM_PLAYER:
 				case LEVEL_ITEM_OPTIONS:
 					/* Do not draw anything. */
 					break;

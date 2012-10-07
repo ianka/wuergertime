@@ -121,8 +121,14 @@ void cleanupInGameStartScreen(void) {
  *  The play screen is showed when the actual game is happening.
  */
 void initInGamePlayScreen(void) {
+	/* Setup player. */
 	PlayerFlags=PLAYER_FLAGS_DIRECTION_RIGHT|PLAYER_FLAGS_SPEED_NORMAL;
-	placeSprite(PlayerSprite,120,64,SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
+
+	/* Setup player sprite. */
+	placeSprite(PlayerSprite,
+		PlayerStartPosition.x*8,
+		PlayerStartPosition.y*8,
+		SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
 }
 
 
