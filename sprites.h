@@ -71,6 +71,13 @@ uint8_t getSpriteFloorDirectionTile(uint8_t slot);
 uint8_t getSpriteLadderTopTile(uint8_t slot);
 uint8_t getSpriteLadderTile(uint8_t slot);
 void stompUnderSprite(uint8_t slot);
+uint8_t checkSpriteAtLadderEntryUp(uint8_t slot);
+uint8_t checkSpriteAtLadderEntryDown(uint8_t slot);
+uint8_t checkSpriteAtLadderExit(uint8_t slot);
+uint8_t checkSpriteAtLadderTop(uint8_t slot);
+uint8_t checkSpriteAtLadderBottom(uint8_t slot);
+uint8_t checkSpriteAtLeftFloorEnd(uint8_t slot);
+uint8_t checkSpriteAtRightFloorEnd(uint8_t slot);
 
 
 #endif /* SPRITES_H */

@@ -127,26 +127,10 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_RIGHT)
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_LEFT);
 
-			/* Change direction from ladder to floor if player is onto a ladder top or bottom. */
-			if (!(getSpriteY(Player.sprite) & 0x07)) {
-				/* On an exact tile coordinate. Check floor. */
-				switch (getSpriteFloorTile(Player.sprite)) {
-					case TILES0_LADDER_TOP_LEFT:
-					case TILES0_LADDER_TOP_FLOOREND_LEFT:
-					case TILES0_LADDER_BOTTOM_LEFT:
-					case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
-					case TILES0_LADDER_TOP_RIGHT:
-					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-					case TILES0_LADDER_BOTTOM_RIGHT:
-					case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
-						/* Change direction. */
-						changePlayerDirection(PLAYER_FLAGS_DIRECTION_LEFT);
-						break;
-					default:
-						/* Not on a top/bottom. */
-						;
-				}
-			}
+			/* Change direction from ladder to floor if player is at a ladder exit. */
+			if (checkSpriteAtLadderExit(Player.sprite))
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_LEFT);
+
 			break;	
 		case BTN_RIGHT:
 			/* Skip if we already are on our way right. */
@@ -157,26 +141,10 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_LEFT)
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_RIGHT);
 
-			/* Change direction from ladder to floor if player is onto a ladder top or bottom. */
-			if (!(getSpriteY(Player.sprite) & 0x07)) {
-				/* On an exact tile coordinate. Check floor. */
-				switch (getSpriteFloorTile(Player.sprite)) {
-					case TILES0_LADDER_TOP_LEFT:
-					case TILES0_LADDER_TOP_FLOOREND_LEFT:
-					case TILES0_LADDER_BOTTOM_LEFT:
-					case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
-					case TILES0_LADDER_TOP_RIGHT:
-					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-					case TILES0_LADDER_BOTTOM_RIGHT:
-					case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
-						/* Change direction. */
-						changePlayerDirection(PLAYER_FLAGS_DIRECTION_RIGHT);
-						break;
-					default:
-						/* Not on a top/bottom. */
-						;
-				}
-			}	
+			/* Change direction from ladder to floor if player is at a ladder exit. */
+			if (checkSpriteAtLadderExit(Player.sprite))
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_RIGHT);
+
 			break;
 		case BTN_DOWN:
 			/* Skip if we already are on our way down. */
@@ -188,28 +156,9 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
 
 			/* Change direction from floor to ladder if player is onto a ladder top. */
-			if (!(getSpriteX(Player.sprite) & 0x07)) {
-				/* On an exact tile coordinate. Check floor. */
-				switch (getSpriteFloorTile(Player.sprite)) {
-					case TILES0_LADDER_TOP_LEFT:
-					case TILES0_LADDER_TOP_FLOOREND_LEFT:
-						/* Change direction if we are currently moving left. */
-						if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_LEFT)
-							changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
-						
-						break;
-					case TILES0_LADDER_TOP_RIGHT:
-					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-						/* Change direction if we are currently moving right . */
-						if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_RIGHT)
-							changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
+			if (checkSpriteAtLadderEntryDown(Player.sprite))
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
 
-						break;
-					default:
-						/* Not on a top. */
-						;
-				}
-			}
 			break;
 		case BTN_UP:
 			/* Skip if we already are on our way up. */
@@ -221,98 +170,45 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 				changePlayerDirectionWithoutAnimationReset(PLAYER_FLAGS_DIRECTION_UP);
 
 			/* Change direction from floor to ladder if player is at a ladder. */
-			if (!(getSpriteX(Player.sprite) & 0x07)) {
-				/* On an exact tile coordinate. Check ladder. */
-				switch (getSpriteLadderTile(Player.sprite)) {
-					case TILES0_LADDER_RIGHT:
-					case TILES0_LADDER_MUSTARDED_RIGHT:
-					case TILES0_LADDER_MUSTARDED_CLEANED_RIGHT:
-					case TILES0_LADDER_TOP_RIGHT:
-					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-						/* No. Change direction. */
-						changePlayerDirection(PLAYER_FLAGS_DIRECTION_UP);
-						break;
-				}		
-			}
+			if (checkSpriteAtLadderEntryUp(Player.sprite))
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_UP);
+
 			break;
 	}
 
 	/* Walk into current direction, if any button but the opposite is held. */
 	switch (Player.flags & PLAYER_FLAGS_DIRECTION_MASK) {
 		case PLAYER_FLAGS_DIRECTION_LEFT:
-			if (directional_buttons_held & (BTN_LEFT|BTN_UP|BTN_DOWN)) {
-				/* Check the floor tile for anything that should stop us. */
-				switch (getSpriteFloorTile(Player.sprite)) {
-					case TILES0_FLOOR_LEFT:
-					case TILES0_LADDER_TOP_FLOOREND_LEFT:
-					case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
-						/* No move. */
-						break;
-					default:
-						/* Move! */
-						moveSprite(Player.sprite,-(1<<((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)),0);
+			/* Move sprite if nothing should stop us. */
+			if ((directional_buttons_held & (BTN_LEFT|BTN_UP|BTN_DOWN)) && (!checkSpriteAtLeftFloorEnd(Player.sprite))) {
+				/* Move! */
+				moveSprite(Player.sprite,-(1<<((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)),0);
 
-						/* Stomp tile under player sprite. */
-						stompUnderSprite(Player.sprite);
-				}
-			}	
+				/* Stomp tile under player sprite. */
+				stompUnderSprite(Player.sprite);
+			}
+
 			break;
 		case PLAYER_FLAGS_DIRECTION_RIGHT:
-			if (directional_buttons_held & (BTN_RIGHT|BTN_UP|BTN_DOWN)) {
-				/* Check the floor tile for anything that should stop us. */
-				switch (getSpriteFloorTile(Player.sprite)) {
-					case TILES0_FLOOR_RIGHT:
-					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-					case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
-						/* No move. */
-						break;
-					default:
-						/* Move! */
-						moveSprite(Player.sprite,(1<<((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)),0);
-						/* Stomp tile under player sprite. */
-						stompUnderSprite(Player.sprite);
-				}
-			}	
+			if ((directional_buttons_held & (BTN_RIGHT|BTN_UP|BTN_DOWN)) && (!checkSpriteAtRightFloorEnd(Player.sprite))) {
+				/* Move! */
+				moveSprite(Player.sprite,(1<<((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)),0);
+
+				/* Stomp tile under player sprite. */
+				stompUnderSprite(Player.sprite);
+			}
+
 			break;
 		case PLAYER_FLAGS_DIRECTION_DOWN:
-			if (directional_buttons_held & (BTN_LEFT|BTN_RIGHT|BTN_DOWN)) {
-				/* Check the floor tile for anything that should stop us. */
-				switch (getSpriteFloorTile(Player.sprite)) {
-					case TILES0_LADDER_BOTTOM_RIGHT:
-					case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
-					case TILES0_LADDER_TOP_UPONLY_RIGHT:
-						/* No move. */
-						break;
-					default:
-						/* Move! */
-						moveSprite(Player.sprite,0,(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
-				}
-			}	
+			if ((directional_buttons_held & (BTN_RIGHT|BTN_LEFT|BTN_DOWN)) && (!checkSpriteAtLadderBottom(Player.sprite)))
+				/* Move! */
+				moveSprite(Player.sprite,0,(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
+
 			break;
 		case PLAYER_FLAGS_DIRECTION_UP:
-			if (directional_buttons_held & (BTN_LEFT|BTN_RIGHT|BTN_UP)) {
-				/* Check the floor tile for anything that should stop us. */
-				switch (getSpriteLadderTopTile(Player.sprite)) {
-					case TILES0_LADDER_TOP_RIGHT:
-					case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-						/* Ladder top end? */
-						switch (getSpriteLadderTile(Player.sprite)) {
-							case TILES0_LADDER_RIGHT:
-							case TILES0_LADDER_TOP_RIGHT:
-							case TILES0_LADDER_TOP_FLOOREND_RIGHT:
-							case TILES0_LADDER_MUSTARDED_RIGHT:
-							case TILES0_LADDER_MUSTARDED_CLEANED_RIGHT:
-								/* No. Move! */
-								moveSprite(Player.sprite,0,-(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
-
-								break;
-						}
-						break;
-					default:
-						/* Move! */
-						moveSprite(Player.sprite,0,-(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
-				}
-			}	
+			if ((directional_buttons_held & (BTN_RIGHT|BTN_LEFT|BTN_UP)) && (!checkSpriteAtLadderTop(Player.sprite)))
+				/* Move! */
+				moveSprite(Player.sprite,0,-(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
 			break;
 	}
 }

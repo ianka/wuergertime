@@ -281,3 +281,140 @@ void stompUnderSprite(uint8_t slot) {
 	if (!(stomp(GameSpriteSlots[slot].x>>3,(GameSpriteSlots[slot].y>>3)-1)))
 		stomp(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
 }
+
+
+/* Check if at ladder up entry. */
+uint8_t checkSpriteAtLadderEntryUp(uint8_t slot) {
+	/* Fail if not at exact tile coordinate. */
+	if (getSpriteX(slot) & 0x07) return 0;
+
+	/* On an exact tile coordinate. Check ladder. */
+	switch (getSpriteLadderTile(slot)) {
+		case TILES0_LADDER_RIGHT:
+		case TILES0_LADDER_MUSTARDED_RIGHT:
+		case TILES0_LADDER_MUSTARDED_CLEANED_RIGHT:
+		case TILES0_LADDER_TOP_RIGHT:
+		case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+			/* On ladder up entry. */
+			return 1;
+		default:
+			/* Not on a ladder up entry. */
+			return 0;
+	}		
+}
+
+
+/* Check if at ladder down entry. */
+uint8_t checkSpriteAtLadderEntryDown(uint8_t slot) {
+	/* Fail if not at exact tile coordinate. */
+	if (getSpriteX(slot) & 0x07) return 0;
+
+	/* On an exact tile coordinate. Check floor. */
+	switch (getSpriteFloorTile(slot)) {
+		case TILES0_LADDER_TOP_LEFT:
+		case TILES0_LADDER_TOP_FLOOREND_LEFT:
+			/* On ladder entry down if we are currently moving left. */
+			return ((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_LEFT);
+		case TILES0_LADDER_TOP_RIGHT:
+		case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+			/* On ladder entry down if we are currently moving right. */
+			return ((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
+		default:
+			/* Not at a ladder down entry. */
+			return 0;
+	}
+}
+
+
+/* Check if at ladder exit. */
+uint8_t checkSpriteAtLadderExit(uint8_t slot) {
+	/* Fail if not at exact tile coordinate. */
+	if (getSpriteY(slot) & 0x07) return 0;
+
+	/* On an exact tile coordinate. Check floor. */
+	switch (getSpriteFloorTile(slot)) {
+		case TILES0_LADDER_TOP_LEFT:
+		case TILES0_LADDER_TOP_FLOOREND_LEFT:
+		case TILES0_LADDER_TOP_UPONLY_LEFT:
+		case TILES0_LADDER_BOTTOM_LEFT:
+		case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
+		case TILES0_LADDER_TOP_RIGHT:
+		case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+		case TILES0_LADDER_TOP_UPONLY_RIGHT:
+		case TILES0_LADDER_BOTTOM_RIGHT:
+		case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
+			/* On ladder exit. */
+			return 1;
+		default:
+			/* Not on a ladder exit. */
+			return 0;
+	}
+}
+
+
+/* Check if at ladder top. */
+uint8_t checkSpriteAtLadderTop(uint8_t slot) {
+	switch (getSpriteLadderTopTile(slot)) {
+		case TILES0_LADDER_TOP_RIGHT:
+		case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+			/* Ladder top end? */
+			switch (getSpriteLadderTile(slot)) {
+				case TILES0_LADDER_RIGHT:
+				case TILES0_LADDER_TOP_RIGHT:
+				case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+				case TILES0_LADDER_MUSTARDED_RIGHT:
+				case TILES0_LADDER_MUSTARDED_CLEANED_RIGHT:
+					/* Not at ladder top. */
+					return 0;
+				default:
+					/* At ladder top. */
+					return 1;
+			}
+		default:
+			/* Not at ladder top. */
+			return 0;
+	}
+}	
+
+
+/* Check if at ladder bottom. */
+uint8_t checkSpriteAtLadderBottom(uint8_t slot) {
+	switch (getSpriteFloorTile(slot)) {
+		case TILES0_LADDER_BOTTOM_RIGHT:
+		case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
+		case TILES0_LADDER_TOP_UPONLY_RIGHT:
+			/* On ladder exit. */
+			return 1;
+		default:
+			/* Not on a ladder exit. */
+			return 0;
+	}
+}
+
+
+/* Check the floor tile for anything that should stop us. */
+uint8_t checkSpriteAtLeftFloorEnd(uint8_t slot) {
+	switch (getSpriteFloorTile(slot)) {
+		case TILES0_FLOOR_LEFT:
+		case TILES0_LADDER_TOP_FLOOREND_LEFT:
+		case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
+			/* At left floor end. */
+			return 1;
+		default:
+			/* Not at left floor end. */
+			return 0;
+	}
+}
+
+uint8_t checkSpriteAtRightFloorEnd(uint8_t slot) {
+	switch (getSpriteFloorTile(slot)) {
+		case TILES0_FLOOR_RIGHT:
+		case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+		case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
+			/* At right floor end. */
+			return 1;
+		default:
+			/* Not at left floor end. */
+			return 0;
+	}
+}
