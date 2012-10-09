@@ -23,6 +23,7 @@
 #include "draw.h"
 #include "utils.h"
 #include "player.h"
+#include "opponents.h"
 #include "tiles.h" /* for TILES0_SPACE */
 
 
@@ -127,6 +128,10 @@ void prepareLevel(void) {
 				case LEVEL_ITEM_PLAYER:
 					Player.start_position.x=x;
 					Player.start_position.y=y;
+					break;
+				case LEVEL_ITEM_OPPONENT:
+					Opponent.start_position.x=x;
+					Opponent.start_position.y=y;
 					break;
 				case LEVEL_ITEM_OPTIONS:
 					/* Use x and y values as option field. */
@@ -304,9 +309,8 @@ void animateLevelStart(void) {
 			/* Check for type of level item. */
 			switch (c) {
 				case LEVEL_ITEM_PLAYER:
+				case LEVEL_ITEM_OPPONENT:
 				case LEVEL_ITEM_OPTIONS:
-					/* Do not draw anything. */
-					break;
 				case LEVEL_ITEM_BURGER_PLACEHOLDER:
 				case LEVEL_ITEM_BURGER_BUNTOP:
 				case LEVEL_ITEM_BURGER_TOMATO:

@@ -8,7 +8,7 @@
  *
  * ---------------------------------------------------
  *
- *  player.h - player functions.
+ *  player.c - player functions.
  */
 
 
@@ -140,6 +140,7 @@ void movePlayer(uint8_t buttons) {
 
 			break;
 		case PLAYER_FLAGS_DIRECTION_RIGHT:
+			/* Move sprite if nothing should stop us. */
 			if ((buttons & (BTN_RIGHT|BTN_UP|BTN_DOWN)) && (!checkSpriteAtRightFloorEnd(Player.sprite))) {
 				/* Move! */
 				moveSprite(Player.sprite,(1<<((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)),0);
@@ -150,14 +151,14 @@ void movePlayer(uint8_t buttons) {
 
 			break;
 		case PLAYER_FLAGS_DIRECTION_DOWN:
+			/* Move sprite if nothing should stop us. */
 			if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_DOWN)) && (!checkSpriteAtLadderBottom(Player.sprite)))
-				/* Move! */
 				moveSprite(Player.sprite,0,(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
 
 			break;
 		case PLAYER_FLAGS_DIRECTION_UP:
+			/* Move sprite if nothing should stop us. */
 			if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_UP)) && (!checkSpriteAtLadderTop(Player.sprite)))
-				/* Move! */
 				moveSprite(Player.sprite,0,-(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
 			break;
 	}

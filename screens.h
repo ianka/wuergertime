@@ -39,6 +39,7 @@
 #define LEVEL_ITEM_OPTION_STOMP_TWICE   0x01
 #define LEVEL_ITEM_OPTION_STOMP_THREETIMES 0x00
 #define LEVEL_ITEM_PLAYER               0x91
+#define LEVEL_ITEM_OPPONENT             0x92
 #define LEVEL_ITEM_LADDER               0xc0
 #define LEVEL_ITEM_LADDER_UPONLY        0x10
 #define LEVEL_ITEM_LADDER_CONTINUED     0x20
@@ -64,6 +65,7 @@ typedef struct {
 #define LEVEL_COMPONENT_END { component: 0 }
 #define LEVEL_COMPONENT_OPTIONS(opts) { component: LEVEL_ITEM_OPTIONS, { options: opts } }
 #define LEVEL_COMPONENT_PLAYER(xc,yc) { component: LEVEL_ITEM_PLAYER, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_OPPONENT(xc,yc) { component: LEVEL_ITEM_OPPONENT, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_FLOOR(xc,yc,len,opts) { component: ((LEVEL_ITEM_FLOOR|len|opts)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_LADDER(xc,yc,len,opts) { component: ((LEVEL_ITEM_LADDER|len|opts)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }

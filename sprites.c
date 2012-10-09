@@ -52,6 +52,24 @@ const uint8_t SpriteAnimationCookLadder[SPRITE_ANIMATION_COOK_LADDER_MAX][4] PRO
 };
 
 
+#define SPRITE_ANIMATION_EGGHEAD_SIDE_MAX 4
+const uint8_t SpriteAnimationEggheadSide[SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][4] PROGMEM = {
+	TILES_BLOCK(TILES2_EGGHEAD_SIDE_ANIMATE0),
+	TILES_BLOCK(TILES2_EGGHEAD_SIDE_ANIMATE1),
+	TILES_BLOCK(TILES2_EGGHEAD_SIDE_ANIMATE2),
+	TILES_BLOCK(TILES2_EGGHEAD_SIDE_ANIMATE3),
+};
+
+
+#define SPRITE_ANIMATION_EGGHEAD_LADDER_MAX 4
+const uint8_t SpriteAnimationEggheadLadder[SPRITE_ANIMATION_EGGHEAD_LADDER_MAX][4] PROGMEM = {
+	TILES_BLOCK(TILES2_EGGHEAD_LADDER_ANIMATE0),
+	TILES_BLOCK(TILES2_EGGHEAD_LADDER_ANIMATE1),
+	TILES_BLOCK(TILES2_EGGHEAD_LADDER_ANIMATE2),
+	TILES_BLOCK(TILES2_EGGHEAD_LADDER_ANIMATE3),
+};
+
+
 /* Megasprite slots. */
 struct {
 	uint8_t x, y;
@@ -75,8 +93,12 @@ uint8_t occupySpriteSlot(void) {
 	/* Get a free sprite slot. */
 	for(i=0;i<SPRITE_SLOTS_MAX;i++)
 		if (GameSpriteSlots[i].flags == SPRITE_FLAGS_FREE_SLOT) break;
-	
-	/* Return free slot number. */
+
+	/* Occupy free slot. */
+	if (i<SPRITE_SLOTS_MAX)
+		GameSpriteSlots[i].flags=SPRITE_FLAGS_OCCUPIED_SLOT;
+
+	/* Return slot number or full marker. */
 	return i;
 }
 
@@ -102,14 +124,33 @@ void updateSprite(uint8_t slot) {
 	uint8_t tile, i, view_right;
 	const uint8_t *p;
 
-	/* Setup kernel sprites according to flags. */
+	/* Setup kernel sprite shape according to flags. */
 	switch (GameSpriteSlots[slot].flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
-		case SPRITE_FLAGS_TYPE_SCORE:
-			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
-			/* Get address of first tile number for given animation step. */
 			p=&SpriteAnimationCookSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_SIDE_MAX][0];
+			break;
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
+			p=&SpriteAnimationCookLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
+			break;
+		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
+			p=&SpriteAnimationEggheadSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][0];
+			break;
+		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
+			p=&SpriteAnimationEggheadLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_LADDER_MAX][0];
+			break;
+		default:
+			return;
+	}
+
+	/* Setup kernel sprites according to flags. */
+	switch (GameSpriteSlots[slot].flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
+		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
+			/* Get address of first tile number for given animation step. */
 			i=slot*4;
 			view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
 
@@ -145,8 +186,8 @@ void updateSprite(uint8_t slot) {
 			sprites[i].y=GameSpriteSlots[slot].y-8;
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
+		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
 			/* Get address of first tile number for given animation step. */
-			p=&SpriteAnimationCookLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
 			i=slot*4;
 
 			/* Place tiles, honor mirroring. */
@@ -179,14 +220,6 @@ void updateSprite(uint8_t slot) {
 			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
 			sprites[i].x=GameSpriteSlots[slot].x;
 			sprites[i].y=GameSpriteSlots[slot].y-8;
-			break;
-		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_FACING:
-			break;
-		case SPRITE_FLAGS_TYPE_EGGHEAD:
-			break;
-		case SPRITE_FLAGS_TYPE_SAUSAGEMAN:
-			break;
-		case SPRITE_FLAGS_TYPE_MRMUSTARD:
 			break;
 	}
 }

@@ -23,6 +23,7 @@
 #include "sprites.h"
 #include "controllers.h"
 #include "player.h"
+#include "opponents.h"
 
 
 /*
@@ -80,6 +81,7 @@ void initInGameStartScreen(void) {
 	/* Reset sprites. */
 	resetSpriteSlots();
 	Player.sprite=occupySpriteSlot();
+	Opponent.sprite=occupySpriteSlot();
 }
 
 void updateInGameStartScreen(void) {
@@ -100,17 +102,18 @@ void cleanupInGameStartScreen(void) {
 void initInGamePlayScreen(void) {
 	/* Reset player to start position. */
 	resetPlayer();
+	resetOpponent();
 }
 
 
 void updateInGamePlayScreen(void) {
 	uint8_t directional_buttons_held;
-
+/*
 SetTile(27,0,getSpriteFloorTile(Player.sprite));
 SetTile(28,0,getSpriteFloorDirectionTile(Player.sprite));
 SetTile(29,0,getSpriteLadderTile(Player.sprite));
 PrintInt(10,0,getSpriteX(Player.sprite),1);
-
+*/
 	/* Burger drop animation. */
 	dropHattedComponents();
 	animateBurgers();
@@ -120,9 +123,11 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 
 	/* Select direction to move player. */
 	selectPlayerDirection(directional_buttons_held);
+	selectOpponentDirection(directional_buttons_held);
 
 	/* Move player into selected direction, if possible. */
 	movePlayer(directional_buttons_held);
+	moveOpponent(directional_buttons_held);
 }
 
 void cleanupInGamePlayScreen(void) {
