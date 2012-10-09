@@ -51,6 +51,8 @@ extern player_t Player;
 void resetPlayer(void);
 void changePlayerDirectionWithoutAnimationReset(uint8_t direction);
 void changePlayerDirection(uint8_t direction);
+void selectPlayerDirection(uint8_t buttons);
+void movePlayer(uint8_t buttons);
 
 
 #endif /* PLAYER_H */
