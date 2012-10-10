@@ -112,7 +112,7 @@ void freeSpriteSlot(uint8_t slot) {
 
 	/* Unmap kernel sprites for that slot. */
 	for(i=0;i<4;i++)
-		sprites[slot*4+i].y=0xf0; /* invalid coordinate */
+		sprites[slot*4+i].x=OFF_SCREEN; /* invalid coordinate */
 
 	/* Free the slot. */
 	GameSpriteSlots[slot].flags=SPRITE_FLAGS_FREE_SLOT;
