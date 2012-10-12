@@ -92,10 +92,10 @@ void prepareLevel(void) {
 	const uint8_t *p=LevelDrawing;
 	const level_item_t *q;
 	uint8_t b, c, x, y, burger, place, component;
-	uint8_t i;
+	uint8_t i, opponent_start_index;
 
 	/* Reset options. */
-	GameScreenOptions=LEVEL_ITEM_OPTION_STOMP_ONCE;
+	GameScreenOptions=LEVEL_ITEM_OPTION_STOMP_ONCE|LEVEL_ITEM_OPTION_OPPONENT_DUO;
 
 	/* Reset burgers. Places in a burger are counted from bottom to top. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
@@ -105,6 +105,12 @@ void prepareLevel(void) {
 		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
 			GameScreenBurger[burger].component[component].type=LEVEL_ITEM_INVALID;
 	}
+
+	/* Reset opponent start positions. */
+	opponent_start_index=0;
+	for (i=0;i<OPPONENT_START_POSITION_MAX;i++)
+		OpponentStartPosition[i].x=OPPONENT_START_POSITION_INVALID;
+
 
 	/* Go through level specific screen list. */
 	while ((b=pgm_read_byte(p))) {
@@ -125,13 +131,22 @@ void prepareLevel(void) {
 
 			/* Check for type of level item. */
 			switch (c) {
-				case LEVEL_ITEM_PLAYER:
+				case LEVEL_ITEM_PLAYER_START:
+					/* Remember player start position. */
 					Player.start_position.x=x;
 					Player.start_position.y=y;
 					break;
-				case LEVEL_ITEM_OPPONENT:
-					Opponent.start_position.x=x;
-					Opponent.start_position.y=y;
+				case LEVEL_ITEM_OPPONENT_START:
+					/* Remember opponent start position. */
+					if (opponent_start_index<OPPONENT_START_POSITION_MAX) {
+						OpponentStartPosition[opponent_start_index].x=x;
+						OpponentStartPosition[opponent_start_index].y=y;
+						opponent_start_index++;
+					}
+					break;
+				case LEVEL_ITEM_ATTACK_WAVES:
+					/* Remember attack waves. */
+					OpponentAttackWaves=pgm_read_word(&(q->options));
 					break;
 				case LEVEL_ITEM_OPTIONS:
 					/* Use x and y values as option field. */
@@ -181,7 +196,7 @@ void prepareLevel(void) {
 							if (c == LEVEL_ITEM_PLATE)
 									GameScreenBurger[burger].place[place].half_y = y*2-2;
 								else	
-									GameScreenBurger[burger].place[place].half_y = y*2+GameScreenOptions;
+									GameScreenBurger[burger].place[place].half_y = y*2+((GameScreenOptions & LEVEL_ITEM_OPTION_STOMP_MASK)>>LEVEL_ITEM_OPTION_STOMP_SHIFT);
 
 							/* If not plate or placeholder, do component initialisations. */
 							if ((c != LEVEL_ITEM_PLATE) && (c != LEVEL_ITEM_BURGER_PLACEHOLDER)) {
@@ -308,8 +323,9 @@ void animateLevelStart(void) {
 
 			/* Check for type of level item. */
 			switch (c) {
-				case LEVEL_ITEM_PLAYER:
-				case LEVEL_ITEM_OPPONENT:
+				case LEVEL_ITEM_PLAYER_START:
+				case LEVEL_ITEM_OPPONENT_START:
+				case LEVEL_ITEM_ATTACK_WAVES:
 				case LEVEL_ITEM_OPTIONS:
 				case LEVEL_ITEM_BURGER_PLACEHOLDER:
 				case LEVEL_ITEM_BURGER_BUNTOP:

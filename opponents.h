@@ -23,7 +23,14 @@
 #include "utils.h"
 
 
+/* Opponent basics. */
+#define OPPONENT_MAX 4
+#define OPPONENT_START_POSITION_MAX 8
+#define OPPONENT_START_POSITION_INVALID 0xff
+
+
 /* Opponent flags: direction and speed. */
+#define OPPONENT_FLAGS_INVALID         0x00
 #define OPPONENT_FLAGS_DIRECTION_SHIFT 0
 #define OPPONENT_FLAGS_DIRECTION_MASK  ((0x07<<OPPONENT_FLAGS_DIRECTION_SHIFT))
 #define OPPONENT_FLAGS_DIRECTION_NONE  ((0<<OPPONENT_FLAGS_DIRECTION_SHIFT))
@@ -42,17 +49,18 @@
 typedef struct {
 	uint8_t flags;
 	uint8_t sprite;
-	position_t start_position;
 } opponent_t;	
 
-extern opponent_t Opponent;
+extern opponent_t Opponent[OPPONENT_MAX];
+extern position_t OpponentStartPosition[OPPONENT_START_POSITION_MAX];
+extern uint16_t OpponentAttackWaves;
 
 
-void resetOpponent(void);
-void changeOpponentDirectionWithoutAnimationReset(uint8_t direction);
-void changeOpponentDirection(uint8_t direction);
-void selectOpponentDirection(uint8_t buttons);
-void moveOpponent(uint8_t buttons);
+void resetOpponents(void);
+void changeOpponentDirectionWithoutAnimationReset(uint8_t index, uint8_t direction);
+void changeOpponentDirection(uint8_t index, uint8_t direction);
+void selectOpponentDirection(uint8_t index, uint8_t buttons);
+void moveOpponent(uint8_t index, uint8_t buttons);
 
 
 #endif /* OPPONENTS_H */

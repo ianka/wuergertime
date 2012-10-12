@@ -81,7 +81,10 @@ void initInGameStartScreen(void) {
 	/* Reset sprites. */
 	resetSpriteSlots();
 	Player.sprite=occupySpriteSlot();
-	Opponent.sprite=occupySpriteSlot();
+	Opponent[0].sprite=occupySpriteSlot();
+	Opponent[1].sprite=occupySpriteSlot();
+	Opponent[2].sprite=occupySpriteSlot();
+	Opponent[3].sprite=occupySpriteSlot();
 }
 
 void updateInGameStartScreen(void) {
@@ -102,12 +105,13 @@ void cleanupInGameStartScreen(void) {
 void initInGamePlayScreen(void) {
 	/* Reset player to start position. */
 	resetPlayer();
-	resetOpponent();
+	resetOpponents();
 }
 
 
 void updateInGamePlayScreen(void) {
 	uint8_t directional_buttons_held;
+	uint8_t i;
 /*
 SetTile(27,0,getSpriteFloorTile(Player.sprite));
 SetTile(28,0,getSpriteFloorDirectionTile(Player.sprite));
@@ -123,11 +127,16 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 
 	/* Select direction to move player. */
 	selectPlayerDirection(directional_buttons_held);
-	selectOpponentDirection(directional_buttons_held);
 
 	/* Move player into selected direction, if possible. */
 	movePlayer(directional_buttons_held);
-	moveOpponent(directional_buttons_held);
+
+
+	/* Move all opponents. */
+	for (i=0;i<OPPONENT_MAX;i++) {
+		selectOpponentDirection(i, directional_buttons_held);
+		moveOpponent(i, directional_buttons_held);
+	}	
 }
 
 void cleanupInGamePlayScreen(void) {

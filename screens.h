@@ -35,11 +35,25 @@
 #define LEVEL_ITEM_PLATE                0x86
 #define LEVEL_ITEM_SIGN                 0x87
 #define LEVEL_ITEM_OPTIONS              0x90
+#define LEVEL_ITEM_OPTION_STOMP_SHIFT   0
+#define LEVEL_ITEM_OPTION_STOMP_MASK    ((0x03<<LEVEL_ITEM_OPTION_STOMP_SHIFT))
 #define LEVEL_ITEM_OPTION_STOMP_ONCE    0x02
 #define LEVEL_ITEM_OPTION_STOMP_TWICE   0x01
 #define LEVEL_ITEM_OPTION_STOMP_THREETIMES 0x00
-#define LEVEL_ITEM_PLAYER               0x91
-#define LEVEL_ITEM_OPPONENT             0x92
+#define LEVEL_ITEM_OPTION_OPPONENT_SHIFT 2
+#define LEVEL_ITEM_OPTION_OPPONENT_MASK ((0x03<<LEVEL_ITEM_OPTION_OPPONENT_SHIFT))
+#define LEVEL_ITEM_OPTION_OPPONENT_SINGLE ((0<<LEVEL_ITEM_OPTION_OPPONENT_SHIFT))
+#define LEVEL_ITEM_OPTION_OPPONENT_DUO    ((1<<LEVEL_ITEM_OPTION_OPPONENT_SHIFT))
+#define LEVEL_ITEM_OPTION_OPPONENT_TRIO   ((2<<LEVEL_ITEM_OPTION_OPPONENT_SHIFT))
+#define LEVEL_ITEM_OPTION_OPPONENT_QUAD   ((3<<LEVEL_ITEM_OPTION_OPPONENT_SHIFT))
+#define LEVEL_ITEM_PLAYER_START         0x91
+#define LEVEL_ITEM_OPPONENT_START       0x92
+#define LEVEL_ITEM_ATTACK_WAVES         0x93
+#define LEVEL_ITEM_ATTACK_WAVE_SHIFT    2
+#define LEVEL_ITEM_ATTACK_WAVE_MASK     0x03
+#define LEVEL_ITEM_ATTACK_WAVE_EGGHEAD     1
+#define	LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN  2
+#define	LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD   3
 #define LEVEL_ITEM_LADDER               0xc0
 #define LEVEL_ITEM_LADDER_UPONLY        0x10
 #define LEVEL_ITEM_LADDER_CONTINUED     0x20
@@ -64,8 +78,11 @@ typedef struct {
 /* Level components. */
 #define LEVEL_COMPONENT_END { component: 0 }
 #define LEVEL_COMPONENT_OPTIONS(opts) { component: LEVEL_ITEM_OPTIONS, { options: opts } }
-#define LEVEL_COMPONENT_PLAYER(xc,yc) { component: LEVEL_ITEM_PLAYER, { position: { x: xc, y: yc } } }
-#define LEVEL_COMPONENT_OPPONENT(xc,yc) { component: LEVEL_ITEM_OPPONENT, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_PLAYER_START(xc,yc) { component: LEVEL_ITEM_PLAYER_START, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_OPPONENT_START(xc,yc) { component: LEVEL_ITEM_OPPONENT_START, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_ATTACK_WAVE(a,b,c,d,e,f,g,h) { component: LEVEL_ITEM_ATTACK_WAVES, { options: ((a|(b<<2)|(c<<4)|(d<<6)|(e<<8)|(f<<10)|(g<<12)|(h<<14))) } }
+
+
 #define LEVEL_COMPONENT_FLOOR(xc,yc,len,opts) { component: ((LEVEL_ITEM_FLOOR|len|opts)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_LADDER(xc,yc,len,opts) { component: ((LEVEL_ITEM_LADDER|len|opts)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }
@@ -122,6 +139,7 @@ extern const level_item_t LevelComponents[] PROGMEM;
 extern uint8_t GameScreenPrevious;
 extern uint8_t GameScreen;
 extern uint16_t GameScreenAnimationPhase;
+extern uint16_t GameScreenOptions;
 extern void (*GameScreenUpdateFunction)(void);
 extern uint8_t Level;
 
