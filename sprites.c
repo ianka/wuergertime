@@ -70,6 +70,36 @@ const uint8_t SpriteAnimationEggheadLadder[SPRITE_ANIMATION_EGGHEAD_LADDER_MAX][
 };
 
 
+#define SPRITE_ANIMATION_SAUSAGEMAN_SIDE_MAX 8
+const uint8_t SpriteAnimationSausagemanSide[SPRITE_ANIMATION_SAUSAGEMAN_SIDE_MAX][4] PROGMEM = {
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE0),
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE1),
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE2),
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE3),
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE4),
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE5),
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE6),
+	TILES_BLOCK(TILES2_SAUSAGEMAN_SIDE_ANIMATE7),
+};
+
+#define SPRITE_ANIMATION_SAUSAGEMAN_LADDER_MAX 4
+const uint8_t SpriteAnimationSausagemanLadder[SPRITE_ANIMATION_SAUSAGEMAN_LADDER_MAX][2] PROGMEM = {
+	TILES_TALLDUO(TILES2_SAUSAGEMAN_LADDER_ANIMATE0),
+	TILES_TALLDUO(TILES2_SAUSAGEMAN_LADDER_ANIMATE0),
+	TILES_TALLDUO(TILES2_SAUSAGEMAN_LADDER_ANIMATE1),
+	TILES_TALLDUO(TILES2_SAUSAGEMAN_LADDER_ANIMATE1),
+};
+
+
+#define SPRITE_ANIMATION_MRMUSTARD_SIDE_MAX 4
+const uint8_t SpriteAnimationMrMustardSide[SPRITE_ANIMATION_MRMUSTARD_SIDE_MAX][2] PROGMEM = {
+	TILES_TALLDUO(TILES2_MRMUSTARD_SIDE_ANIMATE0),
+	TILES_TALLDUO(TILES2_MRMUSTARD_SIDE_ANIMATE1),
+	TILES_TALLDUO(TILES2_MRMUSTARD_SIDE_ANIMATE2),
+	TILES_TALLDUO(TILES2_MRMUSTARD_SIDE_ANIMATE3),
+};
+
+
 /* Megasprite slots. */
 struct {
 	uint8_t x, y;
@@ -140,6 +170,18 @@ void updateSprite(uint8_t slot) {
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
 			p=&SpriteAnimationEggheadLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_LADDER_MAX][0];
 			break;
+		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT:
+			p=&SpriteAnimationSausagemanSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_SAUSAGEMAN_SIDE_MAX][0];
+			break;
+		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LADDER:
+			p=&SpriteAnimationSausagemanLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_SAUSAGEMAN_LADDER_MAX][0];
+			break;
+		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT:
+		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LADDER:
+			p=&SpriteAnimationMrMustardSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_MRMUSTARD_SIDE_MAX][0];
+			break;
 		default:
 			return;
 	}
@@ -150,6 +192,8 @@ void updateSprite(uint8_t slot) {
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
+		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT:
 			/* Get address of first tile number for given animation step. */
 			i=slot*4;
 			view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
@@ -220,6 +264,36 @@ void updateSprite(uint8_t slot) {
 			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
 			sprites[i].x=GameSpriteSlots[slot].x;
 			sprites[i].y=GameSpriteSlots[slot].y-8;
+			break;
+		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LADDER:
+		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT:
+		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LADDER:
+			/* Get address of first tile number for given animation step. */
+			i=slot*4;
+			view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
+
+			/* Place tiles, honor mirroring. */
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-4;
+			sprites[i].y=GameSpriteSlots[slot].y-16;
+			p++;
+			i++;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-4;
+			sprites[i].y=GameSpriteSlots[slot].y-8;
+
+
+			/* Remove unneeded sprite tiles from screen. */
+			i++;
+			sprites[i].x=OFF_SCREEN;
+			i++;
+			sprites[i].x=OFF_SCREEN;
 			break;
 	}
 }

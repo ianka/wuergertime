@@ -28,13 +28,13 @@ opponent_t Opponent;
 /* Reset opponent to start position. */
 void resetOpponent(void) {
 	/* Setup flags. */
-	Opponent.flags=OPPONENT_FLAGS_SPEED_NORMAL|OPPONENT_FLAGS_DIRECTION_LEFT;
+	Opponent.flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_LEFT;
 
 	/* Setup opponent sprite. */
 	placeSprite(Opponent.sprite,
 		Opponent.start_position.x*8,
 		Opponent.start_position.y*8,
-		SPRITE_FLAGS_TYPE_EGGHEAD);
+		SPRITE_FLAGS_TYPE_MRMUSTARD);
 }
 
 

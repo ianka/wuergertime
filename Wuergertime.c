@@ -60,6 +60,9 @@ int main(void) {
 	/* Setup audio. */
 //	InitMusicPlayer(patches);
 //	StartSong(song_drmario_main);
+//	TriggerFx(4,255,true);
+//	TriggerFx(5,255,true);
+
 
 	/* Setup video. */
 	SetSpritesTileTable(SpriteTiles);
