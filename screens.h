@@ -157,6 +157,7 @@ void animateLevelStart(void);
 void dropComponent(uint8_t burger, uint8_t component);
 void dropHattedComponents(void);
 uint8_t stomp(uint8_t x, uint8_t y);
+position_t getRandomBurgerComponentPosition(uint8_t type);
 
 
 #endif /* SCREENS_H */

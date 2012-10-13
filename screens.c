@@ -508,8 +508,8 @@ uint8_t stomp(uint8_t x, uint8_t y) {
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
 		burger_x=GameScreenBurger[burger].x;
 		if ((x >= burger_x) && (x < burger_x+5)) {
-			/* Burger selected. Check if on a component. */
-			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+		/* Burger selected. Check if on a component. */
+		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
 				if ((GameScreenBurger[burger].component[component].half_y>>1) == y) {
 					/* Component found. */
 					stomped++;
@@ -562,4 +562,31 @@ uint8_t stomp(uint8_t x, uint8_t y) {
 
 	/* Return number of stomped tiles. */
 	return stomped;
+}
+
+
+/* Get the position of a random burger component. Used for patrolling opponents. */
+position_t getRandomBurgerComponentPosition(uint8_t type) {
+	uint8_t burger, component;
+	burger_component_t *p;
+
+	/* Try endless, until we have the required component. */
+	for(;;) {
+		/* Choose a random burger. */
+		burger=fastrandom()%4;
+
+		/* Retry if the burger is invalid. */
+		if (GameScreenBurger[burger].x == SCREEN_BURGER_INVALID) continue;
+
+		/* Get component of burger. */
+		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
+			p=&(GameScreenBurger[burger].component[component]);
+
+			/* Return component position if matching. */
+			if (p->type == type)
+				return (position_t){ x: (GameScreenBurger[burger].x+2)*8, y: (p->half_y*4+4) };
+		}
+
+		/* The burger doesn't have this component. Try another. */
+	}
 }
