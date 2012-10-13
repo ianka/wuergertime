@@ -131,11 +131,10 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 	/* Move player into selected direction, if possible. */
 	movePlayer(directional_buttons_held);
 
-
-	/* Move all opponents. */
+	/* Select direction and move all active opponents. */
 	for (i=0;i<OPPONENT_MAX;i++) {
-		selectOpponentDirection(i, directional_buttons_held);
-		moveOpponent(i, directional_buttons_held);
+		selectOpponentDirection(i);
+		moveOpponent(i);
 	}	
 }
 

@@ -507,6 +507,11 @@ uint8_t checkSpriteAtLeftFloorEnd(uint8_t slot) {
 		case TILES0_LADDER_BOTTOM_FLOOREND_LEFT:
 			/* At left floor end. */
 			return 1;
+		case TILES0_LADDER_TOP_LEFT:
+		case TILES0_LADDER_TOP_UPONLY_LEFT:
+		case TILES0_LADDER_BOTTOM_LEFT:
+			/* At left floor end if at left screen border. */
+			return (GameSpriteSlots[slot].x==8);
 		default:
 			/* Not at left floor end. */
 			return 0;
@@ -520,6 +525,11 @@ uint8_t checkSpriteAtRightFloorEnd(uint8_t slot) {
 		case TILES0_LADDER_BOTTOM_FLOOREND_RIGHT:
 			/* At right floor end. */
 			return 1;
+		case TILES0_LADDER_TOP_RIGHT:
+		case TILES0_LADDER_TOP_UPONLY_RIGHT:
+		case TILES0_LADDER_BOTTOM_RIGHT:
+			/* At right floor end if at right screen border. */
+			return (GameSpriteSlots[slot].x==((SCREEN_WIDTH*8)-8));
 		default:
 			/* Not at left floor end. */
 			return 0;

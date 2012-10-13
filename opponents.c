@@ -17,9 +17,11 @@
 
 /* Local includes. */
 #include "utils.h"
+#include "player.h"
 #include "opponents.h"
 #include "sprites.h"
 #include "screens.h"
+#include "draw.h"
 
 
 /* Opponent data. */
@@ -46,20 +48,20 @@ void resetOpponents(void) {
 		/* Select sprite by opponent type. */
 		switch (o) {
 			case LEVEL_ITEM_ATTACK_WAVE_EGGHEAD:
-				s=SPRITE_FLAGS_TYPE_EGGHEAD;
+				s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
 				break;
 			case LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN:
-				s=SPRITE_FLAGS_TYPE_SAUSAGEMAN;
+				s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT;
 				break;	
 			case LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD:
-				s=SPRITE_FLAGS_TYPE_MRMUSTARD;
+				s=SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT;
 				break;
 			default:
-				s=SPRITE_FLAGS_TYPE_EGGHEAD;
+				s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
 		}
 
 		/* Setup flags. */
-		Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_LEFT;
+		Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
 
 		/* Setup opponent sprite. */
 		placeSprite(Opponent[i].sprite,
@@ -76,6 +78,9 @@ void changeOpponentDirectionWithoutAnimationReset(uint8_t index, uint8_t directi
 }	
 
 void changeOpponentDirection(uint8_t index, uint8_t direction) {
+	/* Skip if direction is same as before. */
+	if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == direction) return;
+
 	/* Remember new direction. */
 	changeOpponentDirectionWithoutAnimationReset(index,direction);
 
@@ -92,125 +97,179 @@ void changeOpponentDirection(uint8_t index, uint8_t direction) {
 	}
 }
 
+/* Select a possible opponent direction randomly. */
+uint8_t selectPossibleOpponentDirectionRandomly(uint8_t index, uint8_t directions) {
+	uint8_t d, e, s;
 
-/* Select a opponent direction from held buttons. */
-void selectOpponentDirection(uint8_t index, uint8_t buttons) {
-	switch (buttons) {
-		case BTN_LEFT:
-			/* Skip if we already are on our way left. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_LEFT)
-				break;
+	/* Not possible. Get number of other possible directions. */
+	s=0;
+	d=directions;
+	for (e=0;e<4;e++) {
+		if (d & 0x01) s++;
+		d>>=1;
+	}
 
-			/* Change direction on floor if opponent direction is currently right. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_RIGHT)
-				changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_LEFT);
+	/* TODO: s may not be 0 (no direction possible) here. */
 
-			/* Change direction from ladder to floor if opponent is at a ladder exit. */
-			if (checkSpriteAtLadderExit(Opponent[index].sprite))
-				changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_LEFT);
+	/* Skip a random number (out of 1,2,3) of those possible directions. Return direction. */
+	s=fastrandom()%s;
+	
+	/* Go through all directions. */
+	for (e=0;e<4;e++) {
+		/* Check if possible direction found. */
+		if (directions & 0x01) {
+			/* Yes. Return if enough skipped. */
+			if (s==0) return (e<<OPPONENT_FLAGS_DIRECTION_SHIFT);
 
-			break;	
-		case BTN_RIGHT:
-			/* Skip if we already are on our way right. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_RIGHT)
-				break;
+			/* Skip one less. */
+			s--;
+		}
 
-			/* Change direction on floor if opponent direction is currently left. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_LEFT)
-				changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_RIGHT);
+		/* Next possible direction bit. */
+		directions>>=1;
+	}
 
-			/* Change direction from ladder to floor if opponent is at a ladder exit. */
-			if (checkSpriteAtLadderExit(Opponent[index].sprite))
-				changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_RIGHT);
+	/* TODO: This is never reached. */
+	return 0;
+}
 
+
+/* Select a possible opponent direction randomly, prefer current direction. */
+uint8_t selectPossibleOpponentDirection(uint8_t index, uint8_t directions) {
+	/* Stay in current direction if possible. */
+	if ((1<<((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)>>OPPONENT_FLAGS_DIRECTION_SHIFT)) & directions) return (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK);
+
+	/* Select a possible opponent direction randomly. */
+	return selectPossibleOpponentDirectionRandomly(index,directions);
+}
+
+
+/* Select a new opponent direction. */
+void selectOpponentDirection(uint8_t index) {
+	uint8_t i, directions=0;
+	
+	/* Check possible directions depending on current position. */
+	switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
+		case OPPONENT_FLAGS_DIRECTION_LEFT:
+		case OPPONENT_FLAGS_DIRECTION_RIGHT:
+			/* Walking on a floor. Check for floor ends. */
+			directions|=((checkSpriteAtLeftFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_LEFT;
+			directions|=((checkSpriteAtRightFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_RIGHT;
+
+			/* Check if we could step on a ladder */
+			directions|=(checkSpriteAtLadderEntryUp(Opponent[index].sprite))<<OPPONENT_DIRECTION_UP;
+			directions|=(checkSpriteAtLadderEntryDown(Opponent[index].sprite))<<OPPONENT_DIRECTION_DOWN;
 			break;
-		case BTN_DOWN:
-			/* Skip if we already are on our way down. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_DOWN)
-				break;
+		case OPPONENT_FLAGS_DIRECTION_UP:
+		case OPPONENT_FLAGS_DIRECTION_DOWN:
+			/* Climbing/stepping down a ladder. Check for ladder end. */
+			directions|=((checkSpriteAtLadderTop(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_UP;
+			directions|=((checkSpriteAtLadderBottom(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_DOWN;
 
-			/* Change direction on ladder if opponent direction is currently up. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_UP)
-				changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_DOWN);
-
-			/* Change direction from floor to ladder if opponent is onto a ladder top. */
-			if (checkSpriteAtLadderEntryDown(Opponent[index].sprite))
-				changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_DOWN);
-
+			/* Check if we could step on a floor. */
+			if (checkSpriteAtLadderExit(Opponent[index].sprite)) {
+				directions|=((checkSpriteAtLeftFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_LEFT;
+				directions|=((checkSpriteAtRightFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_RIGHT;
+			}
 			break;
-		case BTN_UP:
-			/* Skip if we already are on our way up. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_UP)
-				break;
-			
-			/* Change direction on ladder if opponent direction is currently down. */
-			if ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_DOWN)
-				changeOpponentDirectionWithoutAnimationReset(index,OPPONENT_FLAGS_DIRECTION_UP);
+	}
 
-			/* Change direction from floor to ladder if opponent is at a ladder. */
-			if (checkSpriteAtLadderEntryUp(Opponent[index].sprite))
-				changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_UP);
+	/* Check if this opponent has nearly the same coordinates
+	 * as another opponent with the same direction and algorithm.
+	 */
+	for (i=0;i<OPPONENT_MAX;i++) {
+		/* Skip self */
+		if (i==index) continue;
 
+		/* Skip if different direction or algorithm. */
+		if ((Opponent[index].flags & (OPPONENT_FLAGS_DIRECTION_MASK|OPPONENT_FLAGS_ALGORITHM_MASK))
+				!= (Opponent[i].flags & (OPPONENT_FLAGS_DIRECTION_MASK|OPPONENT_FLAGS_ALGORITHM_MASK)))
+			continue;
+
+		/* Check coordinates. */
+		if (((getSpriteX(Opponent[index].sprite) & 0xf0) == ((getSpriteX(Opponent[i].sprite) & 0xf0)))
+				&& ((getSpriteY(Opponent[index].sprite) & 0xf0) == ((getSpriteY(Opponent[i].sprite) & 0xf0)))) {
+			/* Same. Change oppenent direction randomly. */
+			changeOpponentDirection(index,selectPossibleOpponentDirectionRandomly(index,directions));
+			return;
+		}	
+	}	
+
+	/* Feed possible directions into movement algorithm. */
+	switch (Opponent[index].flags & OPPONENT_FLAGS_ALGORITHM_MASK) {
+		case OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER:
+			/* On same floor? */
+			if (getSpriteY(Player.sprite) == getSpriteY(Opponent[index].sprite)) {
+				/* Yes. Try to catch the player on this floor. */
+				if ((getSpriteX(Player.sprite) < getSpriteX(Opponent[index].sprite)) && (directions & (1<<OPPONENT_DIRECTION_LEFT)))
+					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_LEFT);
+				else if ((getSpriteX(Player.sprite) > getSpriteX(Opponent[index].sprite)) && (directions & (1<<OPPONENT_DIRECTION_RIGHT)))
+					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_RIGHT);
+				else
+					/* Not possible to catch the player on this floor. Choose a possible direction randomly, prefer current direction. */
+					changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
+			}	else {
+				/* On same ladder? */
+				if (getSpriteX(Player.sprite) == getSpriteX(Opponent[index].sprite)) {
+					/* Yes. Try to catch the player on this ladder. */
+					if ((getSpriteY(Player.sprite) < getSpriteY(Opponent[index].sprite)) && (directions & (1<<OPPONENT_DIRECTION_UP)))
+						changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_UP);
+					else if ((getSpriteX(Player.sprite) > getSpriteX(Opponent[index].sprite)) && (directions & (1<<OPPONENT_DIRECTION_DOWN)))
+						changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_DOWN);
+					else
+						/* Not possible to catch the player on this ladder. Choose a possible direction randomly, prefer current direction. */
+						changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
+				}	else {
+					/* Neither on same floor nor ladder. Check if we are on floor or ladder. */
+					switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
+						case OPPONENT_FLAGS_DIRECTION_LEFT:
+						case OPPONENT_FLAGS_DIRECTION_RIGHT:
+							/* Currently on a floor. Take the next ladder leading in the right direction. */
+							if ((getSpriteY(Player.sprite) < getSpriteY(Opponent[index].sprite))
+									&& (directions & (1<<OPPONENT_DIRECTION_UP)))
+								changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_UP);
+							else if ((getSpriteY(Player.sprite) > getSpriteY(Opponent[index].sprite))
+									&& (directions & (1<<OPPONENT_DIRECTION_DOWN)))
+								changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_DOWN);
+							else
+								/* Not possible to change on ladder. Choose a possible direction randomly, prefer current direction. */
+								changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
+							break;
+						case OPPONENT_FLAGS_DIRECTION_UP:
+						case OPPONENT_FLAGS_DIRECTION_DOWN:
+							/* Currently on a ladder. Take the next floor leading in the right direction. */
+							if ((getSpriteX(Player.sprite) < getSpriteX(Opponent[index].sprite))
+									&& (directions & (1<<OPPONENT_DIRECTION_LEFT)))
+								changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_LEFT);
+							else if ((getSpriteX(Player.sprite) > getSpriteX(Opponent[index].sprite))
+									&& (directions & (1<<OPPONENT_DIRECTION_LEFT)))
+								changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_RIGHT);
+							else
+								/* Not possible to change on floor. Choose a possible direction randomly, prefer current direction. */
+								changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
+							break;
+					}
+				}	
+			}
 			break;
 	}
 }
 
 
-/* Move opponent into selected direction, if possible. */
-void moveOpponent(uint8_t index, uint8_t buttons) {
-	/* Walk into current direction, if any button but the opposite is held. */
+/* Move opponent into selected direction. */
+void moveOpponent(uint8_t index) {
 	switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
 		case OPPONENT_FLAGS_DIRECTION_LEFT:
-			/* Move sprite if nothing should stop us. */
-			if (!checkSpriteAtLeftFloorEnd(Opponent[index].sprite))
-					moveSprite(Opponent[index].sprite,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)),0);
-				/* Change direction from floor to ladder if opponent is at a ladder. */
-				else if (checkSpriteAtLadderEntryUp(Opponent[index].sprite))
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_UP);
-				else if (checkSpriteAtLadderEntryDown(Opponent[index].sprite))	
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_DOWN);
-				else
-					/* Change direction on floor if we are at a dead end. */
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_RIGHT);
+			moveSprite(Opponent[index].sprite,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)),0);
 			break;
 		case OPPONENT_FLAGS_DIRECTION_RIGHT:
-			/* Move sprite if nothing should stop us. */
-			if (!checkSpriteAtRightFloorEnd(Opponent[index].sprite))
-				moveSprite(Opponent[index].sprite,(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)),0);
-				/* Change direction from floor to ladder if opponent is at a ladder. */
-				else if (checkSpriteAtLadderEntryUp(Opponent[index].sprite))
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_UP);
-				else if (checkSpriteAtLadderEntryDown(Opponent[index].sprite))	
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_DOWN);
-				else
-					/* Change direction on floor if we are at a dead end. */
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_LEFT);
-			break;
-		case OPPONENT_FLAGS_DIRECTION_DOWN:
-			/* Move sprite if nothing should stop us. */
-			if (!checkSpriteAtLadderBottom(Opponent[index].sprite))
-				moveSprite(Opponent[index].sprite,0,(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)));
-				/* Change direction from ladder to floor if opponent is at a ladder exit. */
-				else if (!checkSpriteAtRightFloorEnd(Opponent[index].sprite))
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_RIGHT);
-				else if (!checkSpriteAtLeftFloorEnd(Opponent[index].sprite))
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_LEFT);
-				else	
-					/* Change direction on ladder if we are at a dead end. */
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_UP);
+			moveSprite(Opponent[index].sprite,1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT),0);
 			break;
 		case OPPONENT_FLAGS_DIRECTION_UP:
-			/* Move sprite if nothing should stop us. */
-			if (!checkSpriteAtLadderTop(Opponent[index].sprite))
-				moveSprite(Opponent[index].sprite,0,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)));
-				/* Change direction from ladder to floor if opponent is at a ladder exit. */
-				else if (!checkSpriteAtLeftFloorEnd(Opponent[index].sprite))
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_LEFT);
-				else if (!checkSpriteAtRightFloorEnd(Opponent[index].sprite))
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_RIGHT);
-				else	
-					/* Change direction on ladder if we are at a dead end. */
-					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_DOWN);
+			moveSprite(Opponent[index].sprite,0,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)));
+			break;
+		case OPPONENT_FLAGS_DIRECTION_DOWN:
+			moveSprite(Opponent[index].sprite,0,1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT));
 			break;
 	}
 }
