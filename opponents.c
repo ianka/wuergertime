@@ -29,12 +29,24 @@ opponent_t Opponent[OPPONENT_MAX];
 position_t OpponentStartPosition[OPPONENT_START_POSITION_MAX];
 uint8_t OpponentsInLevel;
 uint16_t OpponentAttackWaves;
+uint8_t OpponentRandomness;
+
+
+const uint8_t OpponentRandomnessMasks[] PROGMEM = {
+	OPPONENT_RANDOMNESS_MINIMAL,
+	OPPONENT_RANDOMNESS_NORMAL,
+	OPPONENT_RANDOMNESS_MEDIUM,
+	OPPONENT_RANDOMNESS_HIGH,
+};
 
 
 /* Reset opponents to start position. */
 void resetOpponents(void) {
 	uint8_t i, o;
 	uint16_t s;
+
+	/* Set opponent randomness from level description. */
+	OpponentRandomness=pgm_read_byte(&OpponentRandomnessMasks[(GameScreenOptions & LEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_MASK)>>LEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_SHIFT]);
 
 	/* Get first attack wave. */
 	for (i=0;i<((GameScreenOptions & LEVEL_ITEM_OPTION_OPPONENT_MASK)>>LEVEL_ITEM_OPTION_OPPONENT_SHIFT)+1;i++) { 
@@ -99,14 +111,17 @@ void changeOpponentDirection(uint8_t index, uint8_t direction) {
 		default:	
 			changeSpriteDirection(Opponent[index].sprite,SPRITE_FLAGS_DIRECTION_LADDER);
 	}
-
 }
+
 
 /* Select a possible opponent direction randomly. */
 uint8_t selectPossibleOpponentDirectionRandomly(uint8_t index, uint8_t directions) {
 	uint8_t d, e, s;
 
-	/* Not possible. Get number of other possible directions. */
+	/* Set mad flag for this opponent. This avoids opponents stick in a dead end. */
+	Opponent[index].flags|=OPPONENT_FLAGS_MAD;
+
+	/* Get number of other possible directions. */
 	s=0;
 	d=directions;
 	for (e=0;e<4;e++) {
@@ -151,7 +166,22 @@ uint8_t selectPossibleOpponentDirection(uint8_t index, uint8_t directions) {
 
 /* Select direction leading nearer to target position. */
 void selectOpponentDirectionNearerToTarget(uint8_t index, uint8_t directions, uint8_t x, uint8_t y) {
-	/* On same floor as target? */
+	uint8_t r;
+
+	/* Make it a little random if moving to target or randomly. */
+	r=fastrandom() & OpponentRandomness;
+
+	/* Make opponent movement more random if mad flag was set. */
+	if (Opponent[index].flags & OPPONENT_FLAGS_MAD) r&=OPPONENT_MAD_RANDOMNESS;
+
+	/* Choose direction randomly? */
+	if (!r) {
+		/* Yes, but prefer current direction. */
+		changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
+		return;
+	}	
+
+	/* Not randomly. On same floor as target? */
 	if (y == getSpriteY(Opponent[index].sprite)) {
 		/* Yes. Try to catch the target on this floor. */
 		if ((x < getSpriteX(Opponent[index].sprite)) && (directions & (1<<OPPONENT_DIRECTION_LEFT)))
@@ -265,6 +295,11 @@ void selectOpponentDirection(uint8_t index) {
 			/* Target position is player position. */
 			selectOpponentDirectionNearerToTarget(index,directions,
 				getSpriteX(Player.sprite),getSpriteY(Player.sprite));
+
+			/* Reset mad flag every other animation phase. */
+			if (!(GameScreenAnimationPhase & OPPONENT_MAD_RESET_PHASE))
+				Opponent[index].flags&=~OPPONENT_FLAGS_MAD;
+
 			break;
 		case OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER:
 			/* Target reached? */
@@ -272,6 +307,9 @@ void selectOpponentDirection(uint8_t index) {
 					&& ((getSpriteY(Opponent[index].sprite) & 0xf0) == (Opponent[index].target.y & 0xf0))) {
 				/* Yes. Get a new target position, random buntop. */
 				Opponent[index].target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
+
+				/* Reset mad flag. */
+				Opponent[index].flags&=~OPPONENT_FLAGS_MAD;
 			}
 
 			/* Move nearer to target. */

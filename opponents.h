@@ -51,9 +51,21 @@
 #define OPPONENT_FLAGS_SPEED_FAST      ((2<<OPPONENT_FLAGS_SPEED_SHIFT))
 #define OPPONENT_FLAGS_SPEED_DASH      ((3<<OPPONENT_FLAGS_SPEED_SHIFT))
 #define OPPONENT_FLAGS_ALGORITHM_SHIFT            5
-#define OPPONENT_FLAGS_ALGORITHM_MASK             ((0x07<<OPPONENT_FLAGS_ALGORITHM_SHIFT))
+#define OPPONENT_FLAGS_ALGORITHM_MASK             ((0x03<<OPPONENT_FLAGS_ALGORITHM_SHIFT))
 #define OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER    ((0<<OPPONENT_FLAGS_ALGORITHM_SHIFT))
 #define OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER ((1<<OPPONENT_FLAGS_ALGORITHM_SHIFT))
+#define OPPONENT_FLAGS_MAD_SHIFT   7
+#define OPPONENT_FLAGS_MAD         ((0x01<<OPPONENT_FLAGS_MAD_SHIFT))
+
+
+/* Opponent randomness. */
+#define OPPONENT_RANDOMNESS_MINIMAL 0xff
+#define OPPONENT_RANDOMNESS_NORMAL  0x3f
+#define OPPONENT_RANDOMNESS_MEDIUM  0x0f
+#define OPPONENT_RANDOMNESS_HIGH    0x03
+#define OPPONENT_MAD_RANDOMNESS     0x01
+#define OPPONENT_MAD_RESET_PHASE    0x00ff
+
 
 typedef struct {
 	uint8_t flags;
@@ -64,6 +76,7 @@ typedef struct {
 extern opponent_t Opponent[OPPONENT_MAX];
 extern position_t OpponentStartPosition[OPPONENT_START_POSITION_MAX];
 extern uint16_t OpponentAttackWaves;
+extern uint8_t OpponentRandomness;
 
 
 void resetOpponents(void);
