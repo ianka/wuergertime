@@ -590,3 +590,27 @@ position_t getRandomBurgerComponentPosition(uint8_t type) {
 		/* The burger doesn't have this component. Try another. */
 	}
 }
+
+
+/* Check if at any falling burger component position. */
+uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
+	uint8_t burger, component;
+
+	/* Check all burgers. */
+	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+		/* Check x coordinates of burgers. */
+		if ((x>(GameScreenBurger[burger].x*8)) && (x<((GameScreenBurger[burger].x+5)*8))) {
+			/* Matching burger found. Check y coordunates of all components. */
+			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+				if ((y>((GameScreenBurger[burger].component[component].half_y*4)-16))
+						&& (y<((GameScreenBurger[burger].component[component].half_y*4)-8)))
+					/* Hit by burger component. */
+					return 1;
+
+				/* Not hit. Check next. */	
+		}
+	}
+
+	/* No match. */
+	return 0;
+}

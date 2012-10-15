@@ -131,8 +131,12 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 	/* Move player into selected direction, if possible. */
 	movePlayer(directional_buttons_held);
 
-	/* Select direction and move all active opponents. */
+	/* Handle all opponents. */
 	for (i=0;i<OPPONENT_MAX;i++) {
+		/* Remove opponent if it is hit by a burger component. */
+		removeOpponentIfHit(i);
+
+		/* Select direction and move all active opponents. */
 		selectOpponentDirection(i);
 		moveOpponent(i);
 	}	

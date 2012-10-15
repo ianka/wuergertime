@@ -265,6 +265,9 @@ void selectOpponentDirection(uint8_t index) {
 				directions|=((checkSpriteAtRightFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_RIGHT;
 			}
 			break;
+		case OPPONENT_FLAGS_DIRECTION_HIT:
+			/* Do not select a new direction once an opponent is hit. */
+			return;
 	}
 
 	/*
@@ -338,3 +341,13 @@ void moveOpponent(uint8_t index) {
 			break;
 	}
 }
+
+
+/* Remove an opponent if it is hit by a burger component. */
+void removeOpponentIfHit(uint8_t index) {
+	/* Check if opponent is hit by any burger component. */
+	if (checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite))) {
+		/* Yes. Kick it from the screen. */
+		changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
+	}
+}	

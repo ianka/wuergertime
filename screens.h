@@ -164,6 +164,7 @@ void dropComponent(uint8_t burger, uint8_t component);
 void dropHattedComponents(void);
 uint8_t stomp(uint8_t x, uint8_t y);
 position_t getRandomBurgerComponentPosition(uint8_t type);
+uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y);
 
 
 #endif /* SCREENS_H */
