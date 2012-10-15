@@ -602,8 +602,8 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 		if ((x>(GameScreenBurger[burger].x*8)) && (x<((GameScreenBurger[burger].x+5)*8))) {
 			/* Matching burger found. Check y coordunates of all components. */
 			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
-				if ((y>((GameScreenBurger[burger].component[component].half_y*4)-16))
-						&& (y<((GameScreenBurger[burger].component[component].half_y*4)-8)))
+				if ((y>((GameScreenBurger[burger].component[component].half_y*4)-20))
+						&& (y<((GameScreenBurger[burger].component[component].half_y*4)-12)))
 					/* Hit by burger component. */
 					return 1;
 

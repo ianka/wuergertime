@@ -68,10 +68,17 @@
 #define OPPONENT_MAD_RESET_PHASE    0x00ff
 
 
+/* For animation when opponent is hit. */
+#define OPPONENT_HIT_SPEED_X        2
+#define OPPONENT_START_HIT_SPEED_Y -8
+
 typedef struct {
 	uint8_t flags;
 	uint8_t sprite;
-	position_t target;
+	union {
+		position_t target;
+		int8_t hit_speed;
+	} info;	
 } opponent_t;	
 
 extern opponent_t Opponent[OPPONENT_MAX];

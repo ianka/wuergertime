@@ -102,7 +102,8 @@ const uint8_t SpriteAnimationMrMustardSide[SPRITE_ANIMATION_MRMUSTARD_SIDE_MAX][
 
 /* Megasprite slots. */
 struct {
-	uint8_t x, y;
+	uint8_t x;
+	int16_t y;
 	uint16_t flags;
 } GameSpriteSlots[SPRITE_SLOTS_MAX];
 
@@ -133,16 +134,23 @@ uint8_t occupySpriteSlot(void) {
 }
 
 
-/* Free a sprite slot. */
-void freeSpriteSlot(uint8_t slot) {
+/* Unmap a sprite. */
+void unmapSprite(uint8_t slot) {
 	uint8_t i;
-
-	/* Skip if the slot is free already. */ 
-	if (GameSpriteSlots[slot].flags == SPRITE_FLAGS_FREE_SLOT) return;
 
 	/* Unmap kernel sprites for that slot. */
 	for(i=0;i<4;i++)
 		sprites[slot*4+i].x=OFF_SCREEN; /* invalid coordinate */
+}
+
+
+/* Free a sprite slot. */
+void freeSpriteSlot(uint8_t slot) {
+	/* Skip if the slot is free already. */ 
+	if (GameSpriteSlots[slot].flags == SPRITE_FLAGS_FREE_SLOT) return;
+
+	/* Unmap sprite. */
+	unmapSprite(slot);
 
 	/* Free the slot. */
 	GameSpriteSlots[slot].flags=SPRITE_FLAGS_FREE_SLOT;
@@ -316,6 +324,11 @@ void moveSprite(uint8_t slot, int8_t x, int8_t y) {
 	/* Skip if horizontal position is not within boundaries. */
 	if ((GameSpriteSlots[slot].x+x<8) || (GameSpriteSlots[slot].x+x>(SCREEN_WIDTH<<3)-8)) return;
 
+	/* Actuall move sprite. */
+	moveSpriteUncondionally(slot,x,y);
+}
+
+void moveSpriteUncondionally(uint8_t slot, int8_t x, int8_t y) {
 	/* Remember new position. */
 	GameSpriteSlots[slot].x+=x;
 	GameSpriteSlots[slot].y+=y;

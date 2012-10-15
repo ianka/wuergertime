@@ -62,7 +62,7 @@ void resetOpponents(void) {
 			case LEVEL_ITEM_ATTACK_WAVE_EGGHEAD:
 				s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
 				Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER;
-				Opponent[i].target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
+				Opponent[i].info.target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
 				break;
 			case LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN:
 				s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT;
@@ -306,10 +306,10 @@ void selectOpponentDirection(uint8_t index) {
 			break;
 		case OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER:
 			/* Target reached? */
-			if (((getSpriteX(Opponent[index].sprite) & 0xf0) == (Opponent[index].target.x & 0xf0))
-					&& ((getSpriteY(Opponent[index].sprite) & 0xf0) == (Opponent[index].target.y & 0xf0))) {
+			if (((getSpriteX(Opponent[index].sprite) & 0xf0) == (Opponent[index].info.target.x & 0xf0))
+					&& ((getSpriteY(Opponent[index].sprite) & 0xf0) == (Opponent[index].info.target.y & 0xf0))) {
 				/* Yes. Get a new target position, random buntop. */
-				Opponent[index].target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
+				Opponent[index].info.target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
 
 				/* Reset mad flag. */
 				Opponent[index].flags&=~OPPONENT_FLAGS_MAD;
@@ -317,7 +317,7 @@ void selectOpponentDirection(uint8_t index) {
 
 			/* Move nearer to target. */
 			selectOpponentDirectionNearerToTarget(index,directions,
-				Opponent[index].target.x,Opponent[index].target.y);
+				Opponent[index].info.target.x,Opponent[index].info.target.y);
 			break;
 	}
 }
@@ -326,6 +326,8 @@ void selectOpponentDirection(uint8_t index) {
 
 /* Move opponent into selected direction. */
 void moveOpponent(uint8_t index) {
+	int16_t y;
+
 	switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
 		case OPPONENT_FLAGS_DIRECTION_LEFT:
 			moveSprite(Opponent[index].sprite,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)),0);
@@ -339,6 +341,21 @@ void moveOpponent(uint8_t index) {
 		case OPPONENT_FLAGS_DIRECTION_DOWN:
 			moveSprite(Opponent[index].sprite,0,1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT));
 			break;
+		case OPPONENT_FLAGS_DIRECTION_HIT:
+			/* Move to invalid coordinate? */
+			y=getSpriteY(Opponent[index].sprite);
+			y+=Opponent[index].info.hit_speed;
+			if (y>(SCREEN_HEIGHT*8)) {
+				/* Yes. Remove opponent from screen. */
+				unmapSprite(Opponent[index].sprite);
+			} else {
+				/* No. Move with hit speed. */
+				moveSpriteUncondionally(Opponent[index].sprite,OPPONENT_HIT_SPEED_X,Opponent[index].info.hit_speed);
+
+				/* Turn hit speed from negative to more positive for next step. */
+				Opponent[index].info.hit_speed++;
+			}	
+			break;
 	}
 }
 
@@ -349,5 +366,8 @@ void removeOpponentIfHit(uint8_t index) {
 	if (checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite))) {
 		/* Yes. Kick it from the screen. */
 		changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
+
+		/* Initialize hit speed. */
+		Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
 	}
 }	
