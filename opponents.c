@@ -42,50 +42,85 @@ const uint8_t OpponentRandomnessMasks[] PROGMEM = {
 
 /* Reset opponents to start position. */
 void resetOpponents(void) {
-	uint8_t i, o;
-	uint16_t s;
+	uint8_t i;
 
 	/* Set opponent randomness from level description. */
 	OpponentRandomness=pgm_read_byte(&OpponentRandomnessMasks[(GameScreenOptions & LEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_MASK)>>LEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_SHIFT]);
 
-	/* Get first attack wave. */
-	for (i=0;i<((GameScreenOptions & LEVEL_ITEM_OPTION_OPPONENT_MASK)>>LEVEL_ITEM_OPTION_OPPONENT_SHIFT)+1;i++) { 
-		/* Get next opponent type. */
-		o=(OpponentAttackWaves & LEVEL_ITEM_ATTACK_WAVE_MASK);
+	/* Clear opponent slots and unmap sprites. */
+	for (i=0;i<OPPONENT_MAX;i++) {
+		Opponent[i].flags=OPPONENT_FLAGS_INVALID;
+		unmapSprite(Opponent[i].sprite);
+	}	
 
-		/* Stuff it back into last position of attack wave. */
-		OpponentAttackWaves>>=LEVEL_ITEM_ATTACK_WAVE_SHIFT;
-		OpponentAttackWaves|=(o<<(16-LEVEL_ITEM_ATTACK_WAVE_SHIFT));
-
-		/* Select sprite by opponent type. */
-		switch (o) {
-			case LEVEL_ITEM_ATTACK_WAVE_EGGHEAD:
-				s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
-				Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER;
-				Opponent[i].info.target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
-				break;
-			case LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN:
-				s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT;
-				Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
-				break;	
-			case LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD:
-				s=SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT;
-				Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
-				break;
-			default:
-				s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
-				Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
-		}
-
-		/* Setup flags. */
-		
-		/* Setup opponent sprite. */
-		placeSprite(Opponent[i].sprite,
-			OpponentStartPosition[i].x*8,
-			OpponentStartPosition[i].y*8,
-			s);
-	}
+	/* Start first attack wave. */
+	for (i=0;i<OPPONENT_MAX;i++)
+		nextOpponent();
 }
+
+
+/* Create new opponent, if there isn't the maximum active for this level. */
+void nextOpponent(void) {
+	uint8_t i,o;
+	uint16_t s;
+
+	/* Count occupied opponent slots. */
+	o=0;
+	for (i=0;i<OPPONENT_MAX;i++)
+		if (Opponent[i].flags != OPPONENT_FLAGS_INVALID) o++;
+
+	/* Skip if selected number of opponents is already active. */
+	if (o>((GameScreenOptions & LEVEL_ITEM_OPTION_OPPONENT_MASK)>>LEVEL_ITEM_OPTION_OPPONENT_SHIFT)) return;
+
+	/* Get free opponent slot. */
+	for (i=0;i<OPPONENT_MAX;i++)
+		if (Opponent[i].flags == OPPONENT_FLAGS_INVALID) {
+			/* Slot found. Get next opponent type. */
+			o=(OpponentAttackWaves & LEVEL_ITEM_ATTACK_WAVE_MASK);
+
+			/* Stuff it back into last position of the attack waves. */
+			OpponentAttackWaves>>=LEVEL_ITEM_ATTACK_WAVE_SHIFT;
+			OpponentAttackWaves|=(o<<(16-LEVEL_ITEM_ATTACK_WAVE_SHIFT));
+
+			/* Select sprite by opponent type. */
+			switch (o) {
+				case LEVEL_ITEM_ATTACK_WAVE_EGGHEAD:
+					s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER;
+					Opponent[i].info.target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
+					break;
+				case LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN:
+					s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
+					break;	
+				case LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD:
+					s=SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
+					break;
+				default:
+					s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
+			}
+
+			/* Setup flags. */
+			
+			/* Setup opponent sprite. */
+			placeSprite(Opponent[i].sprite,
+				OpponentStartPosition[i].x*8,
+				OpponentStartPosition[i].y*8,
+				s);
+
+			/* Opponent setup complete. */
+			return;
+		}
+}
+
+
+/* Next opponent at certain animation phases. */
+void nextAttackWave(void) {
+	if (!(GameScreenAnimationPhase & ~(0xffff<<(((GameScreenOptions & LEVEL_ITEM_OPTION_ATTACK_WAVE_MASK)>>LEVEL_ITEM_OPTION_ATTACK_WAVE_SHIFT)+OPPONENT_ATTACK_WAVE_DEFAULT_SHIFT))))
+		nextOpponent();
+}	
 
 
 /* Change moving/facing direction of opponent. */
@@ -240,7 +275,10 @@ void selectOpponentDirectionNearerToTarget(uint8_t index, uint8_t directions, ui
 /* Select a new opponent direction. */
 void selectOpponentDirection(uint8_t index) {
 	uint8_t i, directions=0;
-	
+
+	/* Skip invalid opponent. */
+	if (Opponent[index].flags == OPPONENT_FLAGS_INVALID) return;
+
 	/* Check possible directions depending on current position. */
 	switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
 		case OPPONENT_FLAGS_DIRECTION_LEFT:
@@ -328,6 +366,10 @@ void selectOpponentDirection(uint8_t index) {
 void moveOpponent(uint8_t index) {
 	int16_t y;
 
+	/* Skip invalid opponent. */
+	if (Opponent[index].flags == OPPONENT_FLAGS_INVALID) return;
+
+	/* Move by direction. */
 	switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
 		case OPPONENT_FLAGS_DIRECTION_LEFT:
 			moveSprite(Opponent[index].sprite,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)),0);
@@ -348,6 +390,9 @@ void moveOpponent(uint8_t index) {
 			if (y>(SCREEN_HEIGHT*8)) {
 				/* Yes. Remove opponent from screen. */
 				unmapSprite(Opponent[index].sprite);
+
+				/* Mark opponent as removed. */
+				Opponent[index].flags=OPPONENT_FLAGS_INVALID;
 			} else {
 				/* No. Move with hit speed. */
 				moveSpriteUncondionally(Opponent[index].sprite,OPPONENT_HIT_SPEED_X,Opponent[index].info.hit_speed);
@@ -362,6 +407,9 @@ void moveOpponent(uint8_t index) {
 
 /* Remove an opponent if it is hit by a burger component. */
 void removeOpponentIfHit(uint8_t index) {
+	/* Skip invalid opponent. */
+	if (Opponent[index].flags == OPPONENT_FLAGS_INVALID) return;
+
 	/* Check if opponent is hit by any burger component. */
 	if (checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite))) {
 		/* Yes. Kick it from the screen. */

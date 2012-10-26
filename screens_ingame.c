@@ -139,7 +139,10 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 		/* Select direction and move all active opponents. */
 		selectOpponentDirection(i);
 		moveOpponent(i);
-	}	
+	}
+
+	/* Start next attack wave on matching animation phase. */
+	nextAttackWave();
 }
 
 void cleanupInGamePlayScreen(void) {
