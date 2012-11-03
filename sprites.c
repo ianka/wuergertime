@@ -52,6 +52,15 @@ const uint8_t SpriteAnimationCookLadder[SPRITE_ANIMATION_COOK_LADDER_MAX][4] PRO
 };
 
 
+#define SPRITE_ANIMATION_COOK_CAUGHT_MAX 4
+const uint8_t SpriteAnimationCookCaught[SPRITE_ANIMATION_COOK_CAUGHT_MAX][4] PROGMEM = {
+	TILES_BLOCK(TILES2_COOK_FACING_ANIMATE0),
+	TILES_BLOCK(TILES2_COOK_FACING_ANIMATE1),
+	TILES_BLOCK(TILES2_COOK_FACING_ANIMATE2),
+	TILES_BLOCK(TILES2_COOK_FACING_ANIMATE3),
+};
+
+
 #define SPRITE_ANIMATION_EGGHEAD_SIDE_MAX 4
 const uint8_t SpriteAnimationEggheadSide[SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][4] PROGMEM = {
 	TILES_BLOCK(TILES2_EGGHEAD_SIDE_ANIMATE0),
@@ -171,6 +180,9 @@ void updateSprite(uint8_t slot) {
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
 			p=&SpriteAnimationCookLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
 			break;
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
+			p=&SpriteAnimationCookCaught[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_CAUGHT_MAX][0];
+			break;
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
 			p=&SpriteAnimationEggheadSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][0];
@@ -272,6 +284,41 @@ void updateSprite(uint8_t slot) {
 			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
 			sprites[i].x=GameSpriteSlots[slot].x;
 			sprites[i].y=GameSpriteSlots[slot].y-8;
+			break;
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
+			/* Get address of first tile number for given animation step. */
+			i=slot*4;
+
+			/* Place tiles, honor mirroring. */
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
+			sprites[i].x=GameSpriteSlots[slot].x-8;
+			sprites[i].y=GameSpriteSlots[slot].y-8;
+			p++;
+			i++;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
+			sprites[i].x=GameSpriteSlots[slot].x;
+			sprites[i].y=GameSpriteSlots[slot].y-8;
+			p++;
+			i++;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
+			sprites[i].x=GameSpriteSlots[slot].x-8;
+			sprites[i].y=GameSpriteSlots[slot].y-16;
+			p++;
+			i++;
+
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
+			sprites[i].x=GameSpriteSlots[slot].x;
+			sprites[i].y=GameSpriteSlots[slot].y-16;
 			break;
 		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LADDER:
 		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT:

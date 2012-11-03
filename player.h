@@ -31,6 +31,7 @@
 #define PLAYER_FLAGS_DIRECTION_RIGHT ((2<<PLAYER_FLAGS_DIRECTION_SHIFT))
 #define PLAYER_FLAGS_DIRECTION_UP    ((3<<PLAYER_FLAGS_DIRECTION_SHIFT))
 #define PLAYER_FLAGS_DIRECTION_DOWN  ((4<<PLAYER_FLAGS_DIRECTION_SHIFT))
+#define PLAYER_FLAGS_DIRECTION_CAUGHT ((5<<PLAYER_FLAGS_DIRECTION_SHIFT))
 #define PLAYER_FLAGS_SPEED_SHIFT     3
 #define PLAYER_FLAGS_SPEED_MASK      ((0x03<<PLAYER_FLAGS_SPEED_SHIFT))
 #define PLAYER_FLAGS_SPEED_SLOW      ((0<<PLAYER_FLAGS_SPEED_SHIFT))
@@ -39,10 +40,15 @@
 #define PLAYER_FLAGS_SPEED_FLASH     ((3<<PLAYER_FLAGS_SPEED_SHIFT))
 
 
+/* For animation when player is caught/hit. */
+#define PLAYER_START_HIT_SPEED_Y -4
+
+
 typedef struct {
 	uint8_t flags;
 	uint8_t sprite;
 	position_t start_position;
+	int8_t hit_speed;
 } player_t;	
 
 extern player_t Player;
@@ -53,6 +59,7 @@ void changePlayerDirectionWithoutAnimationReset(uint8_t direction);
 void changePlayerDirection(uint8_t direction);
 void selectPlayerDirection(uint8_t buttons);
 void movePlayer(uint8_t buttons);
+uint8_t animateCaughtPlayer(void);
 
 
 #endif /* PLAYER_H */

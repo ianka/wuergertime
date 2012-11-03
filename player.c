@@ -19,6 +19,7 @@
 #include "utils.h"
 #include "player.h"
 #include "sprites.h"
+#include "draw.h"
 
 
 /* Player data. */
@@ -54,6 +55,12 @@ void changePlayerDirection(uint8_t direction) {
 			break;
 		case PLAYER_FLAGS_DIRECTION_RIGHT:
 			changeSpriteDirection(Player.sprite,SPRITE_FLAGS_DIRECTION_RIGHT);
+			break;
+		case PLAYER_FLAGS_DIRECTION_CAUGHT:
+			changeSpriteDirection(Player.sprite,SPRITE_FLAGS_DIRECTION_CAUGHT);
+
+			/* Initialize hit speed. */
+			Player.hit_speed=min(getSpriteY(Player.sprite)*getSpriteY(Player.sprite),PLAYER_START_HIT_SPEED_Y);
 			break;
 		default:	
 			changeSpriteDirection(Player.sprite,SPRITE_FLAGS_DIRECTION_LADDER);
@@ -162,4 +169,30 @@ void movePlayer(uint8_t buttons) {
 				moveSprite(Player.sprite,0,-(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
 			break;
 	}
+}
+
+
+/* Animate caught player. */
+uint8_t animateCaughtPlayer(void) {
+	int16_t y;
+	
+	/* Move to invalid coordinate? */
+	y=getSpriteY(Player.sprite);
+	y+=Player.hit_speed;
+	if (y>(SCREEN_HEIGHT*8)) {
+		/* Yes. Remove player from screen. */
+		unmapSprite(Player.sprite);
+
+		/* Animation completed. */
+		return 1;
+	} else {
+		/* No. Move with hit speed. */
+		moveSpriteUncondionally(Player.sprite,0,Player.hit_speed);
+
+		/* Turn hit speed from negative to more positive for next step. */
+		Player.hit_speed++;
+
+		/* Animation not completed. */
+		return 0;
+	}	
 }

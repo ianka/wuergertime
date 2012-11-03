@@ -185,9 +185,33 @@ void cleanupInGameBonusScreen(void) {
  *  It shows the lose animation on the level screen.
  */
 void initInGameLoseScreen(void) {
+	/* Kick player from screen. */
+	changePlayerDirection(PLAYER_FLAGS_DIRECTION_CAUGHT);
 }
 
 void updateInGameLoseScreen(void) {
+	uint8_t i;
+
+	/* Burger drop animation. */
+	dropHattedComponents();
+	animateBurgers();
+
+	/* Update game screen statistics. */
+	updateGameScreenStatistics();
+
+	/* Handle all opponents. */
+	for (i=0;i<OPPONENT_MAX;i++) {
+		/* Remove opponent if it is hit by a burger component. */
+		removeOpponentIfHit(i);
+
+		/* Select direction and move all active opponents. */
+		selectOpponentDirection(i);
+		moveOpponent(i);
+	}
+
+	/* Animate caught player. Re-initialize level when done. */
+	if (animateCaughtPlayer())
+		ChangeGameScreen(GAME_SCREEN_LEVEL_START);
 }
 
 void cleanupInGameLoseScreen(void) {
