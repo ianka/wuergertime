@@ -73,6 +73,14 @@
 #define OPPONENT_HIT_SPEED_X        2
 #define OPPONENT_START_HIT_SPEED_Y -8
 
+
+/* Opponent/Player collision distance. */
+#define OPPONENT_PLAYER_COLLISION_DISTANCE_FLOOR  4
+#define OPPONENT_PLAYER_COLLISION_DISTANCE_ON_FLOOR  8
+#define OPPONENT_PLAYER_COLLISION_DISTANCE_LADDER 2
+#define OPPONENT_PLAYER_COLLISION_DISTANCE_ON_LADDER 8
+
+
 typedef struct {
 	uint8_t flags;
 	uint8_t sprite;
@@ -96,6 +104,7 @@ void changeOpponentDirection(uint8_t index, uint8_t direction);
 void selectOpponentDirection(uint8_t index);
 void moveOpponent(uint8_t index);
 void removeOpponentIfHit(uint8_t index);
+uint8_t checkOpponentCaughtPlayer(uint8_t index);
 
 
 #endif /* OPPONENTS_H */

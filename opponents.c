@@ -13,6 +13,7 @@
 
 
 #include <avr/io.h> /* for uint8_t and uint16_t */
+#include <stdlib.h> /* for abs() */
 
 
 /* Local includes. */
@@ -418,4 +419,35 @@ void removeOpponentIfHit(uint8_t index) {
 		/* Initialize hit speed. */
 		Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
 	}
-}	
+}
+
+
+/* Check if opponent has caught player. */
+uint8_t checkOpponentCaughtPlayer(uint8_t index) {
+	int16_t px, py, ox, oy;
+
+	/* Skip invalid opponent. */
+	if (Opponent[index].flags == OPPONENT_FLAGS_INVALID) return 0;
+
+	/* Get coordinates. */
+	px=getSpriteX(Player.sprite);
+	py=getSpriteY(Player.sprite);
+	ox=getSpriteX(Opponent[index].sprite);
+	oy=getSpriteY(Opponent[index].sprite);
+
+	/* Check if the opponent is roughly on same floor as the player. */
+	if (abs(py-oy) <= OPPONENT_PLAYER_COLLISION_DISTANCE_FLOOR) {
+		/* Same floor. Check position on floor. */
+		return (abs(px-ox) <= OPPONENT_PLAYER_COLLISION_DISTANCE_ON_FLOOR);
+	}
+
+	/* Check if the opponent is roughly on same ladder as the player. */
+	if (abs(px-ox) <= OPPONENT_PLAYER_COLLISION_DISTANCE_LADDER) {
+		/* Same ladder. Check position on ladder. */
+		return (abs(py-oy) <= OPPONENT_PLAYER_COLLISION_DISTANCE_ON_LADDER);
+	}
+
+	/* No collision. */
+	return 0;
+}
+	

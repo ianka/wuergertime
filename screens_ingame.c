@@ -139,6 +139,10 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 		/* Select direction and move all active opponents. */
 		selectOpponentDirection(i);
 		moveOpponent(i);
+
+		/* Change to lose screen when an opponent caught a player. */
+		if (checkOpponentCaughtPlayer(i))
+			ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
 	}
 
 	/* Start next attack wave on matching animation phase. */
