@@ -24,6 +24,10 @@
 #include "utils.h"
 
 
+/* Number of lives at beginning of game. */
+#define DEFAULT_LIVES 3
+
+
 /* Items in levels. */
 #define LEVEL_ITEM_INVALID              0x00
 #define LEVEL_ITEM_BURGER_PLACEHOLDER   0x80
@@ -34,6 +38,9 @@
 #define LEVEL_ITEM_BURGER_BUNBOTTOM     0x85
 #define LEVEL_ITEM_PLATE                0x86
 #define LEVEL_ITEM_SIGN                 0x87
+#define LEVEL_ITEM_SCORE                0x88
+#define LEVEL_ITEM_BONUS                0x89
+#define LEVEL_ITEM_LIVES                0x8a
 #define LEVEL_ITEM_OPTIONS              0x90
 #define LEVEL_ITEM_OPTION_STOMP_SHIFT   0
 #define LEVEL_ITEM_OPTION_STOMP_MASK    ((0x03<<LEVEL_ITEM_OPTION_STOMP_SHIFT))
@@ -100,6 +107,9 @@ typedef struct {
 #define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_PLATE(xc,yc) { component: LEVEL_ITEM_PLATE, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_BURGER(type,xc,yc) { component: LEVEL_ITEM_BURGER_ ## type, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_SCORE(xc,yc) { component: LEVEL_ITEM_SCORE, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_BONUS(xc,yc) { component: LEVEL_ITEM_BONUS, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_LIVES(xc,yc) { component: LEVEL_ITEM_LIVES, { position: { x: xc, y: yc } } }
 
 
 /* Levels */
@@ -156,6 +166,17 @@ extern void (*GameScreenUpdateFunction)(void);
 extern uint8_t Level;
 
 
+/* Games stats. */
+#define SCORE_STOMPED_TILE                1
+#define SCORE_COMPONENT_FALLING          10
+#define SCORE_COMPONENT_FALLING_CASCADE  20
+#define SCORE_OPPONENT_HIT              200
+
+extern uint32_t Score;
+extern uint16_t Bonus;
+extern uint8_t Lives;
+
+
 /* Switch to new game screen. */
 static inline void ChangeGameScreen(uint8_t screen) {
 	GameScreen=screen;
@@ -171,6 +192,7 @@ void dropHattedComponents(void);
 uint8_t stomp(uint8_t x, uint8_t y);
 position_t getRandomBurgerComponentPosition(uint8_t type);
 uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y);
+void updateGameScreenStatistics(void);
 
 
 #endif /* SCREENS_H */

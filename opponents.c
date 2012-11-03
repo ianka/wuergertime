@@ -418,6 +418,9 @@ void removeOpponentIfHit(uint8_t index) {
 
 		/* Initialize hit speed. */
 		Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
+
+		/* Score for hit opponent. */
+		Score+=SCORE_OPPONENT_HIT;
 	}
 }
 
@@ -426,8 +429,10 @@ void removeOpponentIfHit(uint8_t index) {
 uint8_t checkOpponentCaughtPlayer(uint8_t index) {
 	int16_t px, py, ox, oy;
 
-	/* Skip invalid opponent. */
-	if (Opponent[index].flags == OPPONENT_FLAGS_INVALID) return 0;
+	/* Skip invalid and hit opponent. */
+	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
+			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
+		return 0;
 
 	/* Get coordinates. */
 	px=getSpriteX(Player.sprite);

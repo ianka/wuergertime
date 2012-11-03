@@ -13,6 +13,7 @@
 
 
 #include <avr/io.h> /* for uint8_t and uint32_t */
+#include <uzebox.h> /* for SetFont() */
 
 
 /*

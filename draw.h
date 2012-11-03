@@ -70,6 +70,9 @@ void drawSoda(uint8_t x, uint8_t y);
 void drawFries(uint8_t x, uint8_t y);
 void drawCrown(uint8_t x, uint8_t y);
 void drawPlate(uint8_t x, uint8_t y);
+void drawScore(uint8_t x, uint8_t y, uint32_t value);
+void drawBonus(uint8_t x, uint8_t y, uint16_t value);
+void drawLives(uint8_t x, uint8_t y, uint8_t value);
 
 
 /* Read VRAM and honor RAM tile offset. */

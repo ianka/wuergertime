@@ -112,12 +112,7 @@ void initInGamePlayScreen(void) {
 void updateInGamePlayScreen(void) {
 	uint8_t directional_buttons_held;
 	uint8_t i;
-/*
-SetTile(27,0,getSpriteFloorTile(Player.sprite));
-SetTile(28,0,getSpriteFloorDirectionTile(Player.sprite));
-SetTile(29,0,getSpriteLadderTile(Player.sprite));
-PrintInt(10,0,getSpriteX(Player.sprite),1);
-*/
+
 	/* Burger drop animation. */
 	dropHattedComponents();
 	animateBurgers();
@@ -130,6 +125,9 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 
 	/* Move player into selected direction, if possible. */
 	movePlayer(directional_buttons_held);
+
+	/* Update game screen statistics. */
+	updateGameScreenStatistics();
 
 	/* Handle all opponents. */
 	for (i=0;i<OPPONENT_MAX;i++) {
@@ -147,6 +145,7 @@ PrintInt(10,0,getSpriteX(Player.sprite),1);
 
 	/* Start next attack wave on matching animation phase. */
 	nextAttackWave();
+
 }
 
 void cleanupInGamePlayScreen(void) {

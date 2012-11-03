@@ -47,6 +47,15 @@ uint16_t GameScreenAnimationPhase;
 void (*GameScreenUpdateFunction)(void);
 uint16_t GameScreenOptions;
 
+
+/* Game screen objects. */
+uint32_t Score;
+uint16_t Bonus;
+uint8_t Lives;
+position_t GameScreenSignPosition;
+position_t GameScreenScorePosition;
+position_t GameScreenBonusPosition;
+position_t GameScreenLivesPosition;
 typedef struct {
 	int8_t  half_y;
 	uint8_t occupied_by;
@@ -61,7 +70,6 @@ struct {
 	burger_component_place_t place[SCREEN_BURGER_PLACE_MAX];
 	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
-
 
 
 /* Lavel number and pointer to current level drawing. */
@@ -222,6 +230,24 @@ void prepareLevel(void) {
 					}
 					break;
 				case LEVEL_ITEM_SIGN:
+					/* Remember sign position. */
+					GameScreenSignPosition.x=x;
+					GameScreenSignPosition.y=y;
+					break;
+				case LEVEL_ITEM_SCORE:
+					/* Remember score position. */
+					GameScreenScorePosition.x=x;
+					GameScreenScorePosition.y=y;
+					break;
+				case LEVEL_ITEM_BONUS:
+					/* Remember bonus position. */
+					GameScreenBonusPosition.x=x;
+					GameScreenBonusPosition.y=y;
+					break;
+				case LEVEL_ITEM_LIVES:
+					/* Remember lives position. */
+					GameScreenLivesPosition.x=x;
+					GameScreenLivesPosition.y=y;
 					break;
 				default:
 					/* Ladders and floors. */
@@ -352,6 +378,18 @@ void animateLevelStart(void) {
 							}
 						}
 					}	
+					break;
+				case LEVEL_ITEM_SCORE:
+					/* Draw score. */
+					drawScore(x,y,Score);
+					break;
+				case LEVEL_ITEM_BONUS:
+					/* Draw bonus. */
+					drawBonus(x,y,Bonus);
+					break;
+				case LEVEL_ITEM_LIVES:
+					/* Draw lives. */
+					drawLives(x,y,Lives);
 					break;
 				case LEVEL_ITEM_PLATE:
 					/* Draw sign shape */
@@ -493,6 +531,9 @@ void dropHattedComponents(void) {
 
 			/* Mark the place being occupied by the former hat. */
 			GameScreenBurger[burger].place[place].occupied_by=hat|SCREEN_BURGER_PLACE_FREE_HAT;
+
+			/* Score for falling component. */
+			Score+=SCORE_COMPONENT_FALLING_CASCADE;
 		}
 	}
 }
@@ -500,7 +541,7 @@ void dropHattedComponents(void) {
 
 /* Stomp onto a tile. */
 uint8_t stomp(uint8_t x, uint8_t y) {
-	uint8_t burger_x, burger, component, stomped;
+	uint8_t burger_x, burger, component, stomped, oldstomped;
 	burger_component_t *p;
 
 	/* Check which burger. */
@@ -516,7 +557,11 @@ uint8_t stomp(uint8_t x, uint8_t y) {
 					p=&(GameScreenBurger[burger].component[component]);
 
 					/* Stomp tile.*/
+					oldstomped=p->stomped;
 					p->stomped|=1<<(x-burger_x);
+
+					/* Score for any stomped tile. */
+					if (p->stomped != oldstomped) Score+=SCORE_STOMPED_TILE;
 
 					/* Restore screen at old position. */
 					handleBurgerBackgroundTile(x-burger_x,
@@ -553,6 +598,9 @@ uint8_t stomp(uint8_t x, uint8_t y) {
 								case TILES0_BURGER_FLOOR_BUNBOTTOM_LEFT:
 									/* Floor is just above this burger component. Drop it! */
 									dropComponent(burger, component);
+
+									/* Score for falling component. */
+									Score+=SCORE_COMPONENT_FALLING;
 							}
 						}
 					}
@@ -600,7 +648,7 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
 		/* Check x coordinates of burgers. */
 		if ((x>(GameScreenBurger[burger].x*8)) && (x<((GameScreenBurger[burger].x+5)*8))) {
-			/* Matching burger found. Check y coordunates of all components. */
+			/* Matching burger found. Check y coordinates of all components. */
 			for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
 				if ((y>((GameScreenBurger[burger].component[component].half_y*4)-20))
 						&& (y<((GameScreenBurger[burger].component[component].half_y*4)-12)))
@@ -613,4 +661,12 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 
 	/* No match. */
 	return 0;
+}
+
+
+/* Update statistics on screen (score, bonus, lives etc.) */
+void updateGameScreenStatistics(void) {
+	drawScore(GameScreenScorePosition.x,GameScreenScorePosition.y,Score);
+	drawBonus(GameScreenBonusPosition.x,GameScreenBonusPosition.y,Bonus);
+	drawLives(GameScreenLivesPosition.x,GameScreenLivesPosition.y,Lives);
 }

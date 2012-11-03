@@ -64,6 +64,11 @@ void cleanupDebugScreen(void) {
  *  and in rotation with credits, demo and highscores.
  */
 void initStartScreen(void) {
+	/* Reset game stats. */
+	Score=0;
+	Bonus=0; /* This will be set correctly by screen description. */
+	Lives=DEFAULT_LIVES;
+
 	/* Fade into clear screen */
 	clearScreen();
 	FadeIn(1,0);
