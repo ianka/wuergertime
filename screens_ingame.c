@@ -85,6 +85,9 @@ void initInGameStartScreen(void) {
 	Opponent[1].sprite=occupySpriteSlot();
 	Opponent[2].sprite=occupySpriteSlot();
 	Opponent[3].sprite=occupySpriteSlot();
+
+	/* Reset bonus. */
+	Bonus=DEFAULT_BONUS;
 }
 
 void updateInGameStartScreen(void) {
@@ -146,6 +149,9 @@ void updateInGamePlayScreen(void) {
 	/* Start next attack wave on matching animation phase. */
 	nextAttackWave();
 
+	/* Decrement bonus, lose a life when bonus is zero. */
+	if (decrementBonus())
+		ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
 }
 
 void cleanupInGamePlayScreen(void) {

@@ -667,6 +667,22 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 /* Update statistics on screen (score, bonus, lives etc.) */
 void updateGameScreenStatistics(void) {
 	drawScore(GameScreenScorePosition.x,GameScreenScorePosition.y,Score);
-	drawBonus(GameScreenBonusPosition.x,GameScreenBonusPosition.y,Bonus);
 	drawLives(GameScreenLivesPosition.x,GameScreenLivesPosition.y,Lives);
+}
+
+
+/* Decrement bonus. */
+uint8_t decrementBonus(void) {
+	/* Return with flag set if bonus is already zero. */ 
+	if (Bonus == 0) return 1;
+
+	/* Decrement bonus, honour speed set by level option. */
+	if (!(GameScreenAnimationPhase & ~(0xffff<<(((GameScreenOptions & LEVEL_ITEM_OPTION_BONUS_MASK)>>LEVEL_ITEM_OPTION_BONUS_SHIFT)+BONUS_DEFAULT_SHIFT))))
+		Bonus--;
+	
+	/* Update bonus counter on screen. */
+	drawBonus(GameScreenBonusPosition.x,GameScreenBonusPosition.y,Bonus);
+
+	/* Return without flag set. */
+	return 0;
 }

@@ -27,6 +27,12 @@
 /* Number of lives at beginning of game. */
 #define DEFAULT_LIVES 3
 
+/* Default bonus whenever a life is lost. */
+#define DEFAULT_BONUS 999
+
+/* Shift for bonus speed. */
+#define BONUS_DEFAULT_SHIFT 0
+
 
 /* Items in levels. */
 #define LEVEL_ITEM_INVALID              0x00
@@ -65,6 +71,12 @@
 #define LEVEL_ITEM_OPTION_ATTACK_WAVE_MEDIUM  ((1<<LEVEL_ITEM_OPTION_ATTACK_WAVE_SHIFT))
 #define LEVEL_ITEM_OPTION_ATTACK_WAVE_SLOW    ((2<<LEVEL_ITEM_OPTION_ATTACK_WAVE_SHIFT))
 #define LEVEL_ITEM_OPTION_ATTACK_WAVE_SLOWEST ((3<<LEVEL_ITEM_OPTION_ATTACK_WAVE_SHIFT))
+#define LEVEL_ITEM_OPTION_BONUS_SHIFT 8
+#define LEVEL_ITEM_OPTION_BONUS_MASK  ((0x03<<LEVEL_ITEM_OPTION_BONUS_SHIFT))
+#define LEVEL_ITEM_OPTION_BONUS_FAST    ((0<<LEVEL_ITEM_OPTION_BONUS_SHIFT))
+#define LEVEL_ITEM_OPTION_BONUS_MEDIUM  ((1<<LEVEL_ITEM_OPTION_BONUS_SHIFT))
+#define LEVEL_ITEM_OPTION_BONUS_SLOW    ((2<<LEVEL_ITEM_OPTION_BONUS_SHIFT))
+#define LEVEL_ITEM_OPTION_BONUS_SLOWEST ((3<<LEVEL_ITEM_OPTION_BONUS_SHIFT))
 #define LEVEL_ITEM_PLAYER_START         0x91
 #define LEVEL_ITEM_OPPONENT_START       0x92
 #define LEVEL_ITEM_ATTACK_WAVES         0x93
@@ -193,6 +205,7 @@ uint8_t stomp(uint8_t x, uint8_t y);
 position_t getRandomBurgerComponentPosition(uint8_t type);
 uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y);
 void updateGameScreenStatistics(void);
+uint8_t decrementBonus(void);
 
 
 #endif /* SCREENS_H */

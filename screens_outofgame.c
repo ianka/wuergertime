@@ -66,7 +66,7 @@ void cleanupDebugScreen(void) {
 void initStartScreen(void) {
 	/* Reset game stats. */
 	Score=0;
-	Bonus=0; /* This will be set correctly by screen description. */
+	Bonus=0;
 	Lives=DEFAULT_LIVES;
 
 	/* Fade into clear screen */
