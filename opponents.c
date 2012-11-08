@@ -411,7 +411,7 @@ void removeOpponentIfHit(uint8_t index) {
 	/* Skip invalid and hit opponent. */
 	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
 			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
-		return 0;
+		return;
 
 	/* Check if opponent is hit by any burger component. */
 	if (checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite))) {
