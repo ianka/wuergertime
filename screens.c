@@ -25,6 +25,7 @@
 #include "player.h"
 #include "opponents.h"
 #include "tiles.h" /* for TILES0_SPACE */
+#include "sprites.h"
 
 
 /* Maximum number of burger components per screen. */
@@ -70,6 +71,7 @@ struct {
 	burger_component_place_t place[SCREEN_BURGER_PLACE_MAX];
 	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
+uint8_t HurryBuffer[3];
 
 
 /* Lavel number and pointer to current level drawing. */
@@ -686,3 +688,55 @@ uint8_t decrementBonus(void) {
 	/* Return without flag set. */
 	return 0;
 }
+
+
+/* Animate "Hurry!" sign. */
+uint8_t animateHurry(void) {
+	uint8_t x,y;
+
+	/* Get tile coordinate of the cook. */ 
+	x=getSpriteX(Player.sprite)/8;
+	y=getSpriteY(Player.sprite)/8;
+
+	/* Decide what to do by animation phase. */
+	switch (GameScreenAnimationPhase) {
+		case HURRY_ANIMATION_DRAW_UPPER_LEFT:
+			/* Draw "Hurry!" animation left above cook. */
+			drawHurry(x-5,y-3,HurryBuffer);
+			break;
+		case HURRY_ANIMATION_REMOVE_UPPER_LEFT:
+			/* Restore background left above cook. */
+			restoreHurryBackground(x-5,y-3,HurryBuffer);
+			break;
+		case HURRY_ANIMATION_DRAW_LOWER_RIGHT:
+			/* Draw "Hurry!" animation right below cook. */
+			drawHurry(x+2,y+2,HurryBuffer);
+			break;
+		case HURRY_ANIMATION_REMOVE_LOWER_RIGHT:
+			/* Restore background right below cook. */
+			restoreHurryBackground(x+2,y+2,HurryBuffer);
+			break;
+		case HURRY_ANIMATION_DRAW_UPPER_RIGHT:
+			/* Draw "Hurry!" animation right above cook. */
+			drawHurry(x+2,y-3,HurryBuffer);
+			break;
+		case HURRY_ANIMATION_REMOVE_UPPER_RIGHT:
+			/* Restore background right above cook. */
+			restoreHurryBackground(x+2,y-3,HurryBuffer);
+			break;
+		case HURRY_ANIMATION_DRAW_LOWER_LEFT:
+			/* Draw "Hurry!" animation left below cook. */
+			drawHurry(x-5,y+2,HurryBuffer);
+			break;
+		case HURRY_ANIMATION_REMOVE_LOWER_LEFT:
+			/* Restore background left below cook. */
+			restoreHurryBackground(x-5,y+2,HurryBuffer);
+
+			/* Animation complete. */
+			return 1;
+	}
+
+	/* Animation not complete. */
+	return 0;
+}
+

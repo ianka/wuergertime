@@ -507,3 +507,39 @@ void drawBonus(uint8_t x, uint8_t y, uint16_t value) {
 /* Draw lives. */
 void drawLives(uint8_t x, uint8_t y, uint8_t value) {
 }
+
+
+/* Draw hurry and save background. */
+void drawHurry(uint8_t x, uint8_t y, uint8_t buffer[3]) {
+	int8_t xh, yh;
+
+	/* Make sure coordinates are on-screen. */
+	xh=min(max(x,0),SCREEN_WIDTH-3);
+	yh=min(max(y,0),SCREEN_HEIGHT-1);
+
+	/* Save background. */
+	buffer[0]=getTile(xh,yh);
+	buffer[1]=getTile(xh+1,yh);
+	buffer[2]=getTile(xh+2,yh);
+
+	/* Draw. */
+	setTile(xh,yh,TILES0_HURRY_LEFT);
+	setTile(xh+1,yh,TILES0_HURRY_MIDDLE);
+	setTile(xh+2,yh,TILES0_HURRY_RIGHT);
+}
+
+
+/* Restore hurry background. */
+void restoreHurryBackground(uint8_t x, uint8_t y, uint8_t buffer[3]) {
+	int8_t xh, yh;
+
+	/* Make sure coordinates are on-screen. */
+	xh=min(max(x,0),SCREEN_WIDTH-3);
+	yh=min(max(y,0),SCREEN_HEIGHT-1);
+
+	/* Restore background. */
+	setTile(xh,yh,buffer[0]);
+	setTile(xh+1,yh,buffer[1]);
+	setTile(xh+2,yh,buffer[2]);
+}
+

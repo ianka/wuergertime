@@ -30,8 +30,21 @@
 /* Default bonus whenever a life is lost. */
 #define DEFAULT_BONUS 999
 
+/* Hurry mode if bonus below. */
+#define HURRY_BONUS 250
+#define HURRY_ANIMATION_SHIFT 2
+#define HURRY_ANIMATION_DRAW_UPPER_LEFT    ((0<<HURRY_ANIMATION_SHIFT))
+#define HURRY_ANIMATION_REMOVE_UPPER_LEFT  ((2<<HURRY_ANIMATION_SHIFT))
+#define HURRY_ANIMATION_DRAW_LOWER_RIGHT   ((4<<HURRY_ANIMATION_SHIFT))
+#define HURRY_ANIMATION_REMOVE_LOWER_RIGHT ((6<<HURRY_ANIMATION_SHIFT))
+#define HURRY_ANIMATION_DRAW_UPPER_RIGHT   ((8<<HURRY_ANIMATION_SHIFT))
+#define HURRY_ANIMATION_REMOVE_UPPER_RIGHT ((10<<HURRY_ANIMATION_SHIFT))
+#define HURRY_ANIMATION_DRAW_LOWER_LEFT    ((12<<HURRY_ANIMATION_SHIFT))
+#define HURRY_ANIMATION_REMOVE_LOWER_LEFT  ((14<<HURRY_ANIMATION_SHIFT))
+
+
 /* Shift for bonus speed. */
-#define BONUS_DEFAULT_SHIFT 0
+#define BONUS_DEFAULT_SHIFT 1
 
 
 /* Items in levels. */
@@ -206,6 +219,7 @@ position_t getRandomBurgerComponentPosition(uint8_t type);
 uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y);
 void updateGameScreenStatistics(void);
 uint8_t decrementBonus(void);
+uint8_t animateHurry(void);
 
 
 #endif /* SCREENS_H */

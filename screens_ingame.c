@@ -45,7 +45,7 @@ void cleanupInGameDescriptionScreen(void) {
  *  The prepare screen is showed when a new level is reached.
  *    + Score displays
  *    + Opening animation of floors and burgers 
- *    + Burger positions are being reset
+ *    + Burger and opponent positions are being reset
  */
 void initInGamePrepareScreen(void) {
 	/* Fade into clear screen */
@@ -66,18 +66,6 @@ void updateInGamePrepareScreen(void) {
 }
 
 void cleanupInGamePrepareScreen(void) {
-}
-
-
-/*
- *  The start screen is showed after prepare screen or after a life is lost.
- *     + Cook and Monsters reset
- *     + Bonus reset
- */
-void initInGameStartScreen(void) {
-	/* Reset controllers. */
-	resetControllers();
-
 	/* Reset sprites. */
 	resetSpriteSlots();
 	Player.sprite=occupySpriteSlot();
@@ -86,8 +74,25 @@ void initInGameStartScreen(void) {
 	Opponent[2].sprite=occupySpriteSlot();
 	Opponent[3].sprite=occupySpriteSlot();
 
+	/* Reset opponent positions. */
+	resetOpponents();
+}
+
+
+/*
+ *  The start screen is showed after prepare screen or after a life is lost.
+ *     + Cook reset
+ *     + Bonus reset
+ */
+void initInGameStartScreen(void) {
+	/* Reset controllers. */
+	resetControllers();
+
 	/* Reset bonus. */
 	Bonus=DEFAULT_BONUS;
+
+	/* Reset player to start position. */
+	resetPlayer();
 }
 
 void updateInGameStartScreen(void) {
@@ -106,9 +111,6 @@ void cleanupInGameStartScreen(void) {
  *  The play screen is showed when the actual game is happening.
  */
 void initInGamePlayScreen(void) {
-	/* Reset player to start position. */
-	resetPlayer();
-	resetOpponents();
 }
 
 
@@ -119,39 +121,46 @@ void updateInGamePlayScreen(void) {
 	/* Burger drop animation. */
 	dropHattedComponents();
 	animateBurgers();
+	
+	/* Check if player and opponents should move. */
+	if ((Bonus < HURRY_BONUS) || (GameScreenAnimationPhase & 1)) {
+		/* Yes. Get held buttons. */
+		directional_buttons_held=checkControllerButtonsHeld(0,BTN_DIRECTIONS);
 
-	/* Get held buttons. */
-	directional_buttons_held=checkControllerButtonsHeld(0,BTN_DIRECTIONS);
+		/* Select direction to move player. */
+		selectPlayerDirection(directional_buttons_held);
 
-	/* Select direction to move player. */
-	selectPlayerDirection(directional_buttons_held);
+		/* Move player into selected direction, if possible. */
+		movePlayer(directional_buttons_held);
 
-	/* Move player into selected direction, if possible. */
-	movePlayer(directional_buttons_held);
+		/* Handle all opponents. */
+		for (i=0;i<OPPONENT_MAX;i++) {
+			/* Remove opponent if it is hit by a burger component. */
+			removeOpponentIfHit(i);
 
-	/* Update game screen statistics. */
-	updateGameScreenStatistics();
+			/* Select direction and move all active opponents. */
+			selectOpponentDirection(i);
+			moveOpponent(i);
 
-	/* Handle all opponents. */
-	for (i=0;i<OPPONENT_MAX;i++) {
-		/* Remove opponent if it is hit by a burger component. */
-		removeOpponentIfHit(i);
-
-		/* Select direction and move all active opponents. */
-		selectOpponentDirection(i);
-		moveOpponent(i);
-
-		/* Change to lose screen when an opponent caught a player. */
-		if (checkOpponentCaughtPlayer(i))
-			ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
+			/* Change to lose screen when an opponent caught a player. */
+			if (checkOpponentCaughtPlayer(i))
+				ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
+		}
 	}
 
 	/* Start next attack wave on matching animation phase. */
 	nextAttackWave();
 
+	/* Update game screen statistics. */
+	updateGameScreenStatistics();
+
 	/* Decrement bonus, lose a life when bonus is zero. */
 	if (decrementBonus())
 		ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
+
+	/* Check if we are at hurry moment. */
+	if (Bonus == HURRY_BONUS) 
+		ChangeGameScreen(GAME_SCREEN_LEVEL_HURRY);
 }
 
 void cleanupInGamePlayScreen(void) {
@@ -166,6 +175,9 @@ void initInGameHurryScreen(void) {
 }
 
 void updateInGameHurryScreen(void) {
+	/* Animate "Hurry!" sign, leave screen when animation is done. */
+	if (animateHurry())
+		ChangeGameScreen(GAME_SCREEN_LEVEL_PLAY);
 }
 
 void cleanupInGameHurryScreen(void) {
