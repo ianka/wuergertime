@@ -118,6 +118,19 @@ void updateInGamePlayScreen(void) {
 	uint8_t directional_buttons_held;
 	uint8_t i;
 
+	/* PLayer start blink animation. */
+	if (GameScreenAnimationPhase < PLAYER_START_BLINKING_ENDED) {
+		if (blink((GameScreenAnimationPhase)>>PLAYER_START_BLINKING_SHIFT,PLAYER_START_BLINKCODE)) {
+			/* Normal player. */
+			setSpriteTransparency(Player.sprite,0);
+			updateSprite(Player.sprite);
+		}	else {
+			/* Transparent player. */
+			setSpriteTransparency(Player.sprite,SPRITE_FLAGS_TRANSPARENT);
+			updateSprite(Player.sprite);
+		}
+	}
+
 	/* Burger drop animation. */
 	dropHattedComponents();
 	animateBurgers();
@@ -143,7 +156,7 @@ void updateInGamePlayScreen(void) {
 			moveOpponent(i);
 
 			/* Change to lose screen when an opponent caught a player. */
-			if (checkOpponentCaughtPlayer(i))
+			if ((GameScreenAnimationPhase >= PLAYER_START_BLINKING_ENDED) && checkOpponentCaughtPlayer(i))
 				ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
 		}
 	}

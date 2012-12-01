@@ -58,6 +58,7 @@ extern const char SpriteTiles[] PROGMEM;
 #define SPRITE_FLAGS_TYPE_SAUSAGEMAN  ((3<<SPRITE_FLAGS_TYPE_SHIFT))
 #define SPRITE_FLAGS_TYPE_EGGHEAD     ((4<<SPRITE_FLAGS_TYPE_SHIFT))
 #define SPRITE_FLAGS_TYPE_MRMUSTARD   ((5<<SPRITE_FLAGS_TYPE_SHIFT))
+#define SPRITE_FLAGS_TRANSPARENT      ((1<<11))
 
 
 void resetSpriteSlots(void);
@@ -82,6 +83,7 @@ uint8_t checkSpriteAtLadderTop(uint8_t slot);
 uint8_t checkSpriteAtLadderBottom(uint8_t slot);
 uint8_t checkSpriteAtLeftFloorEnd(uint8_t slot);
 uint8_t checkSpriteAtRightFloorEnd(uint8_t slot);
+void setSpriteTransparency(uint8_t slot, uint16_t transparent);
 
 
 #endif /* SPRITES_H */

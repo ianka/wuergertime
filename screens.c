@@ -373,7 +373,7 @@ void animateLevelStart(void) {
 						}	else {
 							if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGN_ENDED) {
 								/* Blinking sign animation */
-								if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>1,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
+								if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>LEVEL_START_ANIMATION_SIGN_SHIFT,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
 										drawShape(x,y,ShapeSignInGame);
 									else
 										drawShape(x,y,ShapeSignLevelStart);

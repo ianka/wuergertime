@@ -22,6 +22,13 @@
 #define TILES2_INVALID mtile(6,7,0)
 
 
+/* Transparent animation. */
+#define TILES2_TRANSPARENT_UPPER_LEFT mtile(6,6,0)
+#define TILES2_TRANSPARENT_UPPER_RIGHT mtile(6,6,0)
+#define TILES2_TRANSPARENT_LOWER_LEFT mtile(6,6,0)
+#define TILES2_TRANSPARENT_LOWER_RIGHT mtile(6,6,0)
+
+
 /* Cook animation steps */
 #define TILES2_COOK_SIDE_ANIMATE0_UPPER_LEFT mtile(0,0,0)
 #define TILES2_COOK_SIDE_ANIMATE0_UPPER_RIGHT mtile(0,1,0)

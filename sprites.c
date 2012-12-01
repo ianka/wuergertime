@@ -29,6 +29,12 @@
 #include "data/sprites0.inc"
 
 
+/* Transparent sprite. */
+const uint8_t SpriteTransparent[1][4] PROGMEM = {
+	TILES_BLOCK(TILES2_TRANSPARENT)
+};
+
+
 /* Megasprite animations. */
 #define SPRITE_ANIMATION_COOK_SIDE_MAX 4
 const uint8_t SpriteAnimationCookSide[SPRITE_ANIMATION_COOK_SIDE_MAX][4] PROGMEM = {
@@ -172,38 +178,44 @@ void updateSprite(uint8_t slot) {
 	const uint8_t *p;
 
 	/* Setup kernel sprite shape according to flags. */
-	switch (GameSpriteSlots[slot].flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
-		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
-		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
-			p=&SpriteAnimationCookSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_SIDE_MAX][0];
-			break;
-		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
-			p=&SpriteAnimationCookLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
-			break;
-		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
-			p=&SpriteAnimationCookCaught[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_CAUGHT_MAX][0];
-			break;
-		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LEFT:
-		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
-			p=&SpriteAnimationEggheadSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][0];
-			break;
-		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
-			p=&SpriteAnimationEggheadLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_LADDER_MAX][0];
-			break;
-		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LEFT:
-		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT:
-			p=&SpriteAnimationSausagemanSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_SAUSAGEMAN_SIDE_MAX][0];
-			break;
-		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LADDER:
-			p=&SpriteAnimationSausagemanLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_SAUSAGEMAN_LADDER_MAX][0];
-			break;
-		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LEFT:
-		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT:
-		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LADDER:
-			p=&SpriteAnimationMrMustardSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_MRMUSTARD_SIDE_MAX][0];
-			break;
-		default:
-			return;
+	if (GameSpriteSlots[slot].flags & SPRITE_FLAGS_TRANSPARENT) {
+		/* Transparent sprite. */
+		p=&SpriteTransparent[0][0];
+	} else {
+		/* Non-transparent sprite. */
+		switch (GameSpriteSlots[slot].flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
+			case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
+			case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
+				p=&SpriteAnimationCookSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_SIDE_MAX][0];
+				break;
+			case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
+				p=&SpriteAnimationCookLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_LADDER_MAX][0];
+				break;
+			case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
+				p=&SpriteAnimationCookCaught[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_CAUGHT_MAX][0];
+				break;
+			case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LEFT:
+			case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
+				p=&SpriteAnimationEggheadSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][0];
+				break;
+			case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
+				p=&SpriteAnimationEggheadLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_LADDER_MAX][0];
+				break;
+			case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LEFT:
+			case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT:
+				p=&SpriteAnimationSausagemanSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_SAUSAGEMAN_SIDE_MAX][0];
+				break;
+			case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LADDER:
+				p=&SpriteAnimationSausagemanLadder[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_SAUSAGEMAN_LADDER_MAX][0];
+				break;
+			case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LEFT:
+			case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT:
+			case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LADDER:
+				p=&SpriteAnimationMrMustardSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_MRMUSTARD_SIDE_MAX][0];
+				break;
+			default:
+				return;
+		}
 	}
 
 	/* Setup kernel sprites according to flags. */
@@ -595,3 +607,11 @@ uint8_t checkSpriteAtRightFloorEnd(uint8_t slot) {
 			return 0;
 	}
 }
+
+
+/* Set sprite transparency. */
+void setSpriteTransparency(uint8_t slot, uint16_t transparent) {
+	GameSpriteSlots[slot].flags&=~SPRITE_FLAGS_TRANSPARENT;
+	GameSpriteSlots[slot].flags|=transparent;
+}
+

@@ -43,6 +43,11 @@
 /* For animation when player is caught/hit. */
 #define PLAYER_START_HIT_SPEED_Y -4
 
+/* Player start blinking animation. */
+#define PLAYER_START_BLINKING_ENDED 128
+#define PLAYER_START_BLINKING_SHIFT 2
+#define PLAYER_START_BLINKCODE 0xe733aa55
+
 
 typedef struct {
 	uint8_t flags;
