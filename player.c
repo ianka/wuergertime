@@ -70,12 +70,25 @@ void changePlayerDirection(uint8_t direction) {
 
 /* Select a player direction from held buttons. */
 void selectPlayerDirection(uint8_t buttons) {
+	/* Remove button direction the player is already moving to. */
+	switch (Player.flags & PLAYER_FLAGS_DIRECTION_MASK) {
+		case PLAYER_FLAGS_DIRECTION_LEFT:
+			buttons&=~BTN_LEFT;
+			break;
+		case PLAYER_FLAGS_DIRECTION_RIGHT:
+			buttons&=~BTN_RIGHT;
+			break;
+		case PLAYER_FLAGS_DIRECTION_UP:
+			buttons&=~BTN_UP;
+			break;
+		case PLAYER_FLAGS_DIRECTION_DOWN:
+			buttons&=~BTN_DOWN;
+			break;
+	}
+
+	/* Switch by remaining button flag. */
 	switch (buttons) {
 		case BTN_LEFT:
-			/* Skip if we already are on our way left. */
-			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_LEFT)
-				break;
-
 			/* Change direction on floor if player direction is currently right. */
 			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_RIGHT)
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_LEFT);
@@ -86,10 +99,6 @@ void selectPlayerDirection(uint8_t buttons) {
 
 			break;	
 		case BTN_RIGHT:
-			/* Skip if we already are on our way right. */
-			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_RIGHT)
-				break;
-
 			/* Change direction on floor if player direction is currently left. */
 			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_LEFT)
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_RIGHT);
@@ -100,10 +109,6 @@ void selectPlayerDirection(uint8_t buttons) {
 
 			break;
 		case BTN_DOWN:
-			/* Skip if we already are on our way down. */
-			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_DOWN)
-				break;
-
 			/* Change direction on ladder if player direction is currently up. */
 			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_UP)
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
@@ -114,10 +119,6 @@ void selectPlayerDirection(uint8_t buttons) {
 
 			break;
 		case BTN_UP:
-			/* Skip if we already are on our way up. */
-			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_UP)
-				break;
-			
 			/* Change direction on ladder if player direction is currently down. */
 			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_DOWN)
 				changePlayerDirectionWithoutAnimationReset(PLAYER_FLAGS_DIRECTION_UP);
