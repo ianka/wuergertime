@@ -88,7 +88,7 @@ void initStartScreen(void) {
 
 void updateStartScreen(void) {
 	/* Animate open sign. */
-	if (GameScreenAnimationPhase & 32) {
+	if (GameScreenAnimationPhase & 64) {
 		SetTile(13,1,TILES1_OPEN_ON_LEFT);
 		SetTile(14,1,TILES1_OPEN_ON_RIGHT);
 	} else {
@@ -97,7 +97,7 @@ void updateStartScreen(void) {
 	}
 
 	/* Animate "Press Start". */
-	if (GameScreenAnimationPhase & 4) {
+	if (GameScreenAnimationPhase & 8) {
 		Print(23,10,TextPress);
 		Print(23,12,TextStart);
 	} else {
@@ -112,10 +112,10 @@ void updateStartScreen(void) {
 			selectLevel(0);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
 			break;
-		default:
-			/* Switch to highscore screen after a while. */
-			if (GameScreenAnimationPhase>100)
-				ChangeGameScreen(GAME_SCREEN_DEBUG);
+//		default:
+//			/* Switch to highscore screen after a while. */
+//			if (GameScreenAnimationPhase>100)
+//				ChangeGameScreen(GAME_SCREEN_DEBUG);
 	}
 }
 
