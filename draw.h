@@ -53,6 +53,10 @@ extern const uint8_t ShapeFoodTruck[] PROGMEM;
 #define SCREEN_HEIGHT 28
 
 
+/* Maximum number of cooks to draw for lives marker. */
+#define LIVES_DRAW_MAX 7
+
+
 /* Center strings. */
 #define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);
 
