@@ -115,6 +115,7 @@ int main(void) {
 				case GAME_SCREEN_LEVEL_START:       cleanupInGameStartScreen(); break;
 				case GAME_SCREEN_LEVEL_PLAY:        cleanupInGamePlayScreen(); break;
 				case GAME_SCREEN_LEVEL_LOSE:        cleanupInGameLoseScreen(); break;
+				case GAME_SCREEN_LEVEL_GAME_OVER:   cleanupInGameOverScreen(); break;
 				case GAME_SCREEN_LEVEL_HURRY:       cleanupInGameHurryScreen(); break;
 				case GAME_SCREEN_LEVEL_BONUS:       cleanupInGameBonusScreen(); break;
 				case GAME_SCREEN_LEVEL_WIN:         cleanupInGameWinScreen(); break;
@@ -173,6 +174,10 @@ int main(void) {
 				case GAME_SCREEN_LEVEL_LOSE:
 					GameScreenUpdateFunction=&updateInGameLoseScreen;
 					initInGameLoseScreen();
+					break;
+				case GAME_SCREEN_LEVEL_GAME_OVER:
+					GameScreenUpdateFunction=&updateInGameOverScreen;
+					initInGameOverScreen();
 					break;
 				case GAME_SCREEN_LEVEL_HURRY:
 					GameScreenUpdateFunction=&updateInGameHurryScreen;

@@ -65,6 +65,7 @@ void resetSpriteSlots(void);
 uint8_t occupySpriteSlot(void);
 void unmapSprite(uint8_t slot);
 void freeSpriteSlot(uint8_t slot);
+void updateSprite(uint8_t slot);
 void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint16_t flags);
 void moveSprite(uint8_t slot, int8_t x, int8_t y); 
 void moveSpriteUncondionally(uint8_t slot, int8_t x, int8_t y);

@@ -44,6 +44,10 @@ void initInGameLoseScreen(void);
 void updateInGameLoseScreen(void);
 void cleanupInGameLoseScreen(void);
 
+void initInGameOverScreen(void);
+void updateInGameOverScreen(void);
+void cleanupInGameOverScreen(void);
+
 void initInGameWinScreen(void);
 void updateInGameWinScreen(void);
 void cleanupInGameWinScreen(void);

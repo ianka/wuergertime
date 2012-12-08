@@ -96,6 +96,7 @@ extern uint16_t OpponentAttackWaves;
 extern uint8_t OpponentRandomness;
 
 
+void unmapOpponents(void);
 void resetOpponents(void);
 void nextOpponent(void);
 void nextAttackWave(void);

@@ -240,12 +240,54 @@ void updateInGameLoseScreen(void) {
 		moveOpponent(i);
 	}
 
-	/* Animate caught player. Re-initialize level when done. */
-	if (animateCaughtPlayer())
-		ChangeGameScreen(GAME_SCREEN_LEVEL_START);
+	/* Animate caught player. */
+	if (animateCaughtPlayer()) {
+		/* Animations done. Notice lost life. */
+		Lives--;
+
+		/* Re-initialize level or game over. */
+		if (Lives)
+				ChangeGameScreen(GAME_SCREEN_LEVEL_START);
+			else
+				ChangeGameScreen(GAME_SCREEN_LEVEL_GAME_OVER);
+	}
 }
 
 void cleanupInGameLoseScreen(void) {
+}
+
+
+/*
+ *  The in game game over screen is showed when all lives are lost.
+ *  It shows an animation on the level screen.
+ */
+void initInGameOverScreen(void) {
+	/* Let all burgers drop off-screen. */
+	dropAllBurgersOffScreen();
+}
+
+void updateInGameOverScreen(void) {
+	uint8_t i;
+
+	/* Burger drop animation. */
+	/* Change screen when animation is done. */
+	if (!animateBurgers())
+		ChangeGameScreen(GAME_SCREEN_START);
+
+	/* Handle all opponents. */
+	for (i=0;i<OPPONENT_MAX;i++) {
+		/* Select direction and move all active opponents. */
+		selectOpponentDirection(i);
+		moveOpponent(i);
+	}
+}
+
+void cleanupInGameOverScreen(void) {
+	/* Unmap all opponents. */
+	unmapOpponents();
+
+	/* Fade out. */
+	FadeOut(1,1);
 }
 
 

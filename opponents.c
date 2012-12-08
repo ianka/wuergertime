@@ -41,6 +41,18 @@ const uint8_t OpponentRandomnessMasks[] PROGMEM = {
 };
 
 
+/* Unmap all opponents. */
+void unmapOpponents(void) {
+	uint8_t i;
+
+	/* Clear opponent slots and unmap sprites. */
+	for (i=0;i<OPPONENT_MAX;i++) {
+		Opponent[i].flags=OPPONENT_FLAGS_INVALID;
+		unmapSprite(Opponent[i].sprite);
+	}
+}
+
+
 /* Reset opponents to start position. */
 void resetOpponents(void) {
 	uint8_t i;
@@ -48,11 +60,8 @@ void resetOpponents(void) {
 	/* Set opponent randomness from level description. */
 	OpponentRandomness=pgm_read_byte(&OpponentRandomnessMasks[(GameScreenOptions & LEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_MASK)>>LEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_SHIFT]);
 
-	/* Clear opponent slots and unmap sprites. */
-	for (i=0;i<OPPONENT_MAX;i++) {
-		Opponent[i].flags=OPPONENT_FLAGS_INVALID;
-		unmapSprite(Opponent[i].sprite);
-	}	
+	/* Unmap opponents. */
+	unmapOpponents();
 
 	/* Start first attack wave. */
 	for (i=0;i<OPPONENT_MAX;i++)

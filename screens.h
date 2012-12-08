@@ -171,8 +171,9 @@ extern const level_item_t LevelComponents[] PROGMEM;
 #define GAME_SCREEN_LEVEL_HURRY       ((GAME_SCREEN_TILESET0|4))
 #define GAME_SCREEN_LEVEL_BONUS       ((GAME_SCREEN_TILESET0|5))
 #define GAME_SCREEN_LEVEL_LOSE        ((GAME_SCREEN_TILESET0|6))
-#define GAME_SCREEN_LEVEL_WIN         ((GAME_SCREEN_TILESET0|7))
-#define GAME_SCREEN_LEVEL_AFTERMATH   ((GAME_SCREEN_TILESET1|8))
+#define GAME_SCREEN_LEVEL_GAME_OVER   ((GAME_SCREEN_TILESET0|7))
+#define GAME_SCREEN_LEVEL_WIN         ((GAME_SCREEN_TILESET0|8))
+#define GAME_SCREEN_LEVEL_AFTERMATH   ((GAME_SCREEN_TILESET1|9))
 
 #define GAME_SCREEN_DEBUG             ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|0))
 #define GAME_SCREEN_START             ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|1))
@@ -221,6 +222,6 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y);
 void updateGameScreenStatistics(void);
 uint8_t decrementBonus(void);
 uint8_t animateHurry(void);
-
+void dropAllBurgersOffScreen(void);
 
 #endif /* SCREENS_H */
