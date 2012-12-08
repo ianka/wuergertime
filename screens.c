@@ -744,9 +744,23 @@ uint8_t animateHurry(void) {
 /* Drop all burger components off-screen. */
 void dropAllBurgersOffScreen(void) {
 	uint8_t burger, component;
+	burger_component_t *p;
 
 	/* Check all burgers. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++)
-		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++)
+		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
+			/* Stomp the burger completely. */
+			p=&(GameScreenBurger[burger].component[component]);
+			p->stomped=0x1f;
+
+			/* Restore screen at old position. */
+			handleBurgerBackground(
+				GameScreenBurger[burger].x,
+				p->half_y,
+				p->stomped,
+				p->background);
+
+			/* Set new target position. */
 			GameScreenBurger[burger].component[component].half_target_y=SCREEN_HEIGHT*2;
+		}
 }
