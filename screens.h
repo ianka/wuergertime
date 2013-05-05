@@ -25,7 +25,7 @@
 
 
 /* Number of lives at beginning of game. */
-#define DEFAULT_LIVES 3
+#define DEFAULT_LIVES 1
 
 /* Default bonus whenever a life is lost. */
 #define DEFAULT_BONUS 999
@@ -45,6 +45,21 @@
 
 /* Shift for bonus speed. */
 #define BONUS_DEFAULT_SHIFT 1
+
+
+/* Highscore entries. */
+#define HIGHSCORE_ENTRY_MAX 5
+#define HIGHSCORE_ENTRY_SIZE 6
+
+typedef union {
+	struct {
+		uint16_t eid;
+		uint8_t  entry[HIGHSCORE_ENTRY_MAX][HIGHSCORE_ENTRY_SIZE];
+	}	meaning;
+	struct EepromBlockStruct eeprom;
+} highscores_t;
+
+extern highscores_t Highscores;
 
 
 /* Items in levels. */
@@ -182,7 +197,6 @@ extern const level_item_t LevelComponents[] PROGMEM;
 #define GAME_SCREEN_HIGHSCORES        ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|4))
 #define GAME_SCREEN_NEW_HIGHSCORE     ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|5))
 #define GAME_SCREEN_INVALID           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|6)) 
-
 
 /* Game screen switch, level number, animation phase and update function pointer. */ 
 extern uint8_t GameScreenPrevious;

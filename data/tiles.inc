@@ -33,6 +33,10 @@
 #define TILES1_SPACE stile(1,7,0)
 
 
+/* Connecting dot. */
+#define TILES1_DOT stile(1,8,11)
+
+
 /* Small icons */
 #define TILES0_COOK_SMALL utile(0,2,0)
 #define TILES0_PEPPERPOT utile(0,2,1)

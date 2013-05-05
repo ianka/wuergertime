@@ -72,6 +72,7 @@ struct {
 	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
 uint8_t HurryBuffer[3];
+highscores_t Highscores;
 
 
 /* Lavel number and pointer to current level drawing. */
@@ -374,9 +375,9 @@ void animateLevelStart(void) {
 							if (GameScreenAnimationPhase < LEVEL_START_ANIMATION_SIGN_ENDED) {
 								/* Blinking sign animation */
 								if (blink((GameScreenAnimationPhase-LEVEL_START_ANIMATION_SIGNFRAME_ENDED)>>LEVEL_START_ANIMATION_SIGN_SHIFT,LEVEL_START_ANIMATION_SIGN_BLINKCODE))
-										drawShape(x,y,ShapeSignInGame);
+										drawShape(x,y,ShapeSignInGame,0);
 									else
-										drawShape(x,y,ShapeSignLevelStart);
+										drawShape(x,y,ShapeSignLevelStart,0);
 							}
 						}
 					}	
@@ -764,3 +765,4 @@ void dropAllBurgersOffScreen(void) {
 			GameScreenBurger[burger].component[component].half_target_y=SCREEN_HEIGHT*2;
 		}
 }
+

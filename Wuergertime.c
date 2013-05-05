@@ -44,6 +44,8 @@ uint8_t DebugSingleStepAnimation;
  *  Main funcion
  */
 int main(void) {
+	uint8_t i;
+
 	/* Game-wide initialisation */
 	resetControllers();
 
@@ -56,6 +58,16 @@ int main(void) {
 	GameScreen=GAME_SCREEN_START;
 	GameScreenAnimationPhase=0;
 	GameScreenUpdateFunction=NULL; /* This will be set correctly below. */
+
+	/* Initialize highscores. */
+	for (i=0;i<HIGHSCORE_ENTRY_MAX;i++) {
+		Highscores.meaning.entry[i][0]=1;
+		Highscores.meaning.entry[i][1]=0;
+		Highscores.meaning.entry[i][2]=0x80;
+		Highscores.meaning.entry[i][3]=0x20;
+		Highscores.meaning.entry[i][4]=0x06;
+		Highscores.meaning.entry[i][5]=0x29;
+	}
 
 	/* Setup audio. */
 //	InitMusicPlayer(patches);

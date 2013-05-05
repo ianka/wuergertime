@@ -75,8 +75,8 @@ void initStartScreen(void) {
 
 	/* Draw picture */
 	drawFloor(0,20,SCREEN_WIDTH,0);
-	drawShape(7,1,ShapeSignOutOfGame);
-	drawShape(5,6,ShapeFoodTruck);
+	drawShape(7,1,ShapeSignOutOfGame,0);
+	drawShape(5,6,ShapeFoodTruck,0);
 
 	/* Draw credits and licensing strings. */
 	drawStringCentered(21,TextProgrammingAndArtwork);
@@ -112,10 +112,10 @@ void updateStartScreen(void) {
 			selectLevel(0);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
 			break;
-//		default:
-//			/* Switch to highscore screen after a while. */
-//			if (GameScreenAnimationPhase>100)
-//				ChangeGameScreen(GAME_SCREEN_DEBUG);
+		default:
+			/* Switch to highscore screen after a while. */
+			if (GameScreenAnimationPhase>20)
+				ChangeGameScreen(GAME_SCREEN_HIGHSCORES);
 	}
 }
 
@@ -155,12 +155,79 @@ void cleanupDemoScreen(void) {
  *  The highscores screen is showed in rotation with start, demo and credits.
  */
 void initHighscoresScreen(void) {
+	uint8_t i, j, y;
+	uint32_t score;
+	uint32_t name;
+
+	/* Draw highscores table. */
+	clearScreen();
+
+	/* Draw picture */
+	drawFloor(1,23,SCREEN_WIDTH-2,DRAW_OPTION_FLOOR_CAP_LEFT|DRAW_OPTION_FLOOR_CAP_RIGHT);
+	drawLadder(3,-1,24,0);
+	drawLadder(26,23,5,DRAW_OPTION_LADDER_UPONLY);
+	drawShape(12,2,ShapeHighscoreSignBurger,0);
+	drawShape(5,8,ShapeHighscoreSignTop,0);
+	drawShape(5,9,ShapeHighscoreSignLeft,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(24,9,ShapeHighscoreSignRight,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(5,20,ShapeHighscoreSignBottom,0);
+
+	/* Draw all entries. */
+	for (i=0,y=10;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
+		/* Get score from entry. */
+		score=(Highscores.meaning.entry[i][2] & 0x7f);
+		score<<=8;
+		score|=Highscores.meaning.entry[i][1];
+		score<<=8;
+		score|=Highscores.meaning.entry[i][0];
+
+		/* Break on first entry zeroed out. */
+		if (score == 0) break;
+		
+		/* Get name from entry. */
+		name=Highscores.meaning.entry[i][5];
+		name<<=8;
+		name|=Highscores.meaning.entry[i][4];
+		name<<=8;
+		name|=Highscores.meaning.entry[i][3];
+		name<<=1;
+		name|=(Highscores.meaning.entry[i][2]>>7);
+
+		/* Print name. */
+		for (j=0;j<5;j++) {
+			SetTile(7+j,y,SHARED_TILES_COUNT+(name & 0x1f));
+			name>>=5;
+		}
+
+		/* Print connecting line. */
+		for (j=0;j<10;j++) {
+			SetTile(12+j,y,TILES1_DOT);
+		}
+
+		/* Print score. */
+  	for(j=0;j<7;j++) {
+			/* Draw char. */
+			setTile(22-j,y,SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT+0x10+(score%10));
+
+			/* Next char, break if only zeroes are left. */
+  	  score=score/10;
+			if (score == 0) break;
+	  }
+	}
+
+	/* Fade in and wait to complete */
+	FadeIn(1,1);
 }
 
 void updateHighscoresScreen(void) {
+	/* Switch to start screen after a while. */
+	if (GameScreenAnimationPhase>200)
+		ChangeGameScreen(GAME_SCREEN_START);
 }
 
 void cleanupHighscoresScreen(void) {
+	/* Fade out and wait to complete */
+	FadeOut(1,1);
 }
 
 
