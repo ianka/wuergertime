@@ -30,6 +30,7 @@
 #define DRAW_OPTION_FLOOR_CAP_RIGHT LEVEL_ITEM_FLOOR_CAP_RIGHT
 #define DRAW_OPTION_LADDER_CONTINUED LEVEL_ITEM_LADDER_CONTINUED
 #define DRAW_OPTION_LADDER_UPONLY LEVEL_ITEM_LADDER_UPONLY
+#define DRAW_OPTION_SHAPE_TILTED ((1<<0))
 
 
 /* Burger shapes are selected by number. */
@@ -45,6 +46,11 @@ extern const uint8_t ShapeSignInGame[] PROGMEM;
 extern const uint8_t ShapeSignOutOfGame[] PROGMEM;
 extern const uint8_t ShapeSignLevelStart[] PROGMEM;
 extern const uint8_t ShapeFoodTruck[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignTop[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignLeft[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignRight[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignBottom[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignBurger[] PROGMEM;
 
 
 /* Screen size. */
@@ -62,7 +68,7 @@ extern const uint8_t ShapeFoodTruck[] PROGMEM;
 
 
 void clearScreen(void);
-void drawShape(uint8_t x, uint8_t y, const uint8_t *p);
+void drawShape(uint8_t x, uint8_t y, const uint8_t *p, uint8_t options);
 void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase);
 void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps);
 void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options);

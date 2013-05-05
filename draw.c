@@ -112,7 +112,7 @@ void clearScreen(void) {
 
 
 /* Draw an arbitrary shape on screen */
-void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
+void drawShape(uint8_t x, uint8_t y, const uint8_t *p, uint8_t options) {
 	uint8_t width, height, sx, sy, t;
 
 	/* Get width and height of shape. */
@@ -128,8 +128,12 @@ void drawShape(uint8_t x, uint8_t y, const uint8_t *p) {
 			p++;
 
 			/* Honor skip tiles. */
-			if ((Tileset==0 && t!=TILES0_SKIP) || (Tileset==1 && t!=TILES1_SKIP))
-				setTile(x+sx,y+sy,t);
+			if ((Tileset==0 && t!=TILES0_SKIP) || (Tileset==1 && t!=TILES1_SKIP)) {
+				if (options & DRAW_OPTION_SHAPE_TILTED)
+						setTile(x+sy,y+sx,t);
+					else
+						setTile(x+sx,y+sy,t);
+			}			
 		}
 }
 
