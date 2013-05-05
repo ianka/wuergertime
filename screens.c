@@ -744,14 +744,18 @@ uint8_t animateHurry(void) {
 
 /* Drop all burger components off-screen. */
 void dropAllBurgersOffScreen(void) {
-	uint8_t burger, component;
+	uint8_t i, burger, component;
 	burger_component_t *p;
 
 	/* Check all burgers. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++)
 		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
-			/* Stomp the burger completely. */
 			p=&(GameScreenBurger[burger].component[component]);
+	
+			/* Break at first invalid component. */
+			if (p->type == LEVEL_ITEM_INVALID) break;
+
+			/* Stomp the burger completely. */
 			p->stomped=0x1f;
 
 			/* Restore screen at old position. */
@@ -761,8 +765,24 @@ void dropAllBurgersOffScreen(void) {
 				p->stomped,
 				p->background);
 
+			/* Draw burger component at new position. */
+			drawBurgerComponent(
+				GameScreenBurger[burger].x,
+				p->half_y,
+				p->type-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
+				p->stomped,
+				p->background);
+
+			/* Reset stomping. */
+			p->stomped=0;
+			p->half_y++;
+
+			/* Clear background behind component. */
+			for(i=0;i<5;i++)
+				p->background[((p->half_y)>>1) & 0x01][i]=TILES0_SPACE;
+
 			/* Set new target position. */
-			GameScreenBurger[burger].component[component].half_target_y=SCREEN_HEIGHT*2;
+			p->half_target_y=SCREEN_HEIGHT*2;
 		}
 }
 
