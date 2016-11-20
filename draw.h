@@ -46,11 +46,17 @@ extern const uint8_t ShapeSignInGame[] PROGMEM;
 extern const uint8_t ShapeSignOutOfGame[] PROGMEM;
 extern const uint8_t ShapeSignLevelStart[] PROGMEM;
 extern const uint8_t ShapeFoodTruck[] PROGMEM;
+extern const uint8_t ShapePressStart[] PROGMEM;
+extern const uint8_t ShapePressStartBlink[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignTop[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignLeft[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignRight[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignBottom[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignBurger[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignPoleLeftShort[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignPoleRightShort[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignPoleLeftLong[] PROGMEM;
+extern const uint8_t ShapeHighscoreSignPoleRightLong[] PROGMEM;
 
 
 /* Screen size. */

@@ -52,7 +52,7 @@ int main(void) {
 	/* Setup game-wide global variables. */
 #ifdef DEBUG
 	DebugSingleStepAnimation=0;
-#endif	
+#endif
 	Tileset=TILESET1;
 	GameScreenPrevious=GAME_SCREEN_INVALID;
 	GameScreen=GAME_SCREEN_START;
@@ -101,7 +101,7 @@ int main(void) {
 				case BTN_SL:
 					/* Activate single step	animation, if not yet activated. */
 					DebugSingleStepAnimation=1;
-					
+
 					/* Animate a single step. */
 					GameScreenAnimationPhase++;
 

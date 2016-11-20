@@ -111,7 +111,9 @@
 #define TILES0_SIGN_RIGHT stile(0,7,15)
 #define TILES0_SIGN_TOP stile(0,8,13)
 #define TILES1_SIGN_LEFT stile(1,7,12)
+#define TILES1_SIGN_LEFTTOP stile(1,6,12)
 #define TILES1_SIGN_RIGHT stile(1,7,15)
+#define TILES1_SIGN_RIGHTTOP stile(1,6,15)
 #define TILES1_SIGN_TOP stile(1,8,13)
 
 
@@ -172,6 +174,12 @@
 #define TILES1_TIME_MIDDLE stile(1,0,8)
 #define TILES1_TIME_RIGHT stile(1,0,9)
 
+#define TILES1_PRESS_START_UPPER_LEFT stile(1,11,6)
+#define TILES1_PRESS_START_UPPER_MIDDLE stile(1,11,7)
+#define TILES1_PRESS_START_UPPER_RIGHT stile(1,11,8)
+#define TILES1_PRESS_START_LOWER_LEFT stile(1,12,6)
+#define TILES1_PRESS_START_LOWER_MIDDLE stile(1,12,7)
+#define TILES1_PRESS_START_LOWER_RIGHT stile(1,12,8)
 
 
 /* Points */

@@ -24,9 +24,6 @@
 
 /* Fixed strings. */
 const char TextDebug[] PROGMEM = "DEBUG";
-const char TextPress[] PROGMEM = "PRESS";
-const char TextStart[] PROGMEM = "START";
-const char TextPressStartBlink[] PROGMEM = "     ";
 const char TextProgrammingAndArtwork[] PROGMEM = "PROGRAMMING AND ARTWORK";
 const char TextByJanKandziora[] PROGMEM = "BY JAN KANDZIORA";
 const char TextCopyleft[] PROGMEM = "@2012 JAN KANDZIORA";
@@ -75,8 +72,11 @@ void initStartScreen(void) {
 
 	/* Draw picture */
 	drawFloor(0,20,SCREEN_WIDTH,0);
-	drawShape(7,1,ShapeSignOutOfGame,0);
-	drawShape(5,6,ShapeFoodTruck,0);
+	drawShape(9,1,ShapeSignOutOfGame,0);
+	drawShape(7,6,ShapeFoodTruck,0);
+	drawShape(3,0,ShapeHighscoreSignPoleRightLong,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(26,0,ShapeHighscoreSignPoleLeftLong,DRAW_OPTION_SHAPE_TILTED);
+	drawLadder(4,-1,21,0);
 
 	/* Draw credits and licensing strings. */
 	drawStringCentered(21,TextProgrammingAndArtwork);
@@ -89,20 +89,18 @@ void initStartScreen(void) {
 void updateStartScreen(void) {
 	/* Animate open sign. */
 	if (GameScreenAnimationPhase & 64) {
-		SetTile(13,1,TILES1_OPEN_ON_LEFT);
-		SetTile(14,1,TILES1_OPEN_ON_RIGHT);
+		SetTile(15,1,TILES1_OPEN_ON_LEFT);
+		SetTile(16,1,TILES1_OPEN_ON_RIGHT);
 	} else {
-		SetTile(13,1,TILES1_OPEN_OFF_LEFT);
-		SetTile(14,1,TILES1_OPEN_OFF_RIGHT);
+		SetTile(15,1,TILES1_OPEN_OFF_LEFT);
+		SetTile(16,1,TILES1_OPEN_OFF_RIGHT);
 	}
 
 	/* Animate "Press Start". */
 	if (GameScreenAnimationPhase & 8) {
-		Print(23,10,TextPress);
-		Print(23,12,TextStart);
+		drawShape(15,10,ShapePressStart,0);
 	} else {
-		Print(23,10,TextPressStartBlink);
-		Print(23,12,TextPressStartBlink);
+		drawShape(15,10,ShapePressStartBlink,0);
 	}
 
 	/* Check buttons. */
@@ -114,7 +112,7 @@ void updateStartScreen(void) {
 			break;
 		default:
 			/* Switch to highscore screen after a while. */
-			if (GameScreenAnimationPhase>20)
+			if (GameScreenAnimationPhase>500)
 				ChangeGameScreen(GAME_SCREEN_HIGHSCORES);
 	}
 }
@@ -163,17 +161,18 @@ void initHighscoresScreen(void) {
 	clearScreen();
 
 	/* Draw picture */
-	drawFloor(1,23,SCREEN_WIDTH-2,DRAW_OPTION_FLOOR_CAP_LEFT|DRAW_OPTION_FLOOR_CAP_RIGHT);
-	drawLadder(3,-1,24,0);
-	drawLadder(26,23,5,DRAW_OPTION_LADDER_UPONLY);
-	drawShape(12,2,ShapeHighscoreSignBurger,0);
-	drawShape(5,8,ShapeHighscoreSignTop,0);
-	drawShape(5,9,ShapeHighscoreSignLeft,DRAW_OPTION_SHAPE_TILTED);
-	drawShape(24,9,ShapeHighscoreSignRight,DRAW_OPTION_SHAPE_TILTED);
-	drawShape(5,20,ShapeHighscoreSignBottom,0);
+	drawShape(12,1,ShapeHighscoreSignBurger,0);
+	drawShape(3,10,ShapeHighscoreSignTop,0);
+	drawShape(3,11,ShapeHighscoreSignLeft,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(26,11,ShapeHighscoreSignRight,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(3,22,ShapeHighscoreSignBottom,0);
+	drawShape(3,23,ShapeHighscoreSignPoleRightShort,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(26,23,ShapeHighscoreSignPoleLeftShort,DRAW_OPTION_SHAPE_TILTED);
+	drawLadder(4,23,5,DRAW_OPTION_LADDER_UPONLY);
+
 
 	/* Draw all entries. */
-	for (i=0,y=10;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
+	for (i=0,y=12;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
 		/* Get score from entry. */
 		score=(Highscores.meaning.entry[i][2] & 0x7f);
 		score<<=8;
@@ -183,7 +182,7 @@ void initHighscoresScreen(void) {
 
 		/* Break on first entry zeroed out. */
 		if (score == 0) break;
-		
+
 		/* Get name from entry. */
 		name=Highscores.meaning.entry[i][5];
 		name<<=8;
@@ -221,7 +220,7 @@ void initHighscoresScreen(void) {
 
 void updateHighscoresScreen(void) {
 	/* Switch to start screen after a while. */
-	if (GameScreenAnimationPhase>200)
+	if (GameScreenAnimationPhase>500)
 		ChangeGameScreen(GAME_SCREEN_START);
 }
 
