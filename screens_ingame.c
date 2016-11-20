@@ -44,7 +44,7 @@ void cleanupInGameDescriptionScreen(void) {
 /*
  *  The prepare screen is showed when a new level is reached.
  *    + Score displays
- *    + Opening animation of floors and burgers 
+ *    + Opening animation of floors and burgers
  *    + Burger and opponent positions are being reset
  */
 void initInGamePrepareScreen(void) {
@@ -118,7 +118,16 @@ void updateInGamePlayScreen(void) {
 	uint8_t directional_buttons_held;
 	uint8_t i;
 
-	/* PLayer start blink animation. */
+	/* Animate open sign. */
+	if (GameScreenAnimationPhase & 64) {
+		SetTile(15,0,TILES0_OPEN_OFF_LEFT);
+		SetTile(16,0,TILES0_OPEN_OFF_RIGHT);
+	} else {
+		SetTile(15,0,TILES0_OPEN_ON_LEFT);
+		SetTile(16,0,TILES0_OPEN_ON_RIGHT);
+	}
+
+	/* Player start blink animation. */
 	if (GameScreenAnimationPhase < PLAYER_START_BLINKING_ENDED) {
 		if (blink((GameScreenAnimationPhase)>>PLAYER_START_BLINKING_SHIFT,PLAYER_START_BLINKCODE)) {
 			/* Normal player. */
@@ -134,7 +143,7 @@ void updateInGamePlayScreen(void) {
 	/* Burger drop animation. */
 	dropHattedComponents();
 	animateBurgers();
-	
+
 	/* Check if player and opponents should move. */
 	if ((Bonus < HURRY_BONUS) || (GameScreenAnimationPhase & 1)) {
 		/* Yes. Get held buttons. */
@@ -172,7 +181,7 @@ void updateInGamePlayScreen(void) {
 		ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
 
 	/* Check if we are at hurry moment. */
-	if (Bonus == HURRY_BONUS) 
+	if (Bonus == HURRY_BONUS)
 		ChangeGameScreen(GAME_SCREEN_LEVEL_HURRY);
 }
 
