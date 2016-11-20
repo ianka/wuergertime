@@ -41,7 +41,7 @@
 #define SCREEN_BURGER_PLACE_FREE      ((SCREEN_BURGER_PLACE_FREE_BODY|SCREEN_BURGER_PLACE_FREE_HAT))
 
 
-/* Game screen switch, animation phase and update function pointer. */ 
+/* Game screen switch, animation phase and update function pointer. */
 uint8_t GameScreenPrevious;
 uint8_t GameScreen;
 uint16_t GameScreenAnimationPhase;
@@ -183,7 +183,7 @@ void prepareLevel(void) {
 								/* Allocate burger slot. */
 								GameScreenBurger[burger].x=x;
 								break;
-							}	
+							}
 						}
 					}
 
@@ -206,7 +206,7 @@ void prepareLevel(void) {
 							/* Set y coordinate. Special handling for plate. */
 							if (c == LEVEL_ITEM_PLATE)
 									GameScreenBurger[burger].place[place].half_y = y*2-2;
-								else	
+								else
 									GameScreenBurger[burger].place[place].half_y = y*2+((GameScreenOptions & LEVEL_ITEM_OPTION_STOMP_MASK)>>LEVEL_ITEM_OPTION_STOMP_SHIFT);
 
 							/* If not plate or placeholder, do component initialisations. */
@@ -223,7 +223,7 @@ void prepareLevel(void) {
 								for (i=0;i<5;i++) {
 									GameScreenBurger[burger].component[component].background[0][i]=TILES0_SPACE;
 									GameScreenBurger[burger].component[component].background[1][i]=TILES0_SPACE;
-								}	
+								}
 
 								/* Set current y to a negative value for start animation. */
 								GameScreenBurger[burger].component[component].half_y =
@@ -256,7 +256,7 @@ void prepareLevel(void) {
 					/* Ladders and floors. */
 					if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
 					} else {
-					}	
+					}
 			}
 
 			/* Next element in drawing component. */
@@ -265,7 +265,7 @@ void prepareLevel(void) {
 
 		/* Next block. */
 		p++;
-	}	
+	}
 }
 
 
@@ -291,15 +291,15 @@ uint8_t animateBurgers(void) {
 					for (i=0;i<5;i++) {
 						p->background[(~(p->half_y>>1)) & 0x01][i]=TILES0_SPACE;
 					}
-				}	
+				}
 
 				/* Skip other steps. */
 				continue;
-			}	
+			}
 
 			/* Animate component. Remember. */
 			animated++;
-			
+
 			/* Move it down. */
 			p->half_y++;
 
@@ -380,7 +380,7 @@ void animateLevelStart(void) {
 										drawShape(x,y,ShapeSignLevelStart,0);
 							}
 						}
-					}	
+					}
 					break;
 				case LEVEL_ITEM_SCORE:
 					/* Draw score. */
@@ -407,7 +407,7 @@ void animateLevelStart(void) {
 							pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
 							if ((length <= (c & LEVEL_ITEM_LADDER_LENGTH)) && ((GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED) & 0x01))
 								drawLadder(x,pos,length,(length==1)?c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_UPONLY):(c& LEVEL_ITEM_LADDER_UPONLY)|LEVEL_ITEM_LADDER_CONTINUED);
-						}	
+						}
 					} else {
 						/* Floor. Animate width. */
 						if (GameScreenAnimationPhase <= LEVEL_START_ANIMATION_FLOORS_ENDED) {
@@ -418,7 +418,7 @@ void animateLevelStart(void) {
 							drawFloor(pos,y,length,((pos==0)||(pos+length == SCREEN_WIDTH))?c & LEVEL_ITEM_FLOOR_CAP_BOTH:LEVEL_ITEM_FLOOR_CAP_BOTH);
 						}
 					}
-			}	
+			}
 
 			/* Next element in drawing component. */
 			q++;
@@ -452,7 +452,7 @@ void dropComponent(uint8_t burger, uint8_t component) {
 			/* Clear background behind component. */
 			for(i=0;i<5;i++)
 				p->background[((p->half_y)>>1) & 0x01][i]=TILES0_SPACE;
-			
+
 			/* Get component on place below. */
 			component_below=GameScreenBurger[burger].place[place-1].occupied_by & SCREEN_BURGER_OCCUPIED_MASK;
 			if (component_below == SCREEN_BURGER_PLACE_FREE_BODY) {
@@ -471,7 +471,7 @@ void dropComponent(uint8_t burger, uint8_t component) {
 					/* No. Mark it as being occupied by the current component. */
 					GameScreenBurger[burger].place[place-1].occupied_by=component|SCREEN_BURGER_PLACE_FREE_HAT;
 				}
-			} else {	
+			} else {
 				/* Place below is occupied. Get component. */
 				q=&(GameScreenBurger[burger].component[component_below]);
 
@@ -513,7 +513,7 @@ void dropHattedComponents(void) {
 			p=&(GameScreenBurger[burger].component[hat]);
 			q=&(GameScreenBurger[burger].component[body]);
 			if (p->half_y != (q->half_y-2)) continue;
-			
+
 			/* Move hat half a tile up to make it jump. */
 			p->half_y--;
 			drawBurgerComponent(GameScreenBurger[burger].x,
@@ -658,7 +658,7 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 					/* Hit by burger component. */
 					return 1;
 
-				/* Not hit. Check next. */	
+				/* Not hit. Check next. */
 		}
 	}
 
@@ -676,13 +676,13 @@ void updateGameScreenStatistics(void) {
 
 /* Decrement bonus. */
 uint8_t decrementBonus(void) {
-	/* Return with flag set if bonus is already zero. */ 
+	/* Return with flag set if bonus is already zero. */
 	if (Bonus == 0) return 1;
 
 	/* Decrement bonus, honour speed set by level option. */
 	if (!(GameScreenAnimationPhase & ~(0xffff<<(((GameScreenOptions & LEVEL_ITEM_OPTION_BONUS_MASK)>>LEVEL_ITEM_OPTION_BONUS_SHIFT)+BONUS_DEFAULT_SHIFT))))
 		Bonus--;
-	
+
 	/* Update bonus counter on screen. */
 	drawBonus(GameScreenBonusPosition.x,GameScreenBonusPosition.y,Bonus);
 
@@ -695,7 +695,7 @@ uint8_t decrementBonus(void) {
 uint8_t animateHurry(void) {
 	uint8_t x,y;
 
-	/* Get tile coordinate of the cook. */ 
+	/* Get tile coordinate of the cook. */
 	x=getSpriteX(Player.sprite)/8;
 	y=getSpriteY(Player.sprite)/8;
 
@@ -751,7 +751,7 @@ void dropAllBurgersOffScreen(void) {
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++)
 		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
 			p=&(GameScreenBurger[burger].component[component]);
-	
+
 			/* Break at first invalid component. */
 			if (p->type == LEVEL_ITEM_INVALID) break;
 
