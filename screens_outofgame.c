@@ -219,9 +219,18 @@ void initHighscoresScreen(void) {
 }
 
 void updateHighscoresScreen(void) {
-	/* Switch to start screen after a while. */
-	if (GameScreenAnimationPhase>500)
-		ChangeGameScreen(GAME_SCREEN_START);
+	/* Check buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_START)) {
+		case BTN_START:
+			/* Change to level 0 as soon start is pressed. */
+			selectLevel(0);
+			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
+			break;
+		default:
+			/* Switch to start screen after a while. */
+			if (GameScreenAnimationPhase>500)
+				ChangeGameScreen(GAME_SCREEN_START);
+	}
 }
 
 void cleanupHighscoresScreen(void) {
