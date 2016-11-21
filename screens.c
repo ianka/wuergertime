@@ -690,6 +690,24 @@ uint8_t decrementBonus(void) {
 	return 0;
 }
 
+/* Decrement bonus fast. */
+uint8_t decrementBonusFast(void) {
+	/* Return with flag set if bonus is already zero. */
+	if (Bonus == 0) return 1;
+
+	/* High speed bonus decrement. */
+	if (Bonus >= 13)
+		Bonus-=13;
+	else
+		Bonus=0;
+
+	/* Update bonus counter on screen. */
+	drawBonus(GameScreenBonusPosition.x,GameScreenBonusPosition.y,Bonus);
+
+	/* Return without flag set. */
+	return 0;
+}
+
 
 /* Animate "Hurry!" sign. */
 uint8_t animateHurry(void) {

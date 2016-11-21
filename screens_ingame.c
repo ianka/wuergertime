@@ -279,9 +279,11 @@ void updateInGameOverScreen(void) {
 	uint8_t i;
 
 	/* Burger drop animation. */
-	/* Change screen when animation is done. */
-	if (!animateBurgers()) ;
-//		ChangeGameScreen(GAME_SCREEN_START);
+	/* Change screen when no bonus left and animation is done. */
+	i=decrementBonusFast();
+	if (!animateBurgers() && i) {
+		ChangeGameScreen(GAME_SCREEN_START);
+	}
 
 	/* Update game screen statistics. */
 	updateGameScreenStatistics();

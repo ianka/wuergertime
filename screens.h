@@ -235,6 +235,7 @@ position_t getRandomBurgerComponentPosition(uint8_t type);
 uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y);
 void updateGameScreenStatistics(void);
 uint8_t decrementBonus(void);
+uint8_t decrementBonusFast(void);
 uint8_t animateHurry(void);
 void dropAllBurgersOffScreen(void);
 
