@@ -89,6 +89,7 @@ void drawPlate(uint8_t x, uint8_t y);
 void drawScore(uint8_t x, uint8_t y, uint32_t value);
 void drawBonus(uint8_t x, uint8_t y, uint16_t value);
 void drawLives(uint8_t x, uint8_t y, uint8_t value);
+void drawHighscore(uint8_t x, uint8_t y, highscores_t highscore, uint8_t index);
 void drawHurry(uint8_t x, uint8_t y, uint8_t buffer[3]);
 void restoreHurryBackground(uint8_t x, uint8_t y, uint8_t buffer[3]);
 

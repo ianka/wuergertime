@@ -26,7 +26,7 @@
 const char TextDebug[] PROGMEM = "DEBUG";
 const char TextProgrammingAndArtwork[] PROGMEM = "PROGRAMMING AND ARTWORK";
 const char TextByJanKandziora[] PROGMEM = "BY JAN KANDZIORA";
-const char TextCopyleft[] PROGMEM = "@2012 JAN KANDZIORA";
+const char TextCopyleft[] PROGMEM = ";2012 JAN KANDZIORA";
 const char TextLicense[] PROGMEM = "USE AND DISTRIBUTE UNDER THE";
 const char TextGPL[] PROGMEM = "TERMS OF GNU GPL V3";
 
@@ -153,9 +153,7 @@ void cleanupDemoScreen(void) {
  *  The highscores screen is showed in rotation with start, demo and credits.
  */
 void initHighscoresScreen(void) {
-	uint8_t i, j, y;
-	uint32_t score;
-	uint32_t name;
+	uint8_t i, y;
 
 	/* Draw highscores table. */
 	clearScreen();
@@ -170,49 +168,9 @@ void initHighscoresScreen(void) {
 	drawShape(26,23,ShapeHighscoreSignPoleLeftShort,DRAW_OPTION_SHAPE_TILTED);
 	drawLadder(4,23,5,DRAW_OPTION_LADDER_UPONLY);
 
-
 	/* Draw all entries. */
-	for (i=0,y=12;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
-		/* Get score from entry. */
-		score=(Highscores.meaning.entry[i][2] & 0x7f);
-		score<<=8;
-		score|=Highscores.meaning.entry[i][1];
-		score<<=8;
-		score|=Highscores.meaning.entry[i][0];
-
-		/* Break on first entry zeroed out. */
-		if (score == 0) break;
-
-		/* Get name from entry. */
-		name=Highscores.meaning.entry[i][5];
-		name<<=8;
-		name|=Highscores.meaning.entry[i][4];
-		name<<=8;
-		name|=Highscores.meaning.entry[i][3];
-		name<<=1;
-		name|=(Highscores.meaning.entry[i][2]>>7);
-
-		/* Print name. */
-		for (j=0;j<5;j++) {
-			SetTile(7+j,y,SHARED_TILES_COUNT+(name & 0x1f));
-			name>>=5;
-		}
-
-		/* Print connecting line. */
-		for (j=0;j<10;j++) {
-			SetTile(12+j,y,TILES1_DOT);
-		}
-
-		/* Print score. */
-  	for(j=0;j<7;j++) {
-			/* Draw char. */
-			setTile(22-j,y,SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT+0x10+(score%10));
-
-			/* Next char, break if only zeroes are left. */
-  	  score=score/10;
-			if (score == 0) break;
-	  }
-	}
+	for (i=0,y=12;i<HIGHSCORE_ENTRY_MAX;i++,y+=2)
+		drawHighscore(7,y,Highscores,i);
 
 	/* Fade in and wait to complete */
 	FadeIn(1,1);

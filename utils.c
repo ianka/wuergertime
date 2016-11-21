@@ -14,6 +14,7 @@
 
 #include <avr/io.h> /* for uint8_t and uint32_t */
 #include <uzebox.h> /* for SetFont() */
+#include <avr/pgmspace.h>
 
 
 /*
@@ -33,3 +34,12 @@ uint8_t fastrandom(void) {
 	return (uint8_t) random_seed;
 }
 
+
+/*
+ * Initialize RAM from program memory.
+ */
+void meminit(void *dst, void *src, uint8_t count) {
+	uint8_t i;
+	for (i=0;i<count;i++,src++,dst++)
+		*((uint8_t*)dst)=pgm_read_byte(src);
+}

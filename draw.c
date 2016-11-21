@@ -525,6 +525,51 @@ void drawLives(uint8_t x, uint8_t y, uint8_t value) {
 }
 
 
+/* Draw highscore entry. */
+void drawHighscore(uint8_t x, uint8_t y, highscores_t highscores, uint8_t index) {
+	uint8_t i;
+	uint32_t score;
+	uint32_t name;
+
+	/* Get score from entry. */
+	score=(highscores.meaning.entry[index][2] & 0x7f);
+	score<<=8;
+	score|=highscores.meaning.entry[index][1];
+	score<<=8;
+	score|=highscores.meaning.entry[index][0];
+
+	/* Get name from entry. */
+	name=highscores.meaning.entry[index][5];
+	name<<=8;
+	name|=highscores.meaning.entry[index][4];
+	name<<=8;
+	name|=highscores.meaning.entry[index][3];
+	name<<=1;
+	name|=(highscores.meaning.entry[index][2]>>7);
+
+	/* Print name. */
+	for (i=0;i<5;i++) {
+		SetTile(x+i,y,SHARED_TILES_COUNT+(name & 0x1f));
+		name>>=5;
+	}
+
+	/* Print connecting line. */
+	for (i=5;i<15;i++) {
+		SetTile(x+i,y,TILES1_DOT);
+	}
+
+	/* Print score. */
+ 	for(i=0;i<8;i++) {
+		/* Draw char. */
+		setTile(x+15-i,y,SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT+0x10+(score%10));
+
+		/* Next char, break if only zeroes are left. */
+ 	  score=score/10;
+		if (score == 0) break;
+  }
+}
+
+
 /* Draw hurry and save background. */
 void drawHurry(uint8_t x, uint8_t y, uint8_t buffer[3]) {
 	int8_t xh, yh;

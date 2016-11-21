@@ -34,7 +34,7 @@
 
 
 /* Connecting dot. */
-#define TILES1_DOT stile(1,8,11)
+#define TILES1_DOT stile(1,9,0)
 
 
 /* Small icons */
@@ -97,24 +97,24 @@
 
 /* Plate and sign frame */
 #define TILES0_PLATE_LEFT stile(0,7,13)
-#define TILES0_PLATE_MIDDLELEFT stile(0,8,12)
+#define TILES0_PLATE_MIDDLELEFT stile(0,6,13)
 #define TILES0_PLATE_MIDDLE TILES0_PLATE_MIDDLELEFT /* same */
 #define TILES0_PLATE_MIDDLERIGHT TILES0_PLATE_MIDDLELEFT /* same */
 #define TILES0_PLATE_RIGHT stile(0,7,14)
 #define TILES1_PLATE_LEFT stile(1,7,13)
-#define TILES1_PLATE_MIDDLELEFT stile(1,8,12)
+#define TILES1_PLATE_MIDDLELEFT stile(1,6,13)
 #define TILES1_PLATE_MIDDLE TILES1_PLATE_MIDDLELEFT /* same */
 #define TILES1_PLATE_MIDDLERIGHT TILES1_PLATE_MIDDLELEFT /* same */
 #define TILES1_PLATE_RIGHT stile(1,7,14)
 
 #define TILES0_SIGN_LEFT stile(0,7,12)
 #define TILES0_SIGN_RIGHT stile(0,7,15)
-#define TILES0_SIGN_TOP stile(0,8,13)
+#define TILES0_SIGN_TOP stile(0,6,14)
 #define TILES1_SIGN_LEFT stile(1,7,12)
 #define TILES1_SIGN_LEFTTOP stile(1,6,12)
 #define TILES1_SIGN_RIGHT stile(1,7,15)
 #define TILES1_SIGN_RIGHTTOP stile(1,6,15)
-#define TILES1_SIGN_TOP stile(1,8,13)
+#define TILES1_SIGN_TOP stile(1,6,14)
 
 
 /* Texts */

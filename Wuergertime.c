@@ -41,11 +41,22 @@ uint8_t DebugSingleStepAnimation;
 
 
 /*
+ * Default Highscore entries.
+ */
+const uint8_t DefaultHighscores[] PROGMEM={
+	0x00, 0x00,
+	0xa0, 0x86, 0x81, 0x5b, 0x8b, 0x3c,
+	0x50, 0xc3, 0x80, 0x5c, 0xc7, 0x02,
+	0x20, 0x4e, 0x80, 0x74, 0x12, 0xa5,
+	0x10, 0x27, 0x00, 0xc1, 0x82, 0x3c,
+	0x88, 0x13, 0x00, 0x11, 0x0a, 0x02,
+};
+
+
+/*
  *  Main funcion
  */
 int main(void) {
-	uint8_t i;
-
 	/* Game-wide initialisation */
 	resetControllers();
 
@@ -60,14 +71,7 @@ int main(void) {
 	GameScreenUpdateFunction=NULL; /* This will be set correctly below. */
 
 	/* Initialize highscores. */
-	for (i=0;i<HIGHSCORE_ENTRY_MAX;i++) {
-		Highscores.meaning.entry[i][0]=1;
-		Highscores.meaning.entry[i][1]=0;
-		Highscores.meaning.entry[i][2]=0x80;
-		Highscores.meaning.entry[i][3]=0x20;
-		Highscores.meaning.entry[i][4]=0x06;
-		Highscores.meaning.entry[i][5]=0x29;
-	}
+	meminit(&Highscores, &DefaultHighscores, sizeof(Highscores));
 
 	/* Setup audio. */
 //	InitMusicPlayer(patches);

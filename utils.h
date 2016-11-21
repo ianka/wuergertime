@@ -18,6 +18,7 @@
 
 #include <uzebox.h> /* for vram array */
 #include <avr/io.h> /* for uint8_t */
+#include <avr/pgmspace.h>
 
 
 /* Common types. */
@@ -38,6 +39,10 @@ typedef	struct { uint8_t x, y; } position_t;
 
 /* Random generator. */
 uint8_t fastrandom(void);
+
+
+/* Initialize RAM from program memory. */
+void meminit(void *dst, void *src, uint8_t count);
 
 
 /* Blinking a code. */
