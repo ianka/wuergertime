@@ -517,7 +517,7 @@ void drawLives(uint8_t x, uint8_t y, uint8_t value) {
 
 	/* Draw a vertical line of cooks. */
 	for(i=0;i<LIVES_DRAW_MAX;i++) {
-		if (i<value)
+		if (i<(value-1))
 				setTile(x,y-i,TILES0_COOK_SMALL);
 			else
 				setTile(x,y-i,TILES0_SPACE);
