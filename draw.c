@@ -22,7 +22,7 @@
 #include "screens.h"
 
 
-/* 
+/*
  * Burger shapes.
  *
  * Available half-tile combinations in tileset.
@@ -133,7 +133,7 @@ void drawShape(uint8_t x, uint8_t y, const uint8_t *p, uint8_t options) {
 						setTile(x+sy,y+sx,t);
 					else
 						setTile(x+sx,y+sy,t);
-			}			
+			}
 		}
 }
 
@@ -219,12 +219,12 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 		/* Check if floor end where top is going to be placed. */
 		if (getTile(x,y) == floor[Tileset])
 				setTile(x,y,ladder_top[Tileset].left);
-			else	
+			else
 				setTile(x,y,ladder_top_floorend[Tileset].left);
 
 		if (getTile(x+1,y) == floor[Tileset])
 				setTile(x+1,y,ladder_top[Tileset].right);
-			else	
+			else
 				setTile(x+1,y,ladder_top_floorend[Tileset].right);
 	}
 
@@ -238,12 +238,12 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 		/* Check if floor end where bottom is going to be placed. */
 		if (getTile(x,y+length) == floor[Tileset])
 				setTile(x,y+length,ladder_bottom[Tileset].left);
-			else	
+			else
 				setTile(x,y+length,ladder_bottom_floorend[Tileset].left);
 
 		if (getTile(x+1,y+length) == floor[Tileset])
 				setTile(x+1,y+length,ladder_bottom[Tileset].right);
-			else	
+			else
 				setTile(x+1,y+length,ladder_bottom_floorend[Tileset].right);
 	}
 
@@ -267,7 +267,7 @@ void drawBurgerComponentTile(uint8_t index, uint8_t x, uint8_t half_y, uint8_t c
 	} else {
 		/* Upper tile is combined with air. */
 		upper_combination=pgm_read_byte(&ShapeBurgersHalftiles[SHAPE_BURGER_HALFTILE_AIR][component+SHAPE_BURGER_HALFTILE_BUNTOP]);
-	}	
+	}
 
 	/* Check current VRAM for lower tile. Has to be air or air combo. */
 	if (Tileset == TILESET0) {
@@ -336,7 +336,7 @@ void drawBurgerComponentTile(uint8_t index, uint8_t x, uint8_t half_y, uint8_t c
 				/* Next tile. */
 				return;
 			}
-		}	
+		}
 
 		/* Usual half-tiles. */
 		setTile(x+index,(tile_y>>1),pgm_read_byte(&ShapeBurgers[upper_combination][Tileset].left+index));
@@ -357,10 +357,10 @@ void drawBurgerComponentTile(uint8_t index, uint8_t x, uint8_t half_y, uint8_t c
 				return;
 			}
 		}
-		
+
 		/* Not a special case. */
 		setTile(x+index,tile_y>>1,pgm_read_byte(&ShapeBurgers[component][Tileset].left+index));
-	}	
+	}
 }
 
 
@@ -370,7 +370,7 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
 	/* Go through all burger component tiles in a row. */
 	for (i=0;i<5;i++) {
 		drawBurgerComponentTile(i, x, half_y, component, stomped, buffer);
-	}	
+	}
 }
 
 
@@ -381,10 +381,10 @@ void drawBurgerComponent(uint8_t x, uint8_t half_y, uint8_t component, uint8_t s
  *
  *   tile_y|   0     1       2      3       4
  *         |
- *  tile_y |  
+ *  tile_y |
  * --------------------------------------------
- *    0    | Full   Upper 
- *    2    |        Lower  Full   Upper   
+ *    0    | Full   Upper
+ *    2    |        Lower  Full   Upper
  *    4    |                      Lower    Full
  *
  * When tile_y is odd, lower background at tile_y+1 has to be saved.
@@ -421,7 +421,7 @@ void handleBurgerBackground(uint8_t x, int8_t half_y, uint8_t stomped, uint8_t b
 	/* Go through all burger component tiles in a row. */
 	for (i=0;i<5;i++) {
 		handleBurgerBackgroundTile(i, x, half_y, stomped, buffer);
-	}	
+	}
 }
 
 
@@ -433,7 +433,7 @@ void drawSoda(uint8_t x, uint8_t y) {
 	setTile(x+1,y,soda[Tileset].upperright);
 	setTile(x,y+1,soda[Tileset].lowerleft);
 	setTile(x+1,y+1,soda[Tileset].lowerright);
-}	
+}
 
 
 /* Draw fries packet. */
@@ -519,7 +519,7 @@ void drawLives(uint8_t x, uint8_t y, uint8_t value) {
 	for(i=0;i<LIVES_DRAW_MAX;i++) {
 		if (i<value)
 				setTile(x,y-i,TILES0_COOK_SMALL);
-			else	
+			else
 				setTile(x,y-i,TILES0_SPACE);
 	}
 }
