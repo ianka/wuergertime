@@ -118,10 +118,10 @@ extern highscores_t Highscores;
 #define LEVEL_ITEM_LADDER_CONTINUED     0x20
 #define LEVEL_ITEM_LADDER_LENGTH        0x0f
 #define LEVEL_ITEM_FLOOR                0x00
-#define LEVEL_ITEM_FLOOR_CAP_LEFT       0x40 
-#define LEVEL_ITEM_FLOOR_CAP_RIGHT      0x20 
+#define LEVEL_ITEM_FLOOR_CAP_LEFT       0x40
+#define LEVEL_ITEM_FLOOR_CAP_RIGHT      0x20
 #define LEVEL_ITEM_FLOOR_CAP_BOTH       ((LEVEL_ITEM_FLOOR_CAP_LEFT|LEVEL_ITEM_FLOOR_CAP_RIGHT))
-#define LEVEL_ITEM_FLOOR_LENGTH         0x1f 
+#define LEVEL_ITEM_FLOOR_LENGTH         0x1f
 
 
 typedef struct {
@@ -129,7 +129,7 @@ typedef struct {
 	union {
 		position_t position;
 		uint16_t options;
-	};	
+	};
 } PROGMEM level_item_t;
 
 
@@ -196,9 +196,9 @@ extern const level_item_t LevelComponents[] PROGMEM;
 #define GAME_SCREEN_DEMO              ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|3))
 #define GAME_SCREEN_HIGHSCORES        ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|4))
 #define GAME_SCREEN_NEW_HIGHSCORE     ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|5))
-#define GAME_SCREEN_INVALID           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|6)) 
+#define GAME_SCREEN_INVALID           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|6))
 
-/* Game screen switch, level number, animation phase and update function pointer. */ 
+/* Game screen switch, level number, animation phase and update function pointer. */
 extern uint8_t GameScreenPrevious;
 extern uint8_t GameScreen;
 extern uint16_t GameScreenAnimationPhase;
@@ -214,6 +214,7 @@ extern uint8_t Level;
 #define SCORE_OPPONENT_HIT              200
 
 extern uint32_t Score;
+extern uint32_t DisplayedScore;
 extern uint16_t Bonus;
 extern uint8_t Lives;
 

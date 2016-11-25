@@ -51,6 +51,7 @@ uint16_t GameScreenOptions;
 
 /* Game screen objects. */
 uint32_t Score;
+uint32_t DisplayedScore;
 uint16_t Bonus;
 uint8_t Lives;
 position_t GameScreenSignPosition;
@@ -384,7 +385,8 @@ void animateLevelStart(void) {
 					break;
 				case LEVEL_ITEM_SCORE:
 					/* Draw score. */
-					drawScore(x,y,Score);
+					DisplayedScore=Score;
+					drawScore(x,y,DisplayedScore);
 					break;
 				case LEVEL_ITEM_BONUS:
 					/* Draw bonus. */
@@ -669,7 +671,16 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 
 /* Update statistics on screen (score, bonus, lives etc.) */
 void updateGameScreenStatistics(void) {
-	drawScore(GameScreenScorePosition.x,GameScreenScorePosition.y,Score);
+	/* Crawl to actual score. */
+	if (DisplayedScore+13 < Score)
+		DisplayedScore+=13;
+	else if (DisplayedScore+3 < Score)
+		DisplayedScore+=3;
+	else if (DisplayedScore < Score)
+		DisplayedScore++;
+
+	/* Finally update the displayed score and lives. */
+	drawScore(GameScreenScorePosition.x,GameScreenScorePosition.y,DisplayedScore);
 	drawLives(GameScreenLivesPosition.x,GameScreenLivesPosition.y,Lives);
 }
 
