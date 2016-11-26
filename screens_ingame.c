@@ -276,23 +276,27 @@ void initInGameOverScreen(void) {
 }
 
 void updateInGameOverScreen(void) {
-	uint8_t i;
-
-	/* Burger drop animation. */
-	/* Change screen when no bonus left and animation is done. */
-	i=decrementBonusFast();
-	if (!animateBurgers() && i) {
-		ChangeGameScreen(GAME_SCREEN_START);
-	}
-
-	/* Update game screen statistics. */
-	updateGameScreenStatistics();
+	uint8_t o, b, i;
 
 	/* Handle all opponents. */
 	for (i=0;i<OPPONENT_MAX;i++) {
 		/* Select direction and move all active opponents. */
 		selectOpponentDirection(i);
 		moveOpponent(i);
+	}
+
+	/* Burger drop animation. */
+	b=animateBurgers();
+
+	/* Decrement Bonus */
+	o=decrementBonusFast();
+
+	/* Update game screen statistics. */
+	updateGameScreenStatistics();
+
+	/* Change screen when burger drop animation is done, no bonus left and displayed score updated. */
+	if (o && b == 0 && DisplayedScore == Score) {
+		ChangeGameScreen(GAME_SCREEN_NEW_HIGHSCORE);
 	}
 }
 

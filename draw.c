@@ -525,6 +525,18 @@ void drawLives(uint8_t x, uint8_t y, uint8_t value) {
 }
 
 
+/* Draw the billboard used in the highscore screens. */
+void drawHighscoreBillboard() {
+	drawShape(12,1,ShapeHighscoreSignBurger,0);
+	drawShape(3,10,ShapeHighscoreSignTop,0);
+	drawShape(3,11,ShapeHighscoreSignLeft,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(26,11,ShapeHighscoreSignRight,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(3,22,ShapeHighscoreSignBottom,0);
+	drawShape(3,23,ShapeHighscoreSignPoleRightShort,DRAW_OPTION_SHAPE_TILTED);
+	drawShape(26,23,ShapeHighscoreSignPoleLeftShort,DRAW_OPTION_SHAPE_TILTED);
+}
+
+
 /* Draw highscore entry. */
 void drawHighscore(uint8_t x, uint8_t y, uint32_t name, uint32_t score) {
 	uint8_t i;

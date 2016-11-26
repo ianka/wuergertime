@@ -64,10 +64,12 @@ extern const uint8_t ShapeHighscoreSignPoleRightLong[] PROGMEM;
 #define SCREEN_WRAP   30
 #define SCREEN_HEIGHT 28
 
-
 /* Maximum number of cooks to draw for lives marker. */
 #define LIVES_DRAW_MAX 7
 
+/* Highscore screen constants. */
+#define HIGHSCORE_TOPMOST 12
+#define HIGHSCORE_FLOOR_WIDTH 12
 
 /* Center strings. */
 #define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);
@@ -89,6 +91,7 @@ void drawPlate(uint8_t x, uint8_t y);
 void drawScore(uint8_t x, uint8_t y, uint32_t value);
 void drawBonus(uint8_t x, uint8_t y, uint16_t value);
 void drawLives(uint8_t x, uint8_t y, uint8_t value);
+void drawHighscoreBillboard();
 void drawHighscore(uint8_t x, uint8_t y, uint32_t name, uint32_t score);
 void drawHurry(uint8_t x, uint8_t y, uint8_t buffer[3]);
 void restoreHurryBackground(uint8_t x, uint8_t y, uint8_t buffer[3]);

@@ -198,6 +198,7 @@ extern uint8_t Level;
 #define SCORE_COMPONENT_FALLING_CASCADE  20
 #define SCORE_OPPONENT_HIT              200
 
+extern uint8_t Scratchpad;
 extern uint32_t Score;
 extern uint32_t DisplayedScore;
 extern uint16_t Bonus;

@@ -159,19 +159,11 @@ void initHighscoresScreen(void) {
 
 	/* Draw highscores table. */
 	clearScreen();
-
-	/* Draw picture */
-	drawShape(12,1,ShapeHighscoreSignBurger,0);
-	drawShape(3,10,ShapeHighscoreSignTop,0);
-	drawShape(3,11,ShapeHighscoreSignLeft,DRAW_OPTION_SHAPE_TILTED);
-	drawShape(26,11,ShapeHighscoreSignRight,DRAW_OPTION_SHAPE_TILTED);
-	drawShape(3,22,ShapeHighscoreSignBottom,0);
-	drawShape(3,23,ShapeHighscoreSignPoleRightShort,DRAW_OPTION_SHAPE_TILTED);
-	drawShape(26,23,ShapeHighscoreSignPoleLeftShort,DRAW_OPTION_SHAPE_TILTED);
-	drawLadder(4,23,5,DRAW_OPTION_LADDER_UPONLY);
+	drawHighscoreBillboard();
+	drawLadder(4,24,4,0);
 
 	/* Draw all entries. */
-	for (i=0,y=12;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
+	for (i=0,y=HIGHSCORE_TOPMOST;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
 		readHighscoreEntry(i,&name,&score);
 		drawHighscore(7,y,name,score);
 	}
@@ -202,15 +194,70 @@ void cleanupHighscoresScreen(void) {
 
 
 /*
- *  The new highscore screen is showed when a new high score was reached.
+ *  The new highscore screen is showed after game over.
  */
 void initNewHighscoreScreen(void) {
+	uint8_t i, y, topped;
+	uint32_t name, score;
+
+	/* Draw highscores billboard. */
+	clearScreen();
+	drawHighscoreBillboard();
+
+	/* Find out highscore topped. */
+	topped=findToppedHighscoreEntry(Score);
+
+	/* Any highscore topped? */
+	if (topped != HIGHSCORE_ENTRY_MAX) {
+		/* Yes. Draw all entries, move topped entries. */
+		for (i=0,y=HIGHSCORE_TOPMOST;i<topped;i++,y+=2) {
+			readHighscoreEntry(i,&name,&score);
+			drawHighscore(7,y,name,score);
+		}
+		drawHighscore(7,y,0,Score);
+		for (y+=2;i<HIGHSCORE_ENTRY_MAX-1;i++,y+=2) {
+			readHighscoreEntry(i,&name,&score);
+			drawHighscore(7,y,name,score);
+		}
+	} else {
+		/* No. Draw all entries. */
+		for (i=0,y=HIGHSCORE_TOPMOST;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
+			readHighscoreEntry(i,&name,&score);
+			drawHighscore(7,y,name,score);
+		}
+	}
+
+	/* Save topped value to scratchpad. */
+	Scratchpad=topped;
+
+	/* Fade in and wait to complete */
+	FadeIn(1,1);
 }
 
 void updateNewHighscoreScreen(void) {
+	/* Animate floor. */
+	if (GameScreenAnimationPhase < HIGHSCORE_FLOOR_WIDTH)
+		drawFloor(2,HIGHSCORE_TOPMOST+2*Scratchpad+1,GameScreenAnimationPhase,DRAW_OPTION_FLOOR_CAP_LEFT|DRAW_OPTION_FLOOR_CAP_RIGHT);
+
+	/* Animate ladder. */
+	if (GameScreenAnimationPhase >= HIGHSCORE_FLOOR_WIDTH && GameScreenAnimationPhase < SCREEN_HEIGHT+HIGHSCORE_FLOOR_WIDTH-HIGHSCORE_TOPMOST-2*Scratchpad) {
+		drawLadder(4,SCREEN_HEIGHT+HIGHSCORE_FLOOR_WIDTH-GameScreenAnimationPhase,GameScreenAnimationPhase-HIGHSCORE_FLOOR_WIDTH,DRAW_OPTION_LADDER_CONTINUED);
+	}
+
+	/* Check buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_START)) {
+		case BTN_START:
+			/* Switch to start screen when button is pressed. */
+			ChangeGameScreen(GAME_SCREEN_START);
+			break;
+		default:
+			/* Switch to start screen after a while. */
+			if (GameScreenAnimationPhase>5000)
+				ChangeGameScreen(GAME_SCREEN_START);
+	}
 }
 
 void cleanupNewHighscoreScreen(void) {
+	/* Fade out and wait to complete */
+	FadeOut(1,1);
 }
-
-

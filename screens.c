@@ -50,6 +50,7 @@ uint16_t GameScreenOptions;
 
 
 /* Game screen objects. */
+uint8_t Scratchpad;
 uint32_t Score;
 uint32_t DisplayedScore;
 uint16_t Bonus;
