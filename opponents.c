@@ -102,7 +102,7 @@ void nextOpponent(void) {
 				case LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN:
 					s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT;
 					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
-					break;	
+					break;
 				case LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD:
 					s=SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT;
 					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
@@ -113,7 +113,7 @@ void nextOpponent(void) {
 			}
 
 			/* Setup flags. */
-			
+
 			/* Setup opponent sprite. */
 			placeSprite(Opponent[i].sprite,
 				OpponentStartPosition[i].x*8,
@@ -130,13 +130,13 @@ void nextOpponent(void) {
 void nextAttackWave(void) {
 	if (!(GameScreenAnimationPhase & ~(0xffff<<(((GameScreenOptions & LEVEL_ITEM_OPTION_ATTACK_WAVE_MASK)>>LEVEL_ITEM_OPTION_ATTACK_WAVE_SHIFT)+OPPONENT_ATTACK_WAVE_DEFAULT_SHIFT))))
 		nextOpponent();
-}	
+}
 
 
 /* Change moving/facing direction of opponent. */
 void changeOpponentDirectionWithoutAnimationReset(uint8_t index, uint8_t direction) {
 	Opponent[index].flags=(Opponent[index].flags & ~OPPONENT_FLAGS_DIRECTION_MASK)|direction;
-}	
+}
 
 void changeOpponentDirection(uint8_t index, uint8_t direction) {
 	/* Skip if direction is same as before. */
@@ -153,7 +153,7 @@ void changeOpponentDirection(uint8_t index, uint8_t direction) {
 		case OPPONENT_FLAGS_DIRECTION_RIGHT:
 			changeSpriteDirection(Opponent[index].sprite,SPRITE_FLAGS_DIRECTION_RIGHT);
 			break;
-		default:	
+		default:
 			changeSpriteDirection(Opponent[index].sprite,SPRITE_FLAGS_DIRECTION_LADDER);
 	}
 }
@@ -178,7 +178,7 @@ uint8_t selectPossibleOpponentDirectionRandomly(uint8_t index, uint8_t direction
 
 	/* Skip a random number (out of 1,2,3) of those possible directions. Return direction. */
 	s=fastrandom()%s;
-	
+
 	/* Go through all directions. */
 	for (e=0;e<4;e++) {
 		/* Check if possible direction found. */
@@ -224,7 +224,7 @@ void selectOpponentDirectionNearerToTarget(uint8_t index, uint8_t directions, ui
 		/* Yes, but prefer current direction. */
 		changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
 		return;
-	}	
+	}
 
 	/* Not randomly. On same floor as target? */
 	if (y == getSpriteY(Opponent[index].sprite)) {
@@ -277,7 +277,7 @@ void selectOpponentDirectionNearerToTarget(uint8_t index, uint8_t directions, ui
 						changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
 					break;
 			}
-		}	
+		}
 	}
 }
 
@@ -337,8 +337,8 @@ void selectOpponentDirection(uint8_t index) {
 			/* Same. Change oppenent direction randomly. */
 			changeOpponentDirection(index,selectPossibleOpponentDirectionRandomly(index,directions));
 			return;
-		}	
-	}	
+		}
+	}
 
 	/* Feed possible directions into movement algorithm. */
 	switch (Opponent[index].flags & OPPONENT_FLAGS_ALGORITHM_MASK) {
@@ -409,7 +409,7 @@ void moveOpponent(uint8_t index) {
 
 				/* Turn hit speed from negative to more positive for next step. */
 				Opponent[index].info.hit_speed++;
-			}	
+			}
 			break;
 	}
 }
@@ -466,4 +466,3 @@ uint8_t checkOpponentCaughtPlayer(uint8_t index) {
 	/* No collision. */
 	return 0;
 }
-	

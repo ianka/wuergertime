@@ -47,7 +47,7 @@ void sampleControllers(void) {
 		controllers[i].held |= controllers[i].current & controllers[i].previous;
 		controllers[i].pressed |= controllers[i].current & (controllers[i].current ^ controllers[i].previous);
 		controllers[i].released |= controllers[i].previous & (controllers[i].current ^ controllers[i].previous);
-	}	
+	}
 }
 
 

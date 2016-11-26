@@ -42,7 +42,7 @@ void resetPlayer(void) {
 /* Change moving/facing direction of player. */
 void changePlayerDirectionWithoutAnimationReset(uint8_t direction) {
 	Player.flags=(Player.flags & ~PLAYER_FLAGS_DIRECTION_MASK)|direction;
-}	
+}
 
 void changePlayerDirection(uint8_t direction) {
 	/* Remember new direction. */
@@ -62,7 +62,7 @@ void changePlayerDirection(uint8_t direction) {
 			/* Initialize hit speed. */
 			Player.hit_speed=min(getSpriteY(Player.sprite)*getSpriteY(Player.sprite),PLAYER_START_HIT_SPEED_Y);
 			break;
-		default:	
+		default:
 			changeSpriteDirection(Player.sprite,SPRITE_FLAGS_DIRECTION_LADDER);
 	}
 }
@@ -97,7 +97,7 @@ void selectPlayerDirection(uint8_t buttons) {
 			if (checkSpriteAtLadderExit(Player.sprite))
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_LEFT);
 
-			break;	
+			break;
 		case BTN_RIGHT:
 			/* Change direction on floor if player direction is currently left. */
 			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_LEFT)
@@ -176,7 +176,7 @@ void movePlayer(uint8_t buttons) {
 /* Animate caught player. */
 uint8_t animateCaughtPlayer(void) {
 	int16_t y;
-	
+
 	/* Move to invalid coordinate? */
 	y=getSpriteY(Player.sprite);
 	y+=Player.hit_speed;
@@ -195,5 +195,5 @@ uint8_t animateCaughtPlayer(void) {
 
 		/* Animation not completed. */
 		return 0;
-	}	
+	}
 }

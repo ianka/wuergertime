@@ -135,7 +135,7 @@ void resetSpriteSlots(void) {
 /* Occupy a sprite slot. */
 uint8_t occupySpriteSlot(void) {
 	uint8_t i;
-	
+
 	/* Get a free sprite slot. */
 	for(i=0;i<SPRITE_SLOTS_MAX;i++)
 		if (GameSpriteSlots[i].flags == SPRITE_FLAGS_FREE_SLOT) break;
@@ -161,7 +161,7 @@ void unmapSprite(uint8_t slot) {
 
 /* Free a sprite slot. */
 void freeSpriteSlot(uint8_t slot) {
-	/* Skip if the slot is free already. */ 
+	/* Skip if the slot is free already. */
 	if (GameSpriteSlots[slot].flags == SPRITE_FLAGS_FREE_SLOT) return;
 
 	/* Unmap sprite. */
@@ -425,7 +425,7 @@ uint8_t getSpriteFloorTile(uint8_t slot) {
 	switch (GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) {
 		case SPRITE_FLAGS_DIRECTION_LEFT:
 			return getTile(((GameSpriteSlots[slot].x-1)>>3),GameSpriteSlots[slot].y>>3);
-		default:	
+		default:
 			return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
 	}
 }
@@ -437,7 +437,7 @@ uint8_t getSpriteFloorDirectionTile(uint8_t slot) {
 			return getTile(((GameSpriteSlots[slot].x-1)>>3)-1,GameSpriteSlots[slot].y>>3);
 		case SPRITE_FLAGS_DIRECTION_RIGHT:
 			return getTile((GameSpriteSlots[slot].x>>3)+1,GameSpriteSlots[slot].y>>3);
-		default:	
+		default:
 			return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
 	}
 }
@@ -479,7 +479,7 @@ uint8_t checkSpriteAtLadderEntryUp(uint8_t slot) {
 		default:
 			/* Not on a ladder up entry. */
 			return 0;
-	}		
+	}
 }
 
 
@@ -553,7 +553,7 @@ uint8_t checkSpriteAtLadderTop(uint8_t slot) {
 			/* Not at ladder top. */
 			return 0;
 	}
-}	
+}
 
 
 /* Check if at ladder bottom. */

@@ -32,9 +32,9 @@
 
 
 /* Opponent flags: direction, speed, movement algorithm. */
-#define OPPONENT_DIRECTION_LEFT  0 
-#define OPPONENT_DIRECTION_RIGHT 1 
-#define OPPONENT_DIRECTION_UP    2 
+#define OPPONENT_DIRECTION_LEFT  0
+#define OPPONENT_DIRECTION_RIGHT 1
+#define OPPONENT_DIRECTION_UP    2
 #define OPPONENT_DIRECTION_DOWN  3
 
 #define OPPONENT_FLAGS_INVALID         0xff
@@ -87,8 +87,8 @@ typedef struct {
 	union {
 		position_t target;
 		int8_t hit_speed;
-	} info;	
-} opponent_t;	
+	} info;
+} opponent_t;
 
 extern opponent_t Opponent[OPPONENT_MAX];
 extern position_t OpponentStartPosition[OPPONENT_START_POSITION_MAX];

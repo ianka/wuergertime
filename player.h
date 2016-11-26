@@ -54,7 +54,7 @@ typedef struct {
 	uint8_t sprite;
 	position_t start_position;
 	int8_t hit_speed;
-} player_t;	
+} player_t;
 
 extern player_t Player;
 
