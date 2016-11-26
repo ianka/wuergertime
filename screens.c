@@ -73,7 +73,6 @@ struct {
 	burger_component_t component[SCREEN_BURGER_COMPONENT_MAX];
 } GameScreenBurger[SCREEN_BURGER_MAX];
 uint8_t HurryBuffer[3];
-highscores_t Highscores;
 
 
 /* Lavel number and pointer to current level drawing. */

@@ -17,9 +17,7 @@
 #include <avr/pgmspace.h>
 
 
-/*
- *  Random generator.
- */
+/*  Random generator. */
 #define RANDOM_MODULO 0x7FFFFFFF
 
 uint32_t random_seed = 1234;
@@ -35,9 +33,7 @@ uint8_t fastrandom(void) {
 }
 
 
-/*
- * Initialize RAM from program memory.
- */
+/* Initialize RAM from program memory. */
 void meminit(void *dst, void *src, uint8_t count) {
 	uint8_t i;
 	for (i=0;i<count;i++,src++,dst++)

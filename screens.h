@@ -47,21 +47,6 @@
 #define BONUS_DEFAULT_SHIFT 1
 
 
-/* Highscore entries. */
-#define HIGHSCORE_ENTRY_MAX 5
-#define HIGHSCORE_ENTRY_SIZE 6
-
-typedef union {
-	struct {
-		uint16_t eid;
-		uint8_t  entry[HIGHSCORE_ENTRY_MAX][HIGHSCORE_ENTRY_SIZE];
-	}	meaning;
-	struct EepromBlockStruct eeprom;
-} highscores_t;
-
-extern highscores_t Highscores;
-
-
 /* Items in levels. */
 #define LEVEL_ITEM_INVALID              0x00
 #define LEVEL_ITEM_BURGER_PLACEHOLDER   0x80

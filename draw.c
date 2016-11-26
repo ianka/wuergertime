@@ -526,26 +526,8 @@ void drawLives(uint8_t x, uint8_t y, uint8_t value) {
 
 
 /* Draw highscore entry. */
-void drawHighscore(uint8_t x, uint8_t y, highscores_t highscores, uint8_t index) {
+void drawHighscore(uint8_t x, uint8_t y, uint32_t name, uint32_t score) {
 	uint8_t i;
-	uint32_t score;
-	uint32_t name;
-
-	/* Get score from entry. */
-	score=(highscores.meaning.entry[index][2] & 0x7f);
-	score<<=8;
-	score|=highscores.meaning.entry[index][1];
-	score<<=8;
-	score|=highscores.meaning.entry[index][0];
-
-	/* Get name from entry. */
-	name=highscores.meaning.entry[index][5];
-	name<<=8;
-	name|=highscores.meaning.entry[index][4];
-	name<<=8;
-	name|=highscores.meaning.entry[index][3];
-	name<<=1;
-	name|=(highscores.meaning.entry[index][2]>>7);
 
 	/* Print name. */
 	for (i=0;i<5;i++) {

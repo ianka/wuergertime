@@ -20,6 +20,7 @@
 #include "draw.h"
 #include "tiles.h"
 #include "controllers.h"
+#include "highscores.h"
 
 
 /* Fixed strings. */
@@ -154,6 +155,7 @@ void cleanupDemoScreen(void) {
  */
 void initHighscoresScreen(void) {
 	uint8_t i, y;
+	uint32_t name, score;
 
 	/* Draw highscores table. */
 	clearScreen();
@@ -169,8 +171,10 @@ void initHighscoresScreen(void) {
 	drawLadder(4,23,5,DRAW_OPTION_LADDER_UPONLY);
 
 	/* Draw all entries. */
-	for (i=0,y=12;i<HIGHSCORE_ENTRY_MAX;i++,y+=2)
-		drawHighscore(7,y,Highscores,i);
+	for (i=0,y=12;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
+		readHighscoreEntry(i,&name,&score);
+		drawHighscore(7,y,name,score);
+	}
 
 	/* Fade in and wait to complete */
 	FadeIn(1,1);

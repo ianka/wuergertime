@@ -27,6 +27,7 @@
 #include "tiles.h"
 #include "sprites.h"
 #include "draw.h"
+#include "highscores.h"
 #include "screens.h"
 #include "screens_outofgame.h"
 #include "screens_ingame.h"
@@ -38,19 +39,6 @@
 #ifdef DEBUG
 uint8_t DebugSingleStepAnimation;
 #endif
-
-
-/*
- * Default Highscore entries.
- */
-const uint8_t DefaultHighscores[] PROGMEM={
-	0x00, 0x00,
-	0xa0, 0x86, 0x81, 0x5b, 0x8b, 0x3c,
-	0x50, 0xc3, 0x80, 0x5c, 0xc7, 0x02,
-	0x20, 0x4e, 0x80, 0x74, 0x12, 0xa5,
-	0x10, 0x27, 0x00, 0xc1, 0x82, 0x3c,
-	0x88, 0x13, 0x00, 0x11, 0x0a, 0x02,
-};
 
 
 /*
@@ -69,9 +57,6 @@ int main(void) {
 	GameScreen=GAME_SCREEN_START;
 	GameScreenAnimationPhase=0;
 	GameScreenUpdateFunction=NULL; /* This will be set correctly below. */
-
-	/* Initialize highscores. */
-	meminit(&Highscores, &DefaultHighscores, sizeof(Highscores));
 
 	/* Setup audio. */
 //	InitMusicPlayer(patches);

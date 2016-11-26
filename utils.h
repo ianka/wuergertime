@@ -44,8 +44,7 @@ uint8_t fastrandom(void);
 /* Initialize RAM from program memory. */
 void meminit(void *dst, void *src, uint8_t count);
 
-
-/* Blinking a code. */
+/* Blink a code. */
 static inline uint8_t blink(uint8_t phase, uint32_t phases) {
 	return (phases>>phase) & 0x01;
 }

@@ -36,7 +36,7 @@ COMMON = -mmcu=$(MCU)
 ## Compile options common for all C compilation units.
 CFLAGS = $(COMMON)
 CFLAGS += -Wall -gdwarf-2 -std=gnu99 -DF_CPU=28636360UL -Os -fsigned-char -ffunction-sections
-CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d 
+CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d
 CFLAGS += $(KERNEL_OPTIONS)
 
 ## Assembly specific flags
@@ -46,8 +46,8 @@ ASMFLAGS += -x assembler-with-cpp -Wa,-gdwarf2
 
 ## Linker flags
 LDFLAGS = $(COMMON)
-LDFLAGS += -Wl,-Map=$(GAME).map 
-LDFLAGS += -Wl,-gc-sections 
+LDFLAGS += -Wl,-Map=$(GAME).map
+LDFLAGS += -Wl,-gc-sections
 #LDFLAGS += -Wl,--section-start,.noinit=0x800100 -Wl,--section-start,.data=0x800500  SCROLLING ONLY!
 
 ## Intel Hex file production flags
@@ -59,13 +59,13 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o utils.o controllers.o tiles.o draw.o sprites.o opponents.o player.o screens.o screens_ingame.o screens_outofgame.o $(GAME).o
+OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o utils.o controllers.o tiles.o draw.o sprites.o opponents.o player.o highscores.o screens.o screens_ingame.o screens_outofgame.o $(GAME).o
 
 ## Objects explicitly added by the user
-LINKONLYOBJECTS = 
+LINKONLYOBJECTS =
 
 ## Include Directories
-INCLUDES = -I"$(KERNEL_DIR)" 
+INCLUDES = -I"$(KERNEL_DIR)"
 
 
 
@@ -120,6 +120,9 @@ tiles.o: ../tiles.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 draw.o: ../draw.c
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+highscores.o: ../highscores.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 screens.o: ../screens.c
