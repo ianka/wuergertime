@@ -111,6 +111,8 @@ int main(void) {
 				case GAME_SCREEN_DEMO:              cleanupDemoScreen(); break;
 				case GAME_SCREEN_HIGHSCORES:        cleanupHighscoresScreen(); break;
 				case GAME_SCREEN_NEW_HIGHSCORE:     cleanupNewHighscoreScreen(); break;
+				case GAME_SCREEN_ENTER_HIGHSCORE:   cleanupEnterHighscoreScreen(); break;
+				case GAME_SCREEN_ENTERED_HIGHSCORE: cleanupEnteredHighscoreScreen(); break;
 				case GAME_SCREEN_LEVEL_DESCRIPTION: cleanupInGameDescriptionScreen(); break;
 				case GAME_SCREEN_LEVEL_PREPARE:     cleanupInGamePrepareScreen(); break;
 				case GAME_SCREEN_LEVEL_START:       cleanupInGameStartScreen(); break;
@@ -155,6 +157,14 @@ int main(void) {
 				case GAME_SCREEN_NEW_HIGHSCORE:
 					GameScreenUpdateFunction=&updateNewHighscoreScreen;
 					initNewHighscoreScreen();
+					break;
+				case GAME_SCREEN_ENTER_HIGHSCORE:
+					GameScreenUpdateFunction=&updateEnterHighscoreScreen;
+					initEnterHighscoreScreen();
+					break;
+				case GAME_SCREEN_ENTERED_HIGHSCORE:
+					GameScreenUpdateFunction=&updateEnteredHighscoreScreen;
+					initEnteredHighscoreScreen();
 					break;
 				case GAME_SCREEN_LEVEL_DESCRIPTION:
 					GameScreenUpdateFunction=&updateInGameDescriptionScreen;

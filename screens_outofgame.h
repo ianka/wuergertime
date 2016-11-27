@@ -40,5 +40,13 @@ void initNewHighscoreScreen(void);
 void updateNewHighscoreScreen(void);
 void cleanupNewHighscoreScreen(void);
 
+void initEnterHighscoreScreen(void);
+void updateEnterHighscoreScreen(void);
+void cleanupEnterHighscoreScreen(void);
+
+void initEnteredHighscoreScreen(void);
+void updateEnteredHighscoreScreen(void);
+void cleanupEnteredHighscoreScreen(void);
+
 
 #endif /* SCREENS_OUTOFGAME_H */

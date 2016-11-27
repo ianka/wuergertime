@@ -69,7 +69,11 @@ extern const uint8_t ShapeHighscoreSignPoleRightLong[] PROGMEM;
 
 /* Highscore screen constants. */
 #define HIGHSCORE_TOPMOST 12
-#define HIGHSCORE_FLOOR_WIDTH 12
+#define HIGHSCORE_FLOOR_WIDTH 14
+#define HIGHSCORE_COOK_ANIMATION_PHASE 10
+#define HIGHSCORE_COOK_START_POSITION_X 5
+#define HIGHSCORE_COOK_START_POSITION_Y (SCREEN_HEIGHT+1)
+#define HIGHSCORE_COOK_END_POSITION_X 6
 
 /* Center strings. */
 #define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);

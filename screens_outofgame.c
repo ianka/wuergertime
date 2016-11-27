@@ -21,6 +21,8 @@
 #include "tiles.h"
 #include "controllers.h"
 #include "highscores.h"
+#include "player.h"
+#include "sprites.h"
 
 
 /* Fixed strings. */
@@ -160,7 +162,7 @@ void initHighscoresScreen(void) {
 	/* Draw highscores table. */
 	clearScreen();
 	drawHighscoreBillboard();
-	drawLadder(4,24,4,0);
+	drawLadder(4,26,2,0);
 
 	/* Draw all entries. */
 	for (i=0,y=HIGHSCORE_TOPMOST;i<HIGHSCORE_ENTRY_MAX;i++,y+=2) {
@@ -244,20 +246,138 @@ void updateNewHighscoreScreen(void) {
 		drawLadder(4,SCREEN_HEIGHT+HIGHSCORE_FLOOR_WIDTH-GameScreenAnimationPhase,GameScreenAnimationPhase-HIGHSCORE_FLOOR_WIDTH,DRAW_OPTION_LADDER_CONTINUED);
 	}
 
-	/* Check buttons. */
-	switch (checkControllerButtonsPressed(0,BTN_START)) {
-		case BTN_START:
-			/* Switch to start screen when button is pressed. */
-			ChangeGameScreen(GAME_SCREEN_START);
-			break;
-		default:
-			/* Switch to start screen after a while. */
-			if (GameScreenAnimationPhase>5000)
-				ChangeGameScreen(GAME_SCREEN_START);
+	/* Animate cook. */
+	if (GameScreenAnimationPhase == HIGHSCORE_COOK_ANIMATION_PHASE) {
+		/* Setup cook start position and direction. */
+		Player.flags=PLAYER_FLAGS_DIRECTION_UP|PLAYER_FLAGS_SPEED_NORMAL;
+		placeSprite(Player.sprite,
+			HIGHSCORE_COOK_START_POSITION_X*8,
+			HIGHSCORE_COOK_START_POSITION_Y*8,
+			SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER);
+	}
+
+	if (GameScreenAnimationPhase > HIGHSCORE_COOK_ANIMATION_PHASE) {
+		/* Top of ladder reached? */
+		if (getSpriteY(Player.sprite) > (HIGHSCORE_TOPMOST+2*Scratchpad+1)*8) {
+			/* No. Move cook upwards. */
+			moveSprite(Player.sprite,0,-1);
+		} else {
+			/* Yes. Go right to first letter of name. */
+			if (getSpriteX(Player.sprite) == HIGHSCORE_COOK_START_POSITION_X*8)
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_RIGHT);
+
+			/* Enter highscore if some existing highscore was topped. */
+			if (Scratchpad != HIGHSCORE_ENTRY_MAX) {
+				/* Move cook until end position reached. */
+				if (getSpriteX(Player.sprite) < HIGHSCORE_COOK_END_POSITION_X*8)
+					moveSprite(Player.sprite,1,0);
+				else
+					ChangeGameScreen(GAME_SCREEN_ENTER_HIGHSCORE);
+			} else {
+				/* Move cook until floor end reached. */
+				if (getSpriteX(Player.sprite) < 14*8)
+					moveSprite(Player.sprite,1,0);
+				else
+					ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
+			}
+		}
 	}
 }
 
 void cleanupNewHighscoreScreen(void) {
+}
+
+
+/*
+ *  The enter highscore screen is showed after the new highscore screen.
+ */
+void initEnterHighscoreScreen(void) {
+}
+
+void updateEnterHighscoreScreen(void) {
+	uint8_t x=(getSpriteX(Player.sprite) / 8)+1;
+	uint8_t y=HIGHSCORE_TOPMOST+2*Scratchpad;
+
+	/* Move cook to next half-tile position. */
+	if ((getSpriteX(Player.sprite) % 8) != 2)
+		moveSprite(Player.sprite,1,0);
+
+	/* Check buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_UP|BTN_DOWN|BTN_RIGHT|BTN_START)) {
+		case BTN_UP:
+			/* Roll through alphabet backwards. */
+			setTile(x,y,(((getTile(x,y)-1)-16) % 32)+FONT_ALPHA_TILE);
+			break;
+		case BTN_DOWN:
+			/* Roll through alphabet forward. */
+			setTile(x,y,(((getTile(x,y)+1)-16) % 32)+FONT_ALPHA_TILE);
+			break;
+		case BTN_RIGHT:
+			/* Move to next position. */
+			if (x < HIGHSCORE_COOK_END_POSITION_X+5)
+				moveSprite(Player.sprite,1,0);
+			else
+				ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
+			break;
+		case BTN_START:
+			/* Switch to next screen when start button is pressed. */
+			ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
+			break;
+		default:
+			/* Switch to next screen after a while. */
+			if (GameScreenAnimationPhase>5000)
+				ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
+	}
+}
+
+void cleanupEnterHighscoreScreen(void) {
+	uint8_t y=HIGHSCORE_TOPMOST+2*Scratchpad;
+	uint8_t i;
+	uint32_t name=0;
+
+	/* Calculate name key from tiles. */
+	for(i=0;i<5;i++) {
+		name<<=5;
+		name|=getTile(11-i,y)-SHARED_TILES_COUNT;
+	}
+
+	/* Replace highscore in EEPROM. */
+	replaceHighscoreEntry(Scratchpad,name,Score);
+}
+
+
+/*
+ *  The entered highscore screen is showed after the enter highscore screen.
+ */
+void initEnteredHighscoreScreen(void) {
+	/* Let the cook go back. */
+	changePlayerDirection(PLAYER_FLAGS_DIRECTION_LEFT);
+}
+
+void updateEnteredHighscoreScreen(void) {
+	/* Go left to ladder. */
+	if (getSpriteX(Player.sprite) > HIGHSCORE_COOK_START_POSITION_X*8)
+		moveSprite(Player.sprite,-1,0);
+
+	/* When on ladder, go downwards. */
+	if (getSpriteX(Player.sprite) == HIGHSCORE_COOK_START_POSITION_X*8) {
+		/* Change movement direction. */
+		if (getSpriteY(Player.sprite) == (HIGHSCORE_TOPMOST+2*Scratchpad+1)*8)
+			changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
+
+		/* Move cook until end position reached. */
+		/* Then switch to new highscore entry screen. */
+		if (getSpriteY(Player.sprite) < (HIGHSCORE_COOK_START_POSITION_Y-1)*8)
+			moveSprite(Player.sprite,0,1);
+		else
+			ChangeGameScreen(GAME_SCREEN_START);
+	}
+}
+
+void cleanupEnteredHighscoreScreen(void) {
 	/* Fade out and wait to complete */
 	FadeOut(1,1);
+
+	/* Unmap the cook. */
+	unmapSprite(Player.sprite);
 }
