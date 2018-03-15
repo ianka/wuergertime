@@ -9,6 +9,7 @@ MCU = atmega644
 TARGET = $(GAME).elf
 CC = avr-gcc
 INFO=../gameinfo.properties
+AVR_SYSROOT=/usr/avr/sys-root/
 
 ## Escape spaces in mixer path (due to custom sounds.inc)
 #EMPTY:=
@@ -18,7 +19,7 @@ INFO=../gameinfo.properties
 #MIX_PATH_ESC:= $(subst $(SPACE),$(SPACE_ESC),$(MIX_PATH))
 
 ## Kernel settings
-KERNEL_DIR = ../../trunk/kernel
+KERNEL_DIR = ../../../kernel
 KERNEL_OPTIONS  = -DVIDEO_MODE=3 -DINTRO_LOGO=0
 KERNEL_OPTIONS += -DSOUND_MIXER=1
 KERNEL_OPTIONS += -DSCROLLING=0
@@ -29,7 +30,7 @@ KERNEL_OPTIONS += -DRAM_TILES_COUNT=32
 #KERNEL_OPTIONS  += -DMIXER_WAVES=\"$(MIX_PATH_ESC)\"
 
 ## Options common to compile, link and assembly rules
-COMMON = -mmcu=$(MCU)
+COMMON = --sysroot=$(AVR_SYSROOT) -mmcu=$(MCU)
 #-DDEBUG
 #--verbose
 
@@ -65,15 +66,15 @@ OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEn
 LINKONLYOBJECTS =
 
 ## Include Directories
-INCLUDES = -I"$(KERNEL_DIR)"
+INCLUDES = -I"$(KERNEL_DIR)" -I"$(AVR_SYSROOT)/include"
 
 
 
-## Build
+## Build.
 all: $(TARGET) ../data/tiles0.inc ../data/sprites0.inc $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
 
 
-## Compile Kernel files
+## Compile Kernel files.
 uzeboxVideoEngineCore.o: $(KERNEL_DIR)/uzeboxVideoEngineCore.s
 	$(CC) $(INCLUDES) $(ASMFLAGS) -c  $<
 
@@ -137,7 +138,7 @@ screens_ingame.o: ../screens_ingame.c
 
 ## Link
 $(TARGET): $(OBJECTS)
-	 $(CC) $(LDFLAGS) $(OBJECTS) $(LINKONLYOBJECTS) $(LIBDIRS) $(LIBS) -o $(TARGET)
+	 $(CC) $(LDFLAGS) $(LIBDIRS) $(OBJECTS) $(LINKONLYOBJECTS) $(LIBS) -o $(TARGET)
 
 %.hex: $(TARGET)
 	avr-objcopy -O ihex $(HEX_FLASH_FLAGS)  $< $@
