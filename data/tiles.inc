@@ -182,6 +182,19 @@
 #define TILES1_PRESS_START_LOWER_RIGHT stile(1,12,8)
 
 
+/* Numbers */
+#define TILES0_NUMBER_0 stile(0,8,0)
+#define TILES0_NUMBER_1 stile(0,8,1)
+#define TILES0_NUMBER_2 stile(0,8,2)
+#define TILES0_NUMBER_3 stile(0,8,3)
+#define TILES0_NUMBER_4 stile(0,8,4)
+#define TILES0_NUMBER_5 stile(0,8,5)
+#define TILES0_NUMBER_6 stile(0,8,6)
+#define TILES0_NUMBER_7 stile(0,8,7)
+#define TILES0_NUMBER_8 stile(0,8,8)
+#define TILES0_NUMBER_9 stile(0,8,9)
+
+
 /* Points */
 #define TILES0_POINT_1 utile(0,5,5)
 #define TILES0_POINT_2 utile(0,5,6)

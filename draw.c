@@ -481,11 +481,11 @@ void drawScore(uint8_t x, uint8_t y, uint32_t value) {
 
 	/* Print value. */
 	x+=7;
-  for(i=0;i<7;i++) {
+	for(i=0;i<7;i++) {
 		c=value%10;
-		setTile(x--,y+1,0xf0-FONT_BEFORE_BORDER_TILES_COUNT+c);
-    value=value/10;
-  }
+		setTile(x--,y+1,TILES0_NUMBER_0+c);
+		value=value/10;
+	}
 }
 
 
@@ -500,11 +500,11 @@ void drawBonus(uint8_t x, uint8_t y, uint16_t value) {
 
 	/* Print value. */
 	x+=3;
-  for(i=0;i<3;i++) {
+	for(i=0;i<3;i++) {
 		c=value%10;
-		setTile(x--,y+1,0xf0-FONT_BEFORE_BORDER_TILES_COUNT+c);
-    value=value/10;
-  }
+		setTile(x--,y+1,TILES0_NUMBER_0+c);
+		value=value/10;
+	}
 }
 
 

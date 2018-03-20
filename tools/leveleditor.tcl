@@ -52,7 +52,7 @@ proc applyGrid {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores bonuses picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -104,6 +104,22 @@ proc addXyTags {tag x y} {
 				burger - plate {
 					for {set i 0} {$i<5} {incr i} {
 						.screen addtag [list xy [expr {$x+$i}] $y] withtag $item
+					}
+				}
+				score {
+					for {set i 0} {$i<3} {incr i} {
+						.screen addtag [list xy [expr {$x+$i}] $y] withtag $item
+					}
+					for {set i 1} {$i<=7} {incr i} {
+						.screen addtag [list xy [expr {$x+$i}] [expr {$y+1}]] withtag $item
+					}
+				}
+				bonus {
+					for {set i 0} {$i<3} {incr i} {
+						.screen addtag [list xy [expr {$x+$i}] $y] withtag $item
+					}
+					for {set i 1} {$i<=3} {incr i} {
+						.screen addtag [list xy [expr {$x+$i}] [expr {$y+1}]] withtag $item
 					}
 				}
 			}
@@ -158,6 +174,26 @@ proc addPlate {} {
 	.screen itemconfigure picked \
 		-state normal -image $::plate \
 		-tags [list picked plates [list plate]]
+}
+
+
+## Add score field.
+proc addScore {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	.screen itemconfigure picked \
+		-state normal -image $::score \
+		-tags [list picked scores [list score]]
+}
+
+
+## Add bonus field.
+proc addBonus {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	.screen itemconfigure picked \
+		-state normal -image $::bonus \
+		-tags [list picked bonuses [list bonus]]
 }
 
 
@@ -392,6 +428,21 @@ foreach side {left middleleft middle middleright right} x {0 1 2 3 4} {
 set plate $photo
 
 
+## Create score and bonus.
+foreach element {score bonus} count {7 3} {
+	set photo [image create photo]
+	foreach side {left middle right} x {0 1 2} {
+		lassign [dict get $::coords tiles [list $element $side]] row column
+		copyTile $::tilesphoto $photo $row $column $x 0
+	}
+	for {set x 1} {$x<=$count} {incr x} {
+		lassign [dict get $::coords tiles [list number $x]] row column
+		copyTile $::tilesphoto $photo $row $column $x 1
+	}
+	set $element $photo
+}
+
+
 ## Display.
 frame .sprites
 dict for {sname simage} [lsort -stride 2 -dictionary $sprites ] {
@@ -524,6 +575,8 @@ dict for {type name} $burgertypes {
 
 ## Create plays menu.
 menu .menu.player
+.menu.player add command -command [list addScore] -label "Score"
+.menu.player add command -command [list addBonus] -label "Bonus"
 
 
 ## Create opponents menu.
