@@ -50,16 +50,36 @@ proc applyGrid {} {
 }
 
 
+## Rearrange by layer.
+proc rearrangeByLayer {} {
+	foreach tag {grid floors ladders picked cursor} {
+		.screen raise $tag
+	}
+}
+
+
 ## Apply cursor position.
 set xdiff 0
 set ydiff 0
 proc applyCursorPosition {x y} {
 	if {[gc $x]<0 || [gc $x]>=$::screen_width || [gc $y]<0 || [gc $y]>=$::screen_height} {
+		## Hide cursor.
 		.screen itemconfigure cursor -state hidden
-		.screen itemconfigure picked -state hidden
+
+		## Delete picked item.
+		.screen delete picked
+
+		## Create replacement to picked item.
+		.screen create image 0 0 -state hidden -tags picked -anchor nw
+
+		## Raise the cursor.
+		.screen raise cursor picked
 	} else {
+		## Show and move cursor.
 		.screen itemconfigure cursor -state normal
 		.screen moveto cursor [expr {[sc [gc $x]]-2}] [expr {[sc [gc $y]]-2}]
+
+		## Move picked item.
 		.screen moveto picked [sc [expr {[gc $x]+$::xdiff}]] [sc [expr {[gc $y]+$::ydiff}]]
 	}
 }
@@ -73,6 +93,12 @@ proc addXyTags {tag x y} {
 				floor {
 					for {set i 0} {$i<[lindex $t 2]} {incr i} {
 						.screen addtag [list xy [expr {$x+$i}] $y] withtag $item
+					}
+				}
+				ladder {
+					for {set i 0} {$i<[lindex $t 2]} {incr i} {
+						.screen addtag [list xy $x [expr {$y+$i}]] withtag $item
+						.screen addtag [list xy [expr {$x+1}] [expr {$y+$i}]] withtag $item
 					}
 				}
 			}
@@ -92,10 +118,23 @@ proc removeXyTags {tag} {
 
 ## Add a floor item.
 proc addFloor {type len} {
+	set ::xdiff 0
+	set ::ydiff 0
 	.screen itemconfigure picked \
 		-state normal -image [floor $type $len] \
-		-tags [list picked [list floor $type $len]]
+		-tags [list picked floors [list floor $type $len]]
 }
+
+
+## Add a ladder item.
+proc addLadder {type len} {
+	set ::xdiff 0
+	set ::ydiff 0
+	.screen itemconfigure picked \
+		-state normal -image [ladder $type $len] \
+		-tags [list picked ladders [list ladder $type $len]]
+}
+
 
 
 ## Drop a picked item or pick a dropped one.
@@ -110,6 +149,9 @@ proc dropOrPick {x y} {
 
 		## Create replacement to picked item.
 		.screen create image 0 0 -state hidden -tags picked -anchor nw
+
+		## Rearrange by layer.
+		rearrangeByLayer
 	} else {
 		## Pick the latest item at the cursor position.
  		set item [lindex [.screen find withtag [list xy [gc $x] [gc $y]]] end]
@@ -251,10 +293,11 @@ image delete $pcxphoto
 set pcxphoto [image create photo -file [dict get $parameters -tiles]]
 set tilesphoto [image create photo -data [string map [list "c [dict get $parameters -background]" "c None"] [$pcxphoto data -format XPM]]]
 image delete $pcxphoto
-set floortypes [dict create nocaps "No Caps" leftcap "Left Cap" rightcap "Right Cap" bothcaps "Both Caps"]
-set floors [dict create]
+
 
 ## Create needed floor, if not already done.
+set floortypes [dict create nocaps "No Caps" leftcap "Left Cap" rightcap "Right Cap" bothcaps "Both Caps"]
+set floors [dict create]
 proc floor {type len} {
 	if {[dict exists $::floors $type $len]} {
 		return [dict get $::floors $type $len]
@@ -278,9 +321,32 @@ proc floor {type len} {
 	return $photo
 }
 
-set laddertypes [dict create plain "Plain" continued "Continued" uponly "Up Only" both "Both"]
 
-
+## Create needed ladder, if not already done.
+set laddertypes [dict create simple "Simple" continued "Continued" uponly "Up Only" both "Both"]
+set ladders [dict create]
+proc ladder {type len} {
+	if {[dict exists $::ladders $type $len]} {
+		return [dict get $::ladders $type $len]
+	}
+	set continued [expr {$type eq "continued"||$type eq "both"?1:0}]
+	set uponly [expr {$type eq "uponly"||$type eq "both"?1:0}]
+	set photo [image create photo]
+	foreach side {left right} x {0 1} {
+		lassign [dict get $::coords tiles [list ladder top [expr {$uponly?"uponly":"floorend"}] $side]] row column
+		copyTile $::tilesphoto $photo $row $column $x 0
+		for {set y 1} {$y<$len-1+$continued} {incr y} {
+			lassign [dict get $::coords tiles [list ladder $side]] row column
+			copyTile $::tilesphoto $photo $row $column $x $y
+		}
+		if {!$continued} {
+			lassign [dict get $::coords tiles [list ladder bottom floorend $side]] row column
+			copyTile $::tilesphoto $photo $row $column $x [expr {$len-1}]
+		}
+	}
+	dict set ladders $type $len $photo
+	return $photo
+}
 
 
 ## Display.
@@ -319,6 +385,7 @@ set grid 1
 
 
 ## Create cursor.
+.screen configure -cursor [list @[file join [file dirname $argv0] none.cur] black]
 .screen create rectangle 0 0 [sc 1] [sc 1] \
 	-outline [dict get $parameters -cursor] -width 3 \
 	-tags cursor
@@ -443,7 +510,6 @@ bind . <Control-g> {set grid [expr {!$grid}] ; applyGrid}
 ##
 wm title . "Würgertime Level Editor"
 wm protocol . WM_DELETE_WINDOW exit
-.screen raise cursor all
 pack .screen
 . configure -menu .menu
 
