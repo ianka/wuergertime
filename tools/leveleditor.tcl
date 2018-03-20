@@ -52,7 +52,7 @@ proc applyGrid {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates scores bonuses picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores bonuses lives picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -120,6 +120,11 @@ proc addXyTags {tag x y} {
 					}
 					for {set i 1} {$i<=3} {incr i} {
 						.screen addtag [list xy [expr {$x+$i}] [expr {$y+1}]] withtag $item
+					}
+				}
+				lives {
+					for {set i 0} {$i<$::lives_draw_max} {incr i} {
+						.screen addtag [list xy $x [expr {$y+$i}]] withtag $item
 					}
 				}
 			}
@@ -197,6 +202,16 @@ proc addBonus {} {
 }
 
 
+## Add lives field.
+proc addLives {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	.screen itemconfigure picked \
+		-state normal -image $::lives \
+		-tags [list picked lives [list lives]]
+}
+
+
 ## Drop a picked item or pick a dropped one.
 proc dropOrPick {x y} {
 	if {[.screen itemcget picked -state] eq "normal"} {
@@ -264,7 +279,7 @@ foreach name [list drawh levelsinc spritesinc tilesh tilesinc] {
 
 ## Parse .h files for constants.
 foreach line [split [string cat $drawh $tilesh] \n] {
-	foreach var {screen_height screen_width tilemap_width unique_tiles_count} {
+	foreach var {screen_height screen_width tilemap_width unique_tiles_count lives_draw_max} {
 		if {[regexp -- [string cat {^#define[[:blank:]]+} [string toupper $var] {[[:blank:]]+([[:graph:]]+)[[:blank:]]*.*$}] $line match value]} {
 			set $var $value
 		}
@@ -443,6 +458,15 @@ foreach element {score bonus} count {7 3} {
 }
 
 
+## Create lives.
+set photo [image create photo]
+for {set y 0} {$y<$::lives_draw_max} {incr y} {
+	lassign [dict get $::coords tiles [list cook small]] row column
+	copyTile $::tilesphoto $photo $row $column 0 $y
+}
+set lives $photo
+
+
 ## Display.
 frame .sprites
 dict for {sname simage} [lsort -stride 2 -dictionary $sprites ] {
@@ -577,6 +601,7 @@ dict for {type name} $burgertypes {
 menu .menu.player
 .menu.player add command -command [list addScore] -label "Score"
 .menu.player add command -command [list addBonus] -label "Bonus"
+.menu.player add command -command [list addLives] -label "Lives"
 
 
 ## Create opponents menu.
