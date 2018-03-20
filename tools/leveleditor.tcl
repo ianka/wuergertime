@@ -52,7 +52,7 @@ proc applyGrid {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders picked cursor} {
+	foreach tag {grid floors ladders burgers plates picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -101,6 +101,11 @@ proc addXyTags {tag x y} {
 						.screen addtag [list xy [expr {$x+1}] [expr {$y+$i}]] withtag $item
 					}
 				}
+				burger - plate {
+					for {set i 0} {$i<5} {incr i} {
+						.screen addtag [list xy [expr {$x+$i}] $y] withtag $item
+					}
+				}
 			}
 		}
 	}
@@ -135,6 +140,25 @@ proc addLadder {type len} {
 		-tags [list picked ladders [list ladder $type $len]]
 }
 
+
+## Add a burger component.
+proc addBurger {type} {
+	set ::xdiff 0
+	set ::ydiff 0
+	.screen itemconfigure picked \
+		-state normal -image [dict get $::burgers $type] \
+		-tags [list picked burgers [list burger $type]]
+}
+
+
+## Add a plate.
+proc addPlate {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	.screen itemconfigure picked \
+		-state normal -image $::plate \
+		-tags [list picked plates [list plate]]
+}
 
 
 ## Drop a picked item or pick a dropped one.
@@ -349,6 +373,25 @@ proc ladder {type len} {
 }
 
 
+## Create burger components and plate.
+set burgertypes [dict create buntop "Bun Top" tomato "Tomato" patty "Patty" cheesesalad "Cheese+Salad" bunbottom "Bun Bottom"]
+set burgers [dict create]
+foreach type [dict keys $burgertypes] {
+	set photo [image create photo]
+	foreach side {left middleleft middle middleright right} x {0 1 2 3 4} {
+		lassign [dict get $::coords tiles [list burger $type $side]] row column
+		copyTile $::tilesphoto $photo $row $column $x 0
+	}
+	dict set burgers $type $photo
+}
+set photo [image create photo]
+foreach side {left middleleft middle middleright right} x {0 1 2 3 4} {
+	lassign [dict get $::coords tiles [list plate $side]] row column
+	copyTile $::tilesphoto $photo $row $column $x 0
+}
+set plate $photo
+
+
 ## Display.
 frame .sprites
 dict for {sname simage} [lsort -stride 2 -dictionary $sprites ] {
@@ -461,7 +504,7 @@ dict for {type name} $floortypes {
 
 ## Create ladders menu.
 menu .menu.ladders
-dict for {type name} $laddertypes  {
+dict for {type name} $laddertypes {
 	menu .menu.ladders.$type
 		for {set len 1} {$len<=$screen_height} {incr len} {
 			.menu.ladders.$type add command -command [list addLadder $type $len] -label $len
@@ -472,6 +515,11 @@ dict for {type name} $laddertypes  {
 
 ## Create burgers menu.
 menu .menu.burgers
+dict for {type name} $burgertypes {
+	.menu.burgers add command -command [list addBurger $type] -label $name
+}
+.menu.burgers add separator
+.menu.burgers add command -command [list addPlate] -label "Plate"
 
 
 ## Create plays menu.
