@@ -40,6 +40,19 @@ proc copyTile {from to row column x y {mirror 0}} {
 }
 
 
+## Validate a string is an integer within a range.
+proc validateInteger {string from to} {
+	if {![string is integer -strict $string]} {
+		return false
+	}
+	if {$string<$from} {
+		return false
+	}
+
+	expr {$string<=$to}
+}
+
+
 ##
 ## GUI procedures.
 ##
@@ -55,6 +68,43 @@ proc rearrangeByLayer {} {
 	foreach tag {grid floors ladders burgers plates scores bonuses lives picked cursor} {
 		.screen raise $tag
 	}
+}
+
+
+## Switch to another level.
+proc switchLevel {} {
+	## Skip if level is the same.
+	if {$::previousLevel eq $::level} {
+		return true
+	}
+
+	## Save current state.
+	dict set ::groups $::previousLevel [dict map {group state} [dict get $::groups $::previousLevel] {
+		set state [set ::group$group]
+	}]
+
+	## Apply state from new level.
+	dict for {group state} [dict get $::groups $::level] {
+		set ::group$group $state
+	}
+
+	## Save previous level.
+	set ::previousLevel $::level
+
+	## Hide/show groups.
+	applyGroups
+}
+
+
+## Apply groups.
+proc applyGroups {} {
+	for {set g 1} {$g<100} {incr g} {
+		applyGroup $g
+	}
+}
+
+proc applyGroup {g} {
+	.screen itemconfigure [list group $g] -state [expr {[set ::group$g]?"normal":"hidden"}]
 }
 
 
@@ -146,6 +196,8 @@ proc removeXyTags {tag} {
 proc addFloor {type len} {
 	set ::xdiff 0
 	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
 	.screen itemconfigure picked \
 		-state normal -image [floor $type $len] \
 		-tags [list picked floors [list floor $type $len]]
@@ -156,6 +208,8 @@ proc addFloor {type len} {
 proc addLadder {type len} {
 	set ::xdiff 0
 	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
 	.screen itemconfigure picked \
 		-state normal -image [ladder $type $len] \
 		-tags [list picked ladders [list ladder $type $len]]
@@ -166,6 +220,8 @@ proc addLadder {type len} {
 proc addBurger {type} {
 	set ::xdiff 0
 	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
 	.screen itemconfigure picked \
 		-state normal -image [dict get $::burgers $type] \
 		-tags [list picked burgers [list burger $type]]
@@ -176,6 +232,8 @@ proc addBurger {type} {
 proc addPlate {} {
 	set ::xdiff 0
 	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
 	.screen itemconfigure picked \
 		-state normal -image $::plate \
 		-tags [list picked plates [list plate]]
@@ -186,6 +244,8 @@ proc addPlate {} {
 proc addScore {} {
 	set ::xdiff 0
 	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
 	.screen itemconfigure picked \
 		-state normal -image $::score \
 		-tags [list picked scores [list score]]
@@ -196,6 +256,8 @@ proc addScore {} {
 proc addBonus {} {
 	set ::xdiff 0
 	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
 	.screen itemconfigure picked \
 		-state normal -image $::bonus \
 		-tags [list picked bonuses [list bonus]]
@@ -206,6 +268,8 @@ proc addBonus {} {
 proc addLives {} {
 	set ::xdiff 0
 	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
 	.screen itemconfigure picked \
 		-state normal -image $::lives \
 		-tags [list picked lives [list lives]]
@@ -218,6 +282,9 @@ proc dropOrPick {x y} {
 		## Drop.
 		## Add xy tags to picked item.
 		addXyTags picked [expr {[gc $x]+$::xdiff}] [expr {[gc $y]+$::ydiff}]
+
+		## Add group tag.
+		.screen addtag [list group $::group] withtag picked
 
 		## Remove the picked tag from all items that had it.
 		.screen dtag picked picked
@@ -515,17 +582,50 @@ bind .screen <ButtonPress-1> {dropOrPick %x %y}
 
 
 ##
-## Import data from file.
+## Levels and groups.
 ##
-.screen create image 0 0 -tags picked -anchor nw
-addFloor bothcaps 10
-.screen moveto picked [sc 5] [sc 10]
-dropOrPick [sc 5] [sc 10]
+
+## Setup groups dict.
+set groups [dict create]
+for {set l 0} {$l<100} {incr l} {
+	for {set g 1} {$g<100} {incr g} {
+		dict set groups $l $g 0
+	}
+}
 
 
-## Create picked item.
-#.screen create image 0 0 -state hidden -tags picked -anchor nw
+## Setup spinbox/checkbox frame.
+frame .bottom
+frame .bottom.groups
+ttk::label .bottom.grouplabel -text "Group:"
+set ::previousLevel 0
+set ::level 0
+ttk::spinbox .bottom.level -width 2 -from 0 -to 99 -textvariable ::level -validate focusout -validatecommand {validateInteger %P 0 99} -command switchLevel
+ttk::label .bottom.levellabel -text "Level:"
+set ::group 1
+ttk::spinbox .bottom.group -width 2 -from 1 -to 99 -textvariable ::group -validate focusout -validatecommand {validateInteger %P 1 99}
 
+set gs {}
+for {set y 0} {$y<5} {incr y} {
+	for {set x 0} {$x<20} {incr x} {
+		set g [expr {$y*20+$x}]
+		if {$g!=0} {
+			set group$g 0
+			ttk::checkbutton .bottom.groups.$g -text [format %02d $g] -variable ::group$g -command [list applyGroup $g]
+			lappend gs .bottom.groups.$g
+		} else {
+			lappend gs x
+		}
+	}
+	grid {*}$gs
+	set gs {}
+}
+
+grid .bottom.levellabel  .bottom.groups
+grid .bottom.level       ^              -sticky n
+grid .bottom.grouplabel  ^
+grid .bottom.group       ^              -sticky n
+grid columnconfigure .bottom 0 -pad 30
 
 
 ##
@@ -548,22 +648,6 @@ bind . <Control-s> savefile
 .menu.file add separator
 .menu.file add command -command exit -label "Quit" -underline 0 -accelerator "Crtl+Q"
 bind . <Control-q> exit
-
-
-## Create levels menu.
-menu .menu.levels
-.menu.levels add command -command addLevel    -label "Add…"    -underline 0
-.menu.levels add command -command removeLevel -label "Remove…" -underline 0
-.menu.levels add command -command swapLevels  -label "Swap…"   -underline 0
-.menu.levels add separator
-
-
-## Create groups menu.
-menu .menu.groups
-.menu.groups add command -command addGroup    -label "Add…"    -underline 0
-.menu.groups add command -command removeGroup -label "Remove…" -underline 0
-.menu.groups add command -command swapGroups  -label "Swap…"   -underline 0
-.menu.groups add separator
 
 
 ## Create floors menu.
@@ -619,9 +703,7 @@ bind . <Control-g> {set grid [expr {!$grid}] ; applyGrid}
 
 
 ## Setup menubar.
-.menu add cascade -menu .menu.file       -label "File"       -underline 0
-.menu add cascade -menu .menu.levels     -label "Levels"     -underline 0
-.menu add cascade -menu .menu.groups     -label "Groups"     -underline 0
+.menu add cascade -menu .menu.file       -label "File"       -underline 1
 .menu add cascade -menu .menu.floors     -label "Floors"     -underline 0
 .menu add cascade -menu .menu.ladders    -label "Ladders"    -underline 0
 .menu add cascade -menu .menu.burgers    -label "Burgers"    -underline 0
@@ -636,8 +718,23 @@ bind . <Control-g> {set grid [expr {!$grid}] ; applyGrid}
 ##
 wm title . "Würgertime Level Editor"
 wm protocol . WM_DELETE_WINDOW exit
+pack .bottom -side bottom -fill x
 pack .screen
 . configure -menu .menu
+
+
+##
+## Import data from file.
+##
+.screen create image 0 0 -tags picked -anchor nw
+addFloor bothcaps 10
+.screen moveto picked [sc 5] [sc 10]
+dropOrPick [sc 5] [sc 10]
+
+
+## Create picked item.
+#.screen create image 0 0 -state hidden -tags picked -anchor nw
+
 
 
 ## Drop into tk event loop.
