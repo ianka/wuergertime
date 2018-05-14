@@ -65,7 +65,7 @@ proc applyGrid {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates scores bonuses lives gamesigns picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores bonuses lives gamesigns labels picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -116,11 +116,12 @@ proc applyCursorPosition {x y} {
 		## Hide cursor.
 		.screen itemconfigure cursor -state hidden
 
-		## Delete picked item.
+		## Delete picked items.
 		.screen delete picked
 
-		## Create replacement to picked item.
-		.screen create image 0 0 -state hidden -tags picked -anchor nw
+		## Create replacement to picked items.
+		.screen create image 0 0 -state hidden -tags [list images pickedimage picked] -anchor nw
+		.screen create text 0 0 -state hidden -tags [list labels pickedlabel picked] -anchor c
 
 		## Raise the cursor.
 		.screen raise cursor picked
@@ -130,7 +131,8 @@ proc applyCursorPosition {x y} {
 		.screen moveto cursor [expr {[sc [gc $x]]-2}] [expr {[sc [gc $y]]-2}]
 
 		## Move picked item.
-		.screen moveto picked [sc [expr {[gc $x]+$::xdiff}]] [sc [expr {[gc $y]+$::ydiff}]]
+		.screen moveto pickedimage [sc [expr {[gc $x]+$::xdiff}]] [sc [expr {[gc $y]+$::ydiff}]]
+		.screen moveto pickedlabel [sc [expr {[gc $x]+$::xdiff-1}]] [sc [expr {[gc $y]+$::ydiff-1}]]
 	}
 }
 
@@ -199,15 +201,24 @@ proc removeXyTags {tag} {
 }
 
 
+## Add picked group label.
+proc addPickedGroupLabel {group tags} {
+	.screen itemconfigure pickedlabel \
+		-state normal -fill white -font $::grouplabelfont -text [format %02d $group] -angle 30 \
+		-tags [list labels pickedlabel picked {*}$tags]
+}
+
+
 ## Add a floor item.
 proc addFloor {type len} {
 	set ::xdiff 0
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list floor $type $len]
+	.screen itemconfigure pickedimage \
 		-state normal -image [floor $type $len] \
-		-tags [list picked floors [list floor $type $len]]
+		-tags [list images pickedimage picked floors [list floor $type $len]]
 }
 
 
@@ -217,9 +228,10 @@ proc addLadder {type len} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list ladder $type $len]
+	.screen itemconfigure pickedimage \
 		-state normal -image [ladder $type $len] \
-		-tags [list picked ladders [list ladder $type $len]]
+		-tags [list images pickedimage picked ladders [list ladder $type $len]]
 }
 
 
@@ -229,9 +241,10 @@ proc addBurger {type} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list burger $type]
+	.screen itemconfigure pickedimage \
 		-state normal -image [dict get $::burgers $type] \
-		-tags [list picked burgers [list burger $type]]
+		-tags [list images pickedimage picked burgers [list burger $type]]
 }
 
 
@@ -241,9 +254,10 @@ proc addPlate {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list plate]
+	.screen itemconfigure pickedimage \
 		-state normal -image $::plate \
-		-tags [list picked plates [list plate]]
+		-tags [list images pickedimage picked plates [list plate]]
 }
 
 
@@ -253,9 +267,10 @@ proc addScore {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list score]
+	.screen itemconfigure pickedimage \
 		-state normal -image $::score \
-		-tags [list picked scores [list score]]
+		-tags [list images pickedimage picked scores [list score]]
 }
 
 
@@ -265,9 +280,10 @@ proc addBonus {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list bonus]
+	.screen itemconfigure pickedimage \
 		-state normal -image $::bonus \
-		-tags [list picked bonuses [list bonus]]
+		-tags [list images pickedimage picked bonuses [list bonus]]
 }
 
 
@@ -277,9 +293,10 @@ proc addLives {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list lives]
+	.screen itemconfigure pickedimage \
 		-state normal -image $::lives \
-		-tags [list picked lives [list lives]]
+		-tags [list images pickedimage picked lives [list lives]]
 }
 
 
@@ -289,46 +306,58 @@ proc addGameSign {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	.screen itemconfigure picked \
+	addPickedGroupLabel $::group [list gamesign]
+	.screen itemconfigure pickedimage \
 		-state normal -image $::gamesign \
-		-tags [list picked gamesigns [list gamesign]]
+		-tags [list images pickedimage picked gamesigns [list gamesign]]
 }
 
 
 
 ## Drop a picked item or pick a dropped one.
 proc dropOrPick {x y} {
-	if {[.screen itemcget picked -state] eq "normal"} {
+	if {[.screen itemcget pickedimage -state] eq "normal"} {
 		## Drop.
-		## Add xy tags to picked item.
+		## Add xy tags to picked items.
 		addXyTags picked [expr {[gc $x]+$::xdiff}] [expr {[gc $y]+$::ydiff}]
 
 		## Add group tag.
 		.screen addtag [list group $::group] withtag picked
 
-		## Remove the picked tag from all items that had it.
+		## Remove the picked tags from all items that had it.
 		.screen dtag picked picked
+		.screen dtag pickedimage pickedimage
+		.screen dtag pickedlabel pickedlabel
 
 		## Create replacement to picked item.
-		.screen create image 0 0 -state hidden -tags picked -anchor nw
+		.screen create image 0 0 -state hidden -tags [list images pickedimage picked] -anchor nw
+		.screen create text 0 0 -state hidden -tags [list labels pickedlabel picked] -anchor c
 
 		## Rearrange by layer.
 		rearrangeByLayer
 	} else {
-		## Pick the latest item at the cursor position.
- 		set item [lindex [.screen find withtag [list xy [gc $x] [gc $y]]] end]
+		## Pick the latest two items at the cursor position.
+		foreach item [lrange [.screen find withtag [list xy [gc $x] [gc $y]]] end-1 end] {
+			if {"images" in [.screen gettags $item]} {
+				## Set diff to cursor for image item.
+				lassign [.screen coords $item] xi yi
+				set ::xdiff [expr {[gc $xi]-[gc $x]}]
+				set ::ydiff [expr {[gc $yi]-[gc $y]}]
 
-		## Set diff to cursor.
-		if {$item ne {}} {
-			lassign [.screen coords $item] xi yi
-			set ::xdiff [expr {[gc $xi]-[gc $x]}]
-			set ::ydiff [expr {[gc $yi]-[gc $y]}]
+				## Add the picked tags to the selected item.
+				.screen addtag pickedimage withtag $item
+				.screen addtag picked withtag $item
 
-			## Add the picked tag to the selected item.
-			.screen addtag picked withtag $item
+				## Remove all xy tags from item.
+				removeXyTags pickedimage
+			} elseif {"labels" in [.screen gettags $item]} {
+				## Add the picked tags to the selected item.
+				.screen addtag pickedlabel withtag $item
+				.screen addtag picked withtag $item
 
-			## Remove all xy tags from item.
-			removeXyTags picked
+				## Remove all xy tags from item.
+				removeXyTags pickedlabel
+			}
 		}
 	}
 }
@@ -583,6 +612,10 @@ dict for {sname simage} [lsort -stride 2 -dictionary $sprites ] {
 #pack .sprites
 
 
+## Fonts.
+set grouplabelfont [font create -family monospace -weight bold -size 14]
+
+
 ##
 ## Screen
 ##
@@ -766,7 +799,7 @@ pack .screen
 ##
 ## Import data from file.
 ##
-.screen create image 0 0 -tags picked -anchor nw
+.screen create image 0 0 -tags [list images pickedimage picked] -anchor nw
 addFloor bothcaps 10
 .screen moveto picked [sc 5] [sc 10]
 dropOrPick [sc 5] [sc 10]
