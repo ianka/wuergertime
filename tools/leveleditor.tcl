@@ -63,6 +63,26 @@ proc applyGrid {} {
 }
 
 
+## Apply labels state.
+proc applyLabels {} {
+	if {$::labels} {
+		## Turn on labels for all visible groups.
+		for {set g 1} {$g<100} {incr g} {
+			if {[set ::group$g]} {
+				foreach item [.screen find withtag [list group $g]] {
+					if {"labels" in [.screen gettags $item]} {
+						.screen itemconfigure $item -state normal
+					}
+				}
+			}
+		}
+	} else {
+		## Turn off all labels.
+		.screen itemconfigure labels -state hidden
+	}
+}
+
+
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
 	foreach tag {grid floors ladders burgers plates scores bonuses lives gamesigns labels picked cursor} {
@@ -104,7 +124,15 @@ proc applyGroups {} {
 }
 
 proc applyGroup {g} {
-	.screen itemconfigure [list group $g] -state [expr {[set ::group$g]?"normal":"hidden"}]
+	if {$::labels} {
+		.screen itemconfigure [list group $g] -state [expr {[set ::group$g]?"normal":"hidden"}]
+	} else {
+		foreach item [.screen find withtag [list group $g]] {
+			if {"labels" ni [.screen gettags $item]} {
+				.screen itemconfigure $item -state [expr {[set ::group$g]?"normal":"hidden"}]
+			}
+		}
+	}
 }
 
 
@@ -664,6 +692,7 @@ for {set l 0} {$l<100} {incr l} {
 		dict set groups $l $g 0
 	}
 }
+set labels 1
 
 
 ## Setup spinbox/checkbox frame.
@@ -772,7 +801,9 @@ menu .menu.decoration
 ## Create view menu.
 menu .menu.view
 .menu.view add checkbutton -variable grid -command applyGrid -label "Grid" -underline 0 -accelerator "Crtl+G"
+.menu.view add checkbutton -variable labels -command applyLabels -label "Labels" -underline 0 -accelerator "Crtl+L"
 bind . <Control-g> {set grid [expr {!$grid}] ; applyGrid}
+bind . <Control-l> {set labels [expr {!$labels}] ; applyLabels}
 
 
 ## Setup menubar.
