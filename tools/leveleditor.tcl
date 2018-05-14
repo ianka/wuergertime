@@ -65,7 +65,7 @@ proc applyGrid {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates scores bonuses lives picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores bonuses lives gamesigns picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -177,6 +177,13 @@ proc addXyTags {tag x y} {
 						.screen addtag [list xy $x [expr {$y+$i}]] withtag $item
 					}
 				}
+				gamesign {
+					for {set i 0} {$i<5} {incr i} {
+						for {set j 0} {$j<12} {incr j} {
+							.screen addtag [list xy [expr {$x+$j}] [expr {$y+$i}]] withtag $item
+						}
+					}
+				}
 			}
 		}
 	}
@@ -274,6 +281,19 @@ proc addLives {} {
 		-state normal -image $::lives \
 		-tags [list picked lives [list lives]]
 }
+
+
+## Add game sign.
+proc addGameSign {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
+	.screen itemconfigure picked \
+		-state normal -image $::gamesign \
+		-tags [list picked gamesigns [list gamesign]]
+}
+
 
 
 ## Drop a picked item or pick a dropped one.
@@ -534,6 +554,25 @@ for {set y 0} {$y<$::lives_draw_max} {incr y} {
 set lives $photo
 
 
+## Create "Würgertime" game sign.
+set photo [image create photo]
+set y 0
+foreach tiles {{{sign top} {sign top} {sign top} {sign top} {sign top} {sign top} {open on left} {open on right} {sign top} {sign top} {sign top} {sign top}}
+	{{sign left} {w upper left} {w upper right} {space} {space} {space} {burger buntop left} {burger buntop right} {space} {space} {space} {sign right}}
+	{{sign left} {w lower left} {w lower right} {uerger left} {uerger middle} {uerger right} {burger patty left} {burger patty right} {time left} {time middle} {time right} {sign right}}
+	{{plate left} {plate middle} {plate middle} {plate middle} {plate middle} {sign left} {burger bunbottom left} {burger bunbottom right} {sign right} {plate middle} {plate middle} {plate right}}
+	{{sign right} {space} {space} {space} {space} {plate left} {plate middle} {plate middle} {plate right} {space} {space} {sign left}}} {
+	set x 0
+	foreach tile $tiles {
+		lassign [dict get $::coords tiles $tile] row column
+		copyTile $::tilesphoto $photo $row $column $x $y
+		incr x
+	}
+	incr y
+}
+set gamesign $photo
+
+
 ## Display.
 frame .sprites
 dict for {sname simage} [lsort -stride 2 -dictionary $sprites ] {
@@ -694,6 +733,7 @@ menu .menu.opponents
 
 ## Create decoration menu.
 menu .menu.decoration
+.menu.decoration add command -command [list addGameSign] -label "Game Sign"
 
 
 ## Create view menu.
