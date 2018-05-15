@@ -243,7 +243,7 @@ proc addFloor {type len} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list floor $type $len]
+	addPickedGroupLabel $::group [list [list floor $type $len]]
 	.screen itemconfigure pickedimage \
 		-state normal -image [floor $type $len] \
 		-tags [list images pickedimage picked floors [list floor $type $len]]
@@ -256,7 +256,7 @@ proc addLadder {type len} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list ladder $type $len]
+	addPickedGroupLabel $::group [list [list ladder $type $len]]
 	.screen itemconfigure pickedimage \
 		-state normal -image [ladder $type $len] \
 		-tags [list images pickedimage picked ladders [list ladder $type $len]]
@@ -269,7 +269,7 @@ proc addBurger {type} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list burger $type]
+	addPickedGroupLabel $::group [list [list burger $type]]
 	.screen itemconfigure pickedimage \
 		-state normal -image [dict get $::burgers $type] \
 		-tags [list images pickedimage picked burgers [list burger $type]]
@@ -282,7 +282,7 @@ proc addPlate {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list plate]
+	addPickedGroupLabel $::group [list [list plate]]
 	.screen itemconfigure pickedimage \
 		-state normal -image $::plate \
 		-tags [list images pickedimage picked plates [list plate]]
@@ -295,7 +295,7 @@ proc addScore {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list score]
+	addPickedGroupLabel $::group [list [list score]]
 	.screen itemconfigure pickedimage \
 		-state normal -image $::score \
 		-tags [list images pickedimage picked scores [list score]]
@@ -308,7 +308,7 @@ proc addBonus {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list bonus]
+	addPickedGroupLabel $::group [list [list bonus]]
 	.screen itemconfigure pickedimage \
 		-state normal -image $::bonus \
 		-tags [list images pickedimage picked bonuses [list bonus]]
@@ -321,7 +321,7 @@ proc addLives {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list lives]
+	addPickedGroupLabel $::group [list [list lives]]
 	.screen itemconfigure pickedimage \
 		-state normal -image $::lives \
 		-tags [list images pickedimage picked lives [list lives]]
@@ -334,7 +334,7 @@ proc addGameSign {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list gamesign]
+	addPickedGroupLabel $::group [list [list gamesign]]
 	.screen itemconfigure pickedimage \
 		-state normal -image $::gamesign \
 		-tags [list images pickedimage picked gamesigns [list gamesign]]
