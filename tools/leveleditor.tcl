@@ -149,7 +149,7 @@ proc applyCursorPosition {x y} {
 
 		## Create replacement to picked items.
 		.screen create image 0 0 -state hidden -tags [list images pickedimage picked] -anchor nw
-		.screen create text 0 0 -state hidden -tags [list labels pickedlabel picked] -anchor c
+		.screen create text 0 0 -state hidden -tags [list labels pickedlabel picked] -anchor se
 
 		## Raise the cursor.
 		.screen raise cursor picked
@@ -359,7 +359,7 @@ proc dropOrPick {x y} {
 
 		## Create replacement to picked item.
 		.screen create image 0 0 -state hidden -tags [list images pickedimage picked] -anchor nw
-		.screen create text 0 0 -state hidden -tags [list labels pickedlabel picked] -anchor c
+		.screen create text  0 0 -state hidden -tags [list labels pickedlabel picked] -anchor c
 
 		## Rearrange by layer.
 		rearrangeByLayer
@@ -506,7 +506,8 @@ proc loadLevels {filename} {
 	}
 
 	## Update screen objects from parsed data.
-	.screen create image 0 0 -tags [list images pickedimage picked] -anchor nw
+	.screen create image 0 0 -state hidden -tags [list images pickedimage picked] -anchor nw
+	.screen create text  0 0 -state hidden -tags [list labels pickedlabel picked] -anchor se
 	dict for {group components} $::levelcomponents {
 		foreach component $components {
 			set ::group $group
@@ -522,7 +523,8 @@ proc loadLevels {filename} {
 					lives  {addLives}
 				}
 				if {$item in {floor ladder burger plate sign score bonus lives}} {
-					.screen moveto picked [sc $x] [sc $y]
+					.screen moveto pickedimage [sc $x] [sc $y]
+					.screen moveto pickedlabel [sc [expr {$x-1}]] [sc [expr {$y-1}]]
 					dropOrPick [sc $x] [sc $y]
 				}
 			}
