@@ -329,7 +329,7 @@ proc addLives {} {
 
 
 ## Add game sign.
-proc addGameSign {} {
+proc addSign {} {
 	set ::xdiff 0
 	set ::ydiff 0
 	set ::group$::group 1
@@ -365,7 +365,7 @@ proc dropOrPick {x y} {
 		rearrangeByLayer
 	} else {
 		## Pick the latest two items at the cursor position.
-		foreach item [lrange [.screen find withtag [list xy [gc $x] [gc $y]]] end-1 end] {
+		foreach item [lrange [lsort -integer [.screen find withtag [list xy [gc $x] [gc $y]]]] end-1 end] {
 			if {"images" in [.screen gettags $item]} {
 				## Set diff to cursor for image item.
 				lassign [.screen coords $item] xi yi
@@ -389,6 +389,147 @@ proc dropOrPick {x y} {
 		}
 	}
 }
+
+
+## Load levels from file.
+foreach {simplecomponent params} {
+	player_start   {x y}
+	opponent_start {x y}
+	sign           {x y}
+	score          {x y}
+	bonus          {x y}
+	lives          {x y}
+	plate          {x y}
+	burger         {type x y}
+	floor          {type x y length}
+	ladder         {type x y length}} {
+	set i 1
+	set paramstring {}
+	foreach param $params {
+		append paramstring [string cat { } $param { [string tolower [lindex $match } $i {]]}]
+		incr i
+	}
+	lappend simplecomponentpatterns \
+		[string cat \
+			{^[[:blank:]]*LEVEL_COMPONENT_} \
+			[string toupper $simplecomponent] \
+			{\(} \
+			[string repeat {[[:blank:]]*(.+),} [expr {[llength $params]-1}]] \
+			{[[:blank:]]*(.+)\),[[:blank:]]*$}] \
+		[string cat {dict lappend ::levelcomponents $component [dict create item } $simplecomponent $paramstring {]}]
+}
+foreach leveloption {
+	stomp_once stomp_twice stomp_threetimes
+	opponent_single opponent_duo opponent_trio opponent_quad
+	opponent_randomness_minimal opponent_randomness_normal opponent_randomness_medium opponent_randomness_high
+	attack_wave_fast attack_wave_medium attack_wave_slow attack_wave_slowest
+	bonus_fast bonus_medium bonus_slow bonus_slowest} {
+		lappend leveloptionpatterns \
+			[string cat {^[[:blank:]]*LEVEL_ITEM_OPTION_} [string toupper $leveloption] {\|?[[:blank:]]*$}] \
+			[list lappend leveloptions $leveloption]
+}
+foreach opponent {egghead sausageman mrmustard} {
+	lappend attackwavepatterns \
+		[string cat	{^[[:blank:]]*LEVEL_ITEM_ATTACK_WAVE_} [string toupper $opponent] {,[[:blank:]]*$}] \
+		[list lappend attackwave $opponent]
+}
+
+proc loadLevels {filename} {
+	## Load the file.
+	set levels [loadInclude $filename]
+
+	## Parse the file contents.
+	set part 0
+	set levelsdrawingspart {}
+	set levelscomponentspart {}
+	set levelsdrawings   "const uint8_t LevelDrawings\[\] PROGMEM=\{"
+	set levelscomponents "const level_item_t LevelComponents\[\] PROGMEM=\{"
+	set levelsendpart    "\}\;"
+	set levelsparts [dict create]
+	foreach line [split $levels \n] {
+		if {$line eq $levelsdrawings} {
+			incr part
+			set levelsdrawingspart $part
+		}
+		if {$line eq $levelscomponents} {
+			incr part
+			set levelscomponentspart $part
+		}
+		if {$line eq $levelsendpart} {
+			incr part
+		}
+		dict lappend levelsparts $part $line
+	}
+
+	## Parse level drawings.
+	set level 0
+	set ::leveldrawings [dict create]
+	foreach line [lrange [dict get $levelsparts $levelsdrawingspart] 1 end] {
+		if {[regexp -- {^[[:blank:]]*([[:digit:]]+,[[:blank:]]*)+$} $line match]} {
+			foreach value [lrange [split $match ,] 0 end-1] {
+				set value [expr $value]
+				if {$value == 0} {
+					incr level
+				} else {
+					dict lappend ::leveldrawings $level $value
+				}
+			}
+		}
+	}
+
+	## Parse level components.
+	set component 1
+	set attackwave {}
+	set attackwavepatterns {}
+	set simplecomponentpatterns {}
+	set leveloptionpatterns {}
+	set leveloptions {}
+	set ::levelcomponents [dict create]
+	foreach line [lrange [dict get $levelsparts $levelscomponentspart] 1 end] {
+		switch -regexp -matchvar match -- $line \
+			{*}$::simplecomponentpatterns \
+			{*}$::leveloptionpatterns \
+			{*}$::attackwavepatterns \
+			{^[[:blank:]]*LEVEL_COMPONENT_END,[[:blank:]]*$} {
+				incr component
+			} \
+			{^[[:blank:]]*\),[[:blank:]]*$} {
+				if {$attackwave ne {}} {
+					dict lappend ::levelcomponents $component [dict create item attackwave list $attackwave]
+					set attackwave {}
+				}
+				if {$leveloptions ne {}} {
+					dict lappend ::levelcomponents $component [dict create item options options $leveloptions]
+					set leveloptions {}
+				}
+			}
+	}
+
+	## Update screen objects from parsed data.
+	.screen create image 0 0 -tags [list images pickedimage picked] -anchor nw
+	dict for {group components} $::levelcomponents {
+		foreach component $components {
+			set ::group $group
+			dict with component {
+				switch -- $item {
+					floor  {addFloor  $type $length}
+					ladder {addLadder $type $length}
+					burger {addBurger $type}
+					plate  {addPlate}
+					sign   {addSign}
+					score  {addScore}
+					bonus  {addBonus}
+					lives  {addLives}
+				}
+				if {$item in {floor ladder burger plate sign score bonus lives}} {
+					.screen moveto picked [sc $x] [sc $y]
+					dropOrPick [sc $x] [sc $y]
+				}
+			}
+		}
+	}
+}
+
 
 
 ##
@@ -416,7 +557,7 @@ if {[ catch {set parameters [cmdline::getoptions argv {
 
 
 ## Load include files.
-foreach name [list drawh levelsinc spritesinc tilesh tilesinc] {
+foreach name [list drawh spritesinc tilesh tilesinc] {
 	set $name [loadInclude [dict get $parameters -$name]]
 }
 
@@ -515,24 +656,24 @@ image delete $pcxphoto
 
 
 ## Create needed floor, if not already done.
-set floortypes [dict create nocaps "No Caps" leftcap "Left Cap" rightcap "Right Cap" bothcaps "Both Caps"]
+set floortypes [dict create cap_none "No Caps" cap_left "Left Cap" cap_right "Right Cap" cap_both "Both Caps"]
 set floors [dict create]
 proc floor {type len} {
 	if {[dict exists $::floors $type $len]} {
 		return [dict get $::floors $type $len]
 	}
-	set leftcap [expr {$type eq "leftcap"||$type eq "bothcaps"?1:0}]
-	set rightcap [expr {$type eq "rightcap"||$type eq "bothcaps"?1:0}]
+	set cap_left [expr {$type eq "cap_left"||$type eq "cap_both"?1:0}]
+	set cap_right [expr {$type eq "cap_right"||$type eq "cap_both"?1:0}]
 	set photo [image create photo]
-	for {set x $leftcap} {$x<$len-$rightcap} {incr x} {
+	for {set x $cap_left} {$x<$len-$cap_right} {incr x} {
 		lassign [dict get $::coords tiles [list floor middle]] row column
 		copyTile $::tilesphoto $photo $row $column $x 0
 	}
-	if {$leftcap} {
+	if {$cap_left} {
 		lassign [dict get $::coords tiles [list floor left]] row column
 		copyTile $::tilesphoto $photo $row $column 0 0
 	}
-	if {$rightcap} {
+	if {$cap_right} {
 		lassign [dict get $::coords tiles [list floor right]] row column
 		copyTile $::tilesphoto $photo $row $column [expr {$len-1}] 0
 	}
@@ -542,25 +683,25 @@ proc floor {type len} {
 
 
 ## Create needed ladder, if not already done.
-set laddertypes [dict create simple "Simple" continued "Continued" uponly "Up Only" both "Both"]
+set laddertypes [dict create simple "Simple" continued "Continued" uponly "Up Only" contuponly "Both"]
 set ladders [dict create]
 proc ladder {type len} {
 	if {[dict exists $::ladders $type $len]} {
 		return [dict get $::ladders $type $len]
 	}
-	set continued [expr {$type eq "continued"||$type eq "both"?1:0}]
-	set uponly [expr {$type eq "uponly"||$type eq "both"?1:0}]
+	set continued [expr {$type eq "continued"||$type eq "contuponly"?1:0}]
+	set uponly [expr {$type eq "uponly"||$type eq "contuponly"?1:0}]
 	set photo [image create photo]
 	foreach side {left right} x {0 1} {
 		lassign [dict get $::coords tiles [list ladder top [expr {$uponly?"uponly":"floorend"}] $side]] row column
 		copyTile $::tilesphoto $photo $row $column $x 0
-		for {set y 1} {$y<$len-1+$continued} {incr y} {
+		for {set y 1} {$y<$len} {incr y} {
 			lassign [dict get $::coords tiles [list ladder $side]] row column
 			copyTile $::tilesphoto $photo $row $column $x $y
 		}
 		if {!$continued} {
 			lassign [dict get $::coords tiles [list ladder bottom floorend $side]] row column
-			copyTile $::tilesphoto $photo $row $column $x [expr {$len-1}]
+			copyTile $::tilesphoto $photo $row $column $x $len
 		}
 	}
 	dict set ladders $type $len $photo
@@ -579,6 +720,20 @@ foreach type [dict keys $burgertypes] {
 	}
 	dict set burgers $type $photo
 }
+
+set photo [image create photo]
+$photo copy [image create photo -data {
+	iVBORw0KGgoAAAANSUhEUgAAACgAAAAICAYAAACLUr1bAAABBElEQVQ4y82U
+	sW0DMRAEZ9WCi3iGX4MbYOgevgC6Gip39B048hehGkQDcgXjgJYBV2BtcsfD
+	4bAgsAOA9PXAveBXuuJhLDZxiLZoFqV7RTta0ZpZG3qgMjRNkzkc+GrEGLsc
+	mjLPmatS55GBTYyL+CHdHVwBMGWV43ZGiVsOn/hP2TcOpXhrccWU3Qxb3HgU
+	DTeqNtxPuDxP57w9ir/AW4BLeD4RwDl9GD194gIX4YSX9x+TL4/iT3jJ/Mr3
+	35B0NLjl/N8hKVsc0ryV3JPMef24Y6ZpHMZqFa/+cGVBU5Wu6bOv0RGriHVS
+	pk70yPiDkWrmjsO0uTOicn9gM2IRx57Xae4bYav7h3DUrZAAAAAASUVORK5C
+	YII=
+	====}] -zoom [dict get $::parameters -zoom]
+dict set burgers placeholder $photo
+
 set photo [image create photo]
 foreach side {left middleleft middle middleright right} x {0 1 2 3 4} {
 	lassign [dict get $::coords tiles [list plate $side]] row column
@@ -779,6 +934,7 @@ dict for {type name} $burgertypes {
 	.menu.burgers add command -command [list addBurger $type] -label $name
 }
 .menu.burgers add separator
+.menu.burgers add command -command [list addBurger placeholder] -label "Placeholder"
 .menu.burgers add command -command [list addPlate] -label "Plate"
 
 
@@ -795,7 +951,7 @@ menu .menu.opponents
 
 ## Create decoration menu.
 menu .menu.decoration
-.menu.decoration add command -command [list addGameSign] -label "Game Sign"
+.menu.decoration add command -command [list addSign] -label "Game Sign"
 
 
 ## Create view menu.
@@ -830,10 +986,7 @@ pack .screen
 ##
 ## Import data from file.
 ##
-.screen create image 0 0 -tags [list images pickedimage picked] -anchor nw
-addFloor bothcaps 10
-.screen moveto picked [sc 5] [sc 10]
-dropOrPick [sc 5] [sc 10]
+loadLevels [dict get $::parameters -levelsinc]
 
 
 ## Create picked item.

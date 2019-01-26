@@ -99,10 +99,13 @@
 #define	LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN  2
 #define	LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD   3
 #define LEVEL_ITEM_LADDER               0xc0
+#define LEVEL_ITEM_LADDER_SIMPLE        0x00
 #define LEVEL_ITEM_LADDER_UPONLY        0x10
 #define LEVEL_ITEM_LADDER_CONTINUED     0x20
+#define LEVEL_ITEM_LADDER_CONTUPONLY    ((LEVEL_ITEM_LADDER_UPONLY|LEVEL_ITEM_LADDER_CONTINUED))
 #define LEVEL_ITEM_LADDER_LENGTH        0x0f
 #define LEVEL_ITEM_FLOOR                0x00
+#define LEVEL_ITEM_FLOOR_CAP_NONE       0x00
 #define LEVEL_ITEM_FLOOR_CAP_LEFT       0x40
 #define LEVEL_ITEM_FLOOR_CAP_RIGHT      0x20
 #define LEVEL_ITEM_FLOOR_CAP_BOTH       ((LEVEL_ITEM_FLOOR_CAP_LEFT|LEVEL_ITEM_FLOOR_CAP_RIGHT))
@@ -126,11 +129,10 @@ typedef struct {
 #define LEVEL_COMPONENT_OPPONENT_START(xc,yc) { component: LEVEL_ITEM_OPPONENT_START, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_ATTACK_WAVE(a,b,c,d,e,f,g,h) { component: LEVEL_ITEM_ATTACK_WAVES, { options: ((a|(b<<2)|(c<<4)|(d<<6)|(e<<8)|(f<<10)|(g<<12)|(h<<14))) } }
 
-
-#define LEVEL_COMPONENT_FLOOR(xc,yc,len,opts) { component: ((LEVEL_ITEM_FLOOR|len|opts)), { position: { x: xc, y: yc } } }
-#define LEVEL_COMPONENT_LADDER(xc,yc,len,opts) { component: ((LEVEL_ITEM_LADDER|len|opts)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_PLATE(xc,yc) { component: LEVEL_ITEM_PLATE, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_FLOOR(type,xc,yc,len) { component: ((LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_ ## type|len)), { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_LADDER(type,xc,yc,len) { component: ((LEVEL_ITEM_LADDER|LEVEL_ITEM_LADDER_ ## type|len)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_BURGER(type,xc,yc) { component: LEVEL_ITEM_BURGER_ ## type, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_SCORE(xc,yc) { component: LEVEL_ITEM_SCORE, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_BONUS(xc,yc) { component: LEVEL_ITEM_BONUS, { position: { x: xc, y: yc } } }
