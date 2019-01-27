@@ -85,7 +85,7 @@ proc applyLabels {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates scores bonuses lives gamesigns opponentstartpoints playerstartpoints labels picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores levels bonuses lives gamesigns opponentstartpoints playerstartpoints labels picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -94,7 +94,7 @@ proc rearrangeByLayer {} {
 ## Switch to another level.
 proc switchLevel {} {
 	## Skip if level is the same.
-	if {$::previousLevel eq $::level} {
+	if {$::previousLevel eq $::currentLevel} {
 		return true
 	}
 
@@ -104,12 +104,12 @@ proc switchLevel {} {
 	}]
 
 	## Apply state from new level.
-	dict for {group state} [dict get $::groups $::level] {
+	dict for {group state} [dict get $::groups $::currentLevel] {
 		set ::group$group $state
 	}
 
 	## Save previous level.
-	set ::previousLevel $::level
+	set ::previousLevel $::currentLevel
 
 	## Hide/show groups.
 	applyGroups
@@ -194,7 +194,7 @@ proc addXyTags {tag x y} {
 						.screen addtag [list xy [expr {$x+$i}] [expr {$y+1}]] withtag $item
 					}
 				}
-				bonus {
+				level - bonus {
 					for {set i 0} {$i<3} {incr i} {
 						.screen addtag [list xy [expr {$x+$i}] $y] withtag $item
 					}
@@ -306,6 +306,19 @@ proc addScore {} {
 	.screen itemconfigure pickedimage \
 		-state normal -image $::score \
 		-tags [list images pickedimage picked scores [list score]]
+}
+
+
+## Add level field.
+proc addLevel {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
+	addPickedGroupLabel $::group [list [list level]]
+	.screen itemconfigure pickedimage \
+		-state normal -image $::level \
+		-tags [list images pickedimage picked levels [list level]]
 }
 
 
@@ -429,6 +442,7 @@ foreach {simplecomponent params} {
 	opponentstartpoint {x y}
 	sign               {x y}
 	score              {x y}
+	level              {x y}
 	bonus              {x y}
 	lives              {x y}
 	plate              {x y}
@@ -551,12 +565,13 @@ proc loadLevels {filename} {
 					plate  {addPlate}
 					sign   {addSign}
 					score  {addScore}
+					level  {addLevel}
 					bonus  {addBonus}
 					lives  {addLives}
 					playerstartpoint   {addPlayerStartpoint}
 					opponentstartpoint {addOpponentStartpoint}
 				}
-				if {$item in {floor ladder burger plate sign score bonus}} {
+				if {$item in {floor ladder burger plate sign score level bonus}} {
 					.screen moveto pickedimage [sc $x] [sc $y]
 					.screen moveto pickedlabel [sc [expr {$x-1}]] [sc [expr {$y-1}]]
 					dropOrPick [sc $x] [sc $y]
@@ -826,8 +841,8 @@ $photo copy [image create photo -data {
 set opponentstartpoint $photo
 
 
-## Create score and bonus.
-foreach element {score bonus} count {7 3} {
+## Create score, level and bonus.
+foreach element {score level bonus} count {7 2 3} {
 	set photo [image create photo]
 	foreach side {left middle right} x {0 1 2} {
 		lassign [dict get $::coords tiles [list $element $side]] row column
@@ -938,9 +953,9 @@ set labels 1
 frame .bottom
 frame .bottom.groups
 ttk::label .bottom.grouplabel -text "Group:"
-set ::previousLevel 0
-set ::level 0
-ttk::spinbox .bottom.level -width 2 -from 0 -to 99 -textvariable ::level -validate focusout -validatecommand {validateInteger %P 0 99} -command switchLevel
+set ::previousLevel 1
+set ::currentLevel 1
+ttk::spinbox .bottom.level -width 2 -from 1 -to 99 -textvariable ::currentLevel -validate focusout -validatecommand {validateInteger %P 1 99} -command switchLevel
 ttk::label .bottom.levellabel -text "Level:"
 set ::group 1
 ttk::spinbox .bottom.group -width 2 -from 1 -to 99 -textvariable ::group -validate focusout -validatecommand {validateInteger %P 1 99}
@@ -1028,6 +1043,7 @@ menu .menu.misc
 .menu.misc add command -command [list addOpponentStartpoint] -label "Opponent Startpoint"
 .menu.misc add separator
 .menu.misc add command -command [list addScore] -label "Score"
+.menu.misc add command -command [list addLevel] -label "Level"
 .menu.misc add command -command [list addBonus] -label "Bonus"
 .menu.misc add command -command [list addLives] -label "Lives"
 .menu.misc add separator

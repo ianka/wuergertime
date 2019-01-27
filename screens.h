@@ -58,8 +58,9 @@
 #define LEVEL_ITEM_PLATE                0x86
 #define LEVEL_ITEM_SIGN                 0x87
 #define LEVEL_ITEM_SCORE                0x88
-#define LEVEL_ITEM_BONUS                0x89
-#define LEVEL_ITEM_LIVES                0x8a
+#define LEVEL_ITEM_LEVEL                0x89
+#define LEVEL_ITEM_BONUS                0x8a
+#define LEVEL_ITEM_LIVES                0x8b
 #define LEVEL_ITEM_OPTIONS              0x90
 #define LEVEL_ITEM_OPTION_STOMP_SHIFT   0
 #define LEVEL_ITEM_OPTION_STOMP_MASK    ((0x03<<LEVEL_ITEM_OPTION_STOMP_SHIFT))
@@ -135,6 +136,7 @@ typedef struct {
 #define LEVEL_COMPONENT_LADDER(type,xc,yc,len) { component: ((LEVEL_ITEM_LADDER|LEVEL_ITEM_LADDER_ ## type|len)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_BURGER(type,xc,yc) { component: LEVEL_ITEM_BURGER_ ## type, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_SCORE(xc,yc) { component: LEVEL_ITEM_SCORE, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_LEVEL(xc,yc) { component: LEVEL_ITEM_LEVEL, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_BONUS(xc,yc) { component: LEVEL_ITEM_BONUS, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_LIVES(xc,yc) { component: LEVEL_ITEM_LIVES, { position: { x: xc, y: yc } } }
 

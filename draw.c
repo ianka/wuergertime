@@ -489,6 +489,25 @@ void drawScore(uint8_t x, uint8_t y, uint32_t value) {
 }
 
 
+/* Draw level. */
+void drawLevel(uint8_t x, uint8_t y, uint16_t value) {
+  uint8_t c,i;
+
+	/* Print header. */
+	setTile(x,y,TILES0_LEVEL_LEFT);
+	setTile(x+1,y,TILES0_LEVEL_MIDDLE);
+	setTile(x+2,y,TILES0_LEVEL_RIGHT);
+
+	/* Print value. */
+	x+=2;
+	for(i=0;i<2;i++) {
+		c=value%10;
+		setTile(x--,y+1,TILES0_NUMBER_0+c);
+		value=value/10;
+	}
+}
+
+
 /* Draw bonus. */
 void drawBonus(uint8_t x, uint8_t y, uint16_t value) {
   uint8_t c,i;

@@ -57,6 +57,7 @@ uint16_t Bonus;
 uint8_t Lives;
 position_t GameScreenSignPosition;
 position_t GameScreenScorePosition;
+position_t GameScreenLevelPosition;
 position_t GameScreenBonusPosition;
 position_t GameScreenLivesPosition;
 typedef struct {
@@ -88,10 +89,17 @@ void selectLevel(uint8_t level) {
 	/* Remember level number. */
 	Level=level;
 
-	/* Skip level drawings to given level */
+	/* Start level descriptions with level 1. */
+	level--;
+
+	/* Skip level drawings to given level. */
 	while (level--) {
-		while (pgm_read_byte(&p)) p++;
+		/* Skip to next level description. */
+		while (pgm_read_byte(p)) p++;
 		p++;
+
+		/* Restart with first level if end of level descriptions reached. */
+		if (!pgm_read_byte(p)) p=LevelDrawings;
 	}
 
 	/* Remember level drawing pointer. */
@@ -243,6 +251,11 @@ void prepareLevel(void) {
 					GameScreenScorePosition.x=x;
 					GameScreenScorePosition.y=y;
 					break;
+				case LEVEL_ITEM_LEVEL:
+					/* Remember level position. */
+					GameScreenLevelPosition.x=x;
+					GameScreenLevelPosition.y=y;
+					break;
 				case LEVEL_ITEM_BONUS:
 					/* Remember bonus position. */
 					GameScreenBonusPosition.x=x;
@@ -387,6 +400,10 @@ void animateLevelStart(void) {
 					/* Draw score. */
 					DisplayedScore=Score;
 					drawScore(x,y,DisplayedScore);
+					break;
+				case LEVEL_ITEM_LEVEL:
+					/* Draw level. */
+					drawLevel(x,y,Level);
 					break;
 				case LEVEL_ITEM_BONUS:
 					/* Draw bonus. */
@@ -669,7 +686,7 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 }
 
 
-/* Update statistics on screen (score, bonus, lives etc.) */
+/* Update statistics on screen (score, level, bonus, lives etc.) */
 void updateGameScreenStatistics(void) {
 	/* Crawl to actual score. */
 	if (DisplayedScore+13 < Score)

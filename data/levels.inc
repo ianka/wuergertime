@@ -26,8 +26,11 @@
 
 /* Level descriptions. */
 const uint8_t LevelDrawings[] PROGMEM={
-	/* Level 0 */
+	/* Level 1 */
 	1, 2, 3, 0,
+
+	/* Level 2 */
+	1, 3, 0,
 
 	/* End of level drawings */
 	0
@@ -132,7 +135,8 @@ const level_item_t LevelComponents[] PROGMEM={
 	LEVEL_COMPONENT_BURGER(BUNTOP,23,3),
 
 	LEVEL_COMPONENT_SCORE(0,0),
-	LEVEL_COMPONENT_BONUS(23,0),
+	LEVEL_COMPONENT_LEVEL(22,0),
+	LEVEL_COMPONENT_BONUS(26,0),
 	LEVEL_COMPONENT_LIVES(0,27),
 
 	LEVEL_COMPONENT_END,

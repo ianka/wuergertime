@@ -109,8 +109,8 @@ void updateStartScreen(void) {
 	/* Check buttons. */
 	switch (checkControllerButtonsPressed(0,BTN_START)) {
 		case BTN_START:
-			/* Change to level 0 as soon start is pressed. */
-			selectLevel(0);
+			/* Change to level 1 as soon start is pressed. */
+			selectLevel(1);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
 			break;
 		default:
@@ -178,8 +178,8 @@ void updateHighscoresScreen(void) {
 	/* Check buttons. */
 	switch (checkControllerButtonsPressed(0,BTN_START)) {
 		case BTN_START:
-			/* Change to level 0 as soon start is pressed. */
-			selectLevel(0);
+			/* Change to level 1 as soon start is pressed. */
+			selectLevel(1);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
 			break;
 		default:

@@ -118,13 +118,17 @@
 
 
 /* Texts */
-#define TILES0_HURRY_LEFT utile(0,2,2)
-#define TILES0_HURRY_MIDDLE utile(0,2,3)
-#define TILES0_HURRY_RIGHT utile(0,2,4)
+#define TILES0_SCORE_LEFT utile(0,2,2)
+#define TILES0_SCORE_MIDDLE utile(0,2,3)
+#define TILES0_SCORE_RIGHT utile(0,2,4)
 
-#define TILES0_OUCH_LEFT utile(0,3,2)
-#define TILES0_OUCH_MIDDLE utile(0,3,3)
-#define TILES0_OUCH_RIGHT utile(0,3,4)
+#define TILES0_BONUS_LEFT utile(0,3,2)
+#define TILES0_BONUS_MIDDLE utile(0,3,3)
+#define TILES0_BONUS_RIGHT utile(0,3,4)
+
+#define TILES0_LEVEL_LEFT utile(0,4,2)
+#define TILES0_LEVEL_MIDDLE utile(0,4,3)
+#define TILES0_LEVEL_RIGHT utile(0,4,4)
 
 #define TILES0_TODO_LEFT stile(0,4,8)
 #define TILES0_TODO_RIGHT stile(0,5,8)
@@ -139,17 +143,17 @@
 #define TILES1_OPEN_OFF_LEFT stile(1,7,6)
 #define TILES1_OPEN_OFF_RIGHT stile(1,7,7)
 
-#define TILES0_SCORE_LEFT utile(0,3,13)
-#define TILES0_SCORE_MIDDLE utile(0,3,14)
-#define TILES0_SCORE_RIGHT utile(0,3,15)
+#define TILES0_HURRY_LEFT utile(0,3,13)
+#define TILES0_HURRY_MIDDLE utile(0,3,14)
+#define TILES0_HURRY_RIGHT utile(0,3,15)
 
-#define TILES0_BONUS_LEFT utile(0,4,13)
-#define TILES0_BONUS_MIDDLE utile(0,4,14)
-#define TILES0_BONUS_RIGHT utile(0,4,15)
+#define TILES0_OUCH_LEFT utile(0,4,13)
+#define TILES0_OUCH_MIDDLE utile(0,4,14)
+#define TILES0_OUCH_RIGHT utile(0,4,15)
 
-#define TILES0_KING_LEFT utile(0,4,2)
-#define TILES0_KING_MIDDLE utile(0,4,3)
-#define TILES0_KING_RIGHT utile(0,4,4)
+#define TILES0_KING_LEFT utile(0,4,7)
+#define TILES0_KING_MIDDLE utile(0,4,8)
+#define TILES0_KING_RIGHT utile(0,4,9)
 
 #define TILES0_W_UPPER_LEFT stile(0,0,5)
 #define TILES0_W_UPPER_RIGHT stile(0,0,6)
@@ -196,11 +200,11 @@
 
 
 /* Points */
-#define TILES0_POINT_1 utile(0,5,5)
-#define TILES0_POINT_2 utile(0,5,6)
-#define TILES0_POINT_50 utile(0,5,7)
-#define TILES0_POINT_00 utile(0,5,8)
-#define TILES0_POINT_0 utile(0,5,9)
+#define TILES0_POINT_1 utile(0,12,4)
+#define TILES0_POINT_2 utile(0,12,5)
+#define TILES0_POINT_50 utile(0,12,6)
+#define TILES0_POINT_00 utile(0,12,7)
+#define TILES0_POINT_0 utile(0,12,8)
 
 #define TILES0_POINTS_50 { TILES0_SPACE, TILES0_POINTS_50, TILES0_SPACE }
 #define TILES0_POINTS_100 { TILES0_POINT_1, TILES0_POINTS_00, TILES0_SPACE }
