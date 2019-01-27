@@ -462,7 +462,7 @@ foreach {simplecomponent params} {
 			{\(} \
 			[string repeat {[[:blank:]]*(.+),} [expr {[llength $params]-1}]] \
 			{[[:blank:]]*(.+)\),[[:blank:]]*$}] \
-		[string cat {dict lappend ::levelcomponents $component [dict create item } $simplecomponent $paramstring {]}]
+		[string cat {dict lappend levelcomponents $component [dict create item } $simplecomponent $paramstring {]}]
 }
 foreach leveloption {
 	stomp_once stomp_twice stomp_threetimes
@@ -481,6 +481,12 @@ foreach opponent {egghead sausageman mrmustard} {
 }
 
 proc loadLevels {filename} {
+	## Clear.
+	set ::currentLevel 1
+	set ::group 1
+	setupGroups
+	.screen delete images labels
+
 	## Load the file.
 	set levels [loadInclude $filename]
 
@@ -508,8 +514,7 @@ proc loadLevels {filename} {
 	}
 
 	## Parse level drawings.
-	set level 0
-	set ::leveldrawings [dict create]
+	set level 1
 	foreach line [lrange [dict get $levelsparts $levelsdrawingspart] 1 end] {
 		if {[regexp -- {^[[:blank:]]*([[:digit:]]+,[[:blank:]]*)+$} $line match]} {
 			foreach value [lrange [split $match ,] 0 end-1] {
@@ -517,7 +522,7 @@ proc loadLevels {filename} {
 				if {$value == 0} {
 					incr level
 				} else {
-					dict lappend ::leveldrawings $level $value
+					dict set ::groups $level $value 1
 				}
 			}
 		}
@@ -530,7 +535,7 @@ proc loadLevels {filename} {
 	set simplecomponentpatterns {}
 	set leveloptionpatterns {}
 	set leveloptions {}
-	set ::levelcomponents [dict create]
+	set levelcomponents [dict create]
 	foreach line [lrange [dict get $levelsparts $levelscomponentspart] 1 end] {
 		switch -regexp -matchvar match -- $line \
 			{*}$::simplecomponentpatterns \
@@ -541,11 +546,11 @@ proc loadLevels {filename} {
 			} \
 			{^[[:blank:]]*\),[[:blank:]]*$} {
 				if {$attackwave ne {}} {
-					dict lappend ::levelcomponents $component [dict create item attackwave list $attackwave]
+					dict lappend levelcomponents $component [dict create item attackwave list $attackwave]
 					set attackwave {}
 				}
 				if {$leveloptions ne {}} {
-					dict lappend ::levelcomponents $component [dict create item options options $leveloptions]
+					dict lappend levelcomponents $component [dict create item options options $leveloptions]
 					set leveloptions {}
 				}
 			}
@@ -554,7 +559,7 @@ proc loadLevels {filename} {
 	## Update screen objects from parsed data.
 	.screen create image 0 0 -state hidden -tags [list images pickedimage picked] -anchor nw
 	.screen create text  0 0 -state hidden -tags [list labels pickedlabel picked] -anchor se
-	dict for {group components} $::levelcomponents {
+	dict for {group components} $levelcomponents {
 		foreach component $components {
 			set ::group $group
 			dict with component {
@@ -592,6 +597,34 @@ proc loadLevels {filename} {
 }
 
 
+## Open a file.
+proc openFile {} {
+	set filename [tk_getOpenFile -initialdir [file dirname $::levelFile] -initialfile [file tail $::levelFile]]
+	if {$filename eq {}} return
+
+	loadLevels $filename
+	set ::levelFile $filename
+}
+
+## Revert to saved.
+proc revertToSaved {} {
+	loadLevels $::levelFile
+}
+
+## Save as file.
+proc saveFile {} {
+	saveLevels $::levelFile
+}
+
+## Save as new file.
+proc saveFileAs {} {
+ 	set filename [tk_getSaveFile -initialdir [file dirname $::levelFile] -initialfile [file tail $::levelFile]]
+	if {$filename eq {}} return
+
+	saveLevels $filename
+	set ::levelFile $filename
+}
+
 
 ##
 ## Initialization
@@ -615,6 +648,10 @@ if {[ catch {set parameters [cmdline::getoptions argv {
 	puts stderr $result
 	exit 1
 }
+
+
+## Setup default level file.
+set levelFile [dict get $::parameters -levelsinc]
 
 
 ## Load include files.
@@ -940,13 +977,17 @@ bind .screen <ButtonPress-1> {dropOrPick %x %y}
 ##
 
 ## Setup groups dict.
-set groups [dict create]
-for {set l 0} {$l<100} {incr l} {
+proc setupGroups {} {
+	set ::groups [dict create]
 	for {set g 1} {$g<100} {incr g} {
-		dict set groups $l $g 0
+		set ::group$g 0
+		for {set l 1} {$l<100} {incr l} {
+			dict set ::groups $l $g 0
+		}
 	}
 }
-set labels 1
+setupGroups
+set ::labels 1
 
 
 ## Setup spinbox/checkbox frame.
@@ -1082,9 +1123,9 @@ pack .screen
 
 
 ##
-## Import data from file.
+## Import data from default file.
 ##
-loadLevels [dict get $::parameters -levelsinc]
+revertToSaved
 
 
 ## Drop into tk event loop.
