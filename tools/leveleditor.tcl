@@ -85,7 +85,7 @@ proc applyLabels {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates scores levels bonuses lives gamesigns opponentstartpoints playerstartpoints labels picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores levels bonuses lives signs opponentstartpoints playerstartpoints labels picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -165,10 +165,11 @@ proc applyCursorPosition {x y} {
 }
 
 
-## Add/remove xy tags.
+## Add/remove xy and origin tags.
 proc addXyTags {tag x y} {
 	foreach item [.screen find withtag $tag] {
 		foreach t [.screen gettags $item] {
+			.screen addtag [list origin $x $y] withtag $item
 			switch -- [lindex $t 0] {
 				floor {
 					for {set i 0} {$i<[lindex $t 2]} {incr i} {
@@ -207,7 +208,7 @@ proc addXyTags {tag x y} {
 						.screen addtag [list xy $x [expr {$y+$i}]] withtag $item
 					}
 				}
-				gamesign {
+				sign {
 					for {set i 0} {$i<5} {incr i} {
 						for {set j 0} {$j<12} {incr j} {
 							.screen addtag [list xy [expr {$x+$j}] [expr {$y+$i}]] withtag $item
@@ -229,7 +230,7 @@ proc removeXyTags {tag} {
 	foreach item [.screen find withtag $tag] {
 		foreach t [.screen gettags $item] {
 			switch -- [lindex $t 0] {
-				xy {.screen dtag picked $t}
+				xy - origin {.screen dtag picked $t}
 			}
 		}
 	}
@@ -354,10 +355,10 @@ proc addSign {} {
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list [list gamesign]]
+	addPickedGroupLabel $::group [list [list sign]]
 	.screen itemconfigure pickedimage \
-		-state normal -image $::gamesign \
-		-tags [list images pickedimage picked gamesigns [list gamesign]]
+		-state normal -image $::sign \
+		-tags [list images pickedimage picked signs [list sign]]
 }
 
 
@@ -594,6 +595,106 @@ proc loadLevels {filename} {
 			}
 		}
 	}
+}
+
+
+## Save levels to file.
+proc saveLevels {filename} {
+	## Setup LevelDrawings part.
+	set levelsdrawings {}
+	dict for {level groups} $::groups {
+		set found 0
+		dict for {group state} $groups {
+			if {$state} {
+				set found 1
+				break
+			}
+		}
+		if {!$found} continue
+
+		append levelsdrawings "\t/* Level $level */\n\t"
+		dict for {group state} $groups {
+			if {$state} {
+				append levelsdrawings $group , { }
+			}
+		}
+		append levelsdrawings 0 , { } "\n\n"
+	}
+
+	## Setup LevelComponents part.
+	for {set g 1} {$g<100} {incr g} {
+		set items [.screen find withtag [list group $g]]
+		if {$items eq {}} continue
+
+		append levelscomponents "\t/* Component block $g */\n"
+		foreach item $items {
+			set tags [.screen gettags $item]
+			if {"images" in $tags} continue
+
+			set itemtype {}
+			foreach tag $tags {
+				switch -regexp -matchvar match -- $tag {
+					score - level - bonus - lives - plate - sign - playerstartpoint - opponentstartpoint {
+						set itemtype $tag
+					}
+					{^burger (.+)$} {
+						set itemtype burger
+						set type [lindex $match 1]
+					}
+					{^(floor) (.+) ([[:digit:]]+)$} - {^(ladder) (.+) ([[:digit:]]+)$} {
+						set itemtype [lindex $match 1]
+						set type     [lindex $match 2]
+						set length   [lindex $match 3]
+					}
+					{^origin ([[:digit:]]+) ([[:digit:]]+)$} {
+						set x [lindex $match 1]
+						set y [lindex $match 2]
+					}
+				}
+			}
+			switch -- $itemtype {
+				score - level - bonus - plate - sign {
+					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%2d,%2d),\n" [string toupper $itemtype] $x $y]
+				}
+				burger {
+					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%-12s%2d,%2d),\n" [string toupper $itemtype] [string toupper "$type,"] $x $y]
+				}
+				floor - ladder {
+					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%-11s%2d,%2d,%2d),\n" [string toupper $itemtype] [string toupper "$type,"] $x $y $length]
+				}
+				lives {
+					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%2d,%2d),\n" [string toupper $itemtype] $x [expr {$y-1+$::lives_draw_max}]]
+				}
+				playerstartpoint - opponentstartpoint {
+					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%2d,%2d),\n" [string toupper $itemtype] [expr {$x+1}] [expr {$y+2}]]
+				}
+				default {puts stderr $tags}
+			}
+		}
+		append levelscomponents "\tLEVEL_COMPONENT_END,\n\n"
+	}
+
+	## Write the file.
+	set fd [open $filename w+]
+	puts -nonewline $fd [string cat {#ifndef LEVELS_INC
+#define LEVELS_INC
+
+#include <avr/io.h> /* for uint8_t */
+#include <avr/pgmspace.h> /* for PROGMEM */
+
+/* Local includes */
+#include "../screens.h" /* for level_item_t */
+
+/* Level descriptions. */
+const uint8_t LevelDrawings[] PROGMEM=} "\{\n" $levelsdrawings {	/* End of level drawings */
+	0
+} "\};" {
+
+const level_item_t LevelComponents[] PROGMEM=} "\{\n" $levelscomponents "\};" {
+
+#endif /* LEVELS_INC */
+}]
+	close $fd
 }
 
 
@@ -918,7 +1019,7 @@ foreach tiles {{{sign top} {sign top} {sign top} {sign top} {sign top} {sign top
 	}
 	incr y
 }
-set gamesign $photo
+set sign $photo
 
 
 ## Display.
@@ -1126,7 +1227,6 @@ pack .screen
 ## Import data from default file.
 ##
 revertToSaved
-
 
 ## Drop into tk event loop.
 vwait endless
