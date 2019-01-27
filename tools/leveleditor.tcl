@@ -85,7 +85,7 @@ proc applyLabels {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates scores bonuses lives gamesigns labels picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores bonuses lives gamesigns opponentstartpoints playerstartpoints labels picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -210,6 +210,13 @@ proc addXyTags {tag x y} {
 				gamesign {
 					for {set i 0} {$i<5} {incr i} {
 						for {set j 0} {$j<12} {incr j} {
+							.screen addtag [list xy [expr {$x+$j}] [expr {$y+$i}]] withtag $item
+						}
+					}
+				}
+				playerstartpoint - opponentstartpoint {
+					for {set i 0} {$i<2} {incr i} {
+						for {set j 0} {$j<2} {incr j} {
 							.screen addtag [list xy [expr {$x+$j}] [expr {$y+$i}]] withtag $item
 						}
 					}
@@ -341,6 +348,31 @@ proc addSign {} {
 }
 
 
+## Add a player start point.
+proc addPlayerStartpoint {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
+	addPickedGroupLabel $::group [list [list playerstartpoint]]
+	.screen itemconfigure pickedimage \
+		-state normal -image $::playerstartpoint \
+		-tags [list images pickedimage picked playerstartpoints [list playerstartpoint]]
+}
+
+
+## Add an opponent start point.
+proc addOpponentStartpoint {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
+	addPickedGroupLabel $::group [list [list opponentstartpoint]]
+	.screen itemconfigure pickedimage \
+		-state normal -image $::opponentstartpoint \
+		-tags [list images pickedimage picked opponentstartpoints [list opponentstartpoint]]
+}
+
 
 ## Drop a picked item or pick a dropped one.
 proc dropOrPick {x y} {
@@ -393,16 +425,16 @@ proc dropOrPick {x y} {
 
 ## Load levels from file.
 foreach {simplecomponent params} {
-	player_start   {x y}
-	opponent_start {x y}
-	sign           {x y}
-	score          {x y}
-	bonus          {x y}
-	lives          {x y}
-	plate          {x y}
-	burger         {type x y}
-	floor          {type x y length}
-	ladder         {type x y length}} {
+	playerstartpoint   {x y}
+	opponentstartpoint {x y}
+	sign               {x y}
+	score              {x y}
+	bonus              {x y}
+	lives              {x y}
+	plate              {x y}
+	burger             {type x y}
+	floor              {type x y length}
+	ladder             {type x y length}} {
 	set i 1
 	set paramstring {}
 	foreach param $params {
@@ -521,11 +553,23 @@ proc loadLevels {filename} {
 					score  {addScore}
 					bonus  {addBonus}
 					lives  {addLives}
+					playerstartpoint   {addPlayerStartpoint}
+					opponentstartpoint {addOpponentStartpoint}
 				}
-				if {$item in {floor ladder burger plate sign score bonus lives}} {
+				if {$item in {floor ladder burger plate sign score bonus}} {
 					.screen moveto pickedimage [sc $x] [sc $y]
 					.screen moveto pickedlabel [sc [expr {$x-1}]] [sc [expr {$y-1}]]
 					dropOrPick [sc $x] [sc $y]
+				}
+				if {$item eq {lives}} {
+					.screen moveto pickedimage [sc $x] [sc [expr {$y+1-$::lives_draw_max}]]
+					.screen moveto pickedlabel [sc [expr {$x-1}]] [sc [expr {$y-$::lives_draw_max}]]
+					dropOrPick [sc $x] [sc [expr {$y+1-$::lives_draw_max}]]
+				}
+				if {$item in {playerstartpoint opponentstartpoint}} {
+					.screen moveto pickedimage [sc [expr {$x-1}]] [sc [expr {$y-2}]]
+					.screen moveto pickedlabel [sc [expr {$x-2}]] [sc [expr {$y-3}]]
+					dropOrPick [sc [expr {$x-1}]] [sc [expr {$y-2}]]
 				}
 			}
 		}
@@ -744,6 +788,44 @@ foreach side {left middleleft middle middleright right} x {0 1 2 3 4} {
 set plate $photo
 
 
+## Create player and opponent start points.
+set photo [image create photo]
+$photo copy [image create photo -data {
+	iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB50lEQVQ4y2Ng
+	QAObNv9JOdr88+oTxdc/fzJ+/f+L4ej/V2ILfn5ovnH1SfODFHT1TMicwtpn
+	Vz8v/jPjNz/Tg7NNfJE57lcEixm/CV4IsIhk42d/INFeMuMOW+5VBmyAue/B
+	a6HCuzfs0o8KMeAA+/h6he7KRNx45eb2GkWC/+Cuq6wLz91gIBJ8m11249e6
+	5qsMDAwMLG7nKlK+qEups7NsEttPpAGMYjZWLBxtr94smJHCWPpy6VWWf+wP
+	2iVDvBlIAHeLXLZycHxVYPoseF/FRoR/LgOJ4PnO13O53z1SYfrEupBN99+3
+	faQa8Oul6j7eR1/ZmML/fWb4se4cqfoZeOxsGBiucDEweR4R/vVxw0knUg0Q
+	0zBz+vfd/hfT05v/7jB4nU8m1QC+nxzJ32wi7zDdf/eqf5f/K/eFexmFiNW8
+	oeq2ENvOs+7PLE36GRgYGBh67jBejborT3RCOm144sbV4CuoSdrmme9ru/s9
+	NxIvFON0iTrzPqGtPHdunJO8BE/KjMgKfO9Pucogpq+u/5J9pxCz6Nzvz5n3
+	3Tz2juHRoR9O0me5k32eKrl/YHl+M/OXijZWAxgYGBgqHy5NYWDWLXx6WUbl
+	3EIBNr7r/xhUBL78+vLhzZ1nH1/1n3hgNQdZPQBjRcihwBh/4wAAAABJRU5E
+	rkJggg==
+	====}] -zoom [dict get $::parameters -zoom]
+set playerstartpoint $photo
+
+set photo [image create photo]
+$photo copy [image create photo -data {
+	iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB6UlEQVQ4y2Ng
+	QAMfPvyweHv71fTHcf3XfVnEf4gwsP6471J7/fPTD9MP7L9oga6eCZkzL6pv
+	+r+6+WsYuTjus3Ynhoknhgi8ZfwjsC3AIOwfK+t93sL+NUJcgtMZsAFeFs7t
+	qiKKs0NCIjkZcABRcXFOfna+2UUGwdtRJJSE5KcLsPPPZiAS3N5xefara88h
+	LslIrrXYoBH0JCY2iZNYA95/+Mj5dcWBJxcv3rdgPLPgyPTv3Oz3bUNNuxhI
+	AJVh9WV8334pMnw7ffv616+/dRlIBMysrLqizNzXmTj+/Vb8/ef7bVINEBMR
+	u/3z709Flr9bjzPsfixMqn6GyMgYhp9TVzKw3Dh4/f6GWz9UGRgYLpNigJ2d
+	j6rWeab7LC0fbx24dPeuJ6kGyHIJeb4JcDrAICWlYMHGwPyEiYmJ6GhcsXId
+	58fu1U9OnbxpwfTs2YMTfxj/bxblEppEtPWbn066xim02cxc/QRczFJcc3uF
+	Y+bs9o5+nC5hY2PjtJAzmt1plQxPyozICiYFN0+P/MfgezfRZxKzFOf2t++e
+	3T5x/CTDvt2HVC+eP+755evHPHkhuc333j3MxGoAAwMDw4a1RyxUmDjjxZ88
+	c+DbeVTx2smTDNPYvt1f++7mgfc/Pi78////CWT1AKjhwOTcbwi2AAAAAElF
+	TkSuQmCC
+	====}] -zoom [dict get $::parameters -zoom]
+set opponentstartpoint $photo
+
+
 ## Create score and bonus.
 foreach element {score bonus} count {7 3} {
 	set photo [image create photo]
@@ -940,20 +1022,20 @@ dict for {type name} $burgertypes {
 .menu.burgers add command -command [list addPlate] -label "Plate"
 
 
-## Create plays menu.
-menu .menu.player
-.menu.player add command -command [list addScore] -label "Score"
-.menu.player add command -command [list addBonus] -label "Bonus"
-.menu.player add command -command [list addLives] -label "Lives"
-
-
-## Create opponents menu.
-menu .menu.opponents
+## Create misc menu.
+menu .menu.misc
+.menu.misc add command -command [list addPlayerStartpoint] -label "Player Startpoint"
+.menu.misc add command -command [list addOpponentStartpoint] -label "Opponent Startpoint"
+.menu.misc add separator
+.menu.misc add command -command [list addScore] -label "Score"
+.menu.misc add command -command [list addBonus] -label "Bonus"
+.menu.misc add command -command [list addLives] -label "Lives"
+.menu.misc add separator
+.menu.misc add command -command [list addSign] -label "Game Sign"
 
 
 ## Create decoration menu.
 menu .menu.decoration
-.menu.decoration add command -command [list addSign] -label "Game Sign"
 
 
 ## Create view menu.
@@ -965,14 +1047,12 @@ bind . <Control-l> {set labels [expr {!$labels}] ; applyLabels}
 
 
 ## Setup menubar.
-.menu add cascade -menu .menu.file       -label "File"       -underline 1
-.menu add cascade -menu .menu.floors     -label "Floors"     -underline 0
-.menu add cascade -menu .menu.ladders    -label "Ladders"    -underline 0
-.menu add cascade -menu .menu.burgers    -label "Burgers"    -underline 0
-.menu add cascade -menu .menu.player     -label "Player"     -underline 0
-.menu add cascade -menu .menu.opponents  -label "Opponents"  -underline 0
-.menu add cascade -menu .menu.decoration -label "Decoration" -underline 0
-.menu add cascade -menu .menu.view       -label "View"       -underline 0
+.menu add cascade -menu .menu.file    -label "File"       -underline 1
+.menu add cascade -menu .menu.floors  -label "Floors"     -underline 0
+.menu add cascade -menu .menu.ladders -label "Ladders"    -underline 0
+.menu add cascade -menu .menu.burgers -label "Burgers"    -underline 0
+.menu add cascade -menu .menu.misc    -label "Misc"       -underline 0
+.menu add cascade -menu .menu.view    -label "View"       -underline 0
 
 
 ##
@@ -989,11 +1069,6 @@ pack .screen
 ## Import data from file.
 ##
 loadLevels [dict get $::parameters -levelsinc]
-
-
-## Create picked item.
-#.screen create image 0 0 -state hidden -tags picked -anchor nw
-
 
 
 ## Drop into tk event loop.

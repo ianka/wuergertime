@@ -143,12 +143,12 @@ void prepareLevel(void) {
 
 			/* Check for type of level item. */
 			switch (c) {
-				case LEVEL_ITEM_PLAYER_START:
+				case LEVEL_ITEM_PLAYERSTARTPOINT:
 					/* Remember player start position. */
 					Player.start_position.x=x;
 					Player.start_position.y=y;
 					break;
-				case LEVEL_ITEM_OPPONENT_START:
+				case LEVEL_ITEM_OPPONENTSTARTPOINT:
 					/* Remember opponent start position. */
 					if (opponent_start_index<OPPONENT_START_POSITION_MAX) {
 						OpponentStartPosition[opponent_start_index].x=x;
@@ -353,8 +353,8 @@ void animateLevelStart(void) {
 
 			/* Check for type of level item. */
 			switch (c) {
-				case LEVEL_ITEM_PLAYER_START:
-				case LEVEL_ITEM_OPPONENT_START:
+				case LEVEL_ITEM_PLAYERSTARTPOINT:
+				case LEVEL_ITEM_OPPONENTSTARTPOINT:
 				case LEVEL_ITEM_ATTACK_WAVES:
 				case LEVEL_ITEM_OPTIONS:
 				case LEVEL_ITEM_BURGER_PLACEHOLDER:
