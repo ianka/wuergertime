@@ -116,6 +116,15 @@ proc switchLevel {} {
 }
 
 
+## Switch displayed options group.
+proc switchOptionsGroup {} {
+	if {[grid slaves .right.options] ne {}} {
+		grid remove {*}[grid slaves .right.options]
+	}
+	grid .right.options.group$::currentOptionsGroup
+}
+
+
 ## Apply groups.
 proc applyGroups {} {
 	for {set g 1} {$g<100} {incr g} {
@@ -388,6 +397,34 @@ proc addOpponentStartpoint {} {
 }
 
 
+## Set level options.
+proc setOptions {options} {
+	set ::stompCount$::group {}
+	set ::opponentRandomness$::group {}
+	set ::opponentNumber$::group {}
+	set ::attackWaveSpeed$::group {}
+	set ::bonusSpeed$::group {}
+	foreach option $options {
+		switch -regexp -matchvar match -- $option {
+			{^stomp_(.*)$}               {set ::stompCount$::group         [lindex $match 1]}
+			{^opponent_randomness_(.*)$} {set ::opponentRandomness$::group [lindex $match 1]}
+			{^opponent_(.*)$}            {set ::opponentNumber$::group     [lindex $match 1]}
+			{^attack_wave_(.*)$}         {set ::attackWaveSpeed$::group    [lindex $match 1]}
+			{^bonus_(.*)$}               {set ::bonusSpeed$::group         [lindex $match 1]}
+		}
+	}
+}
+
+
+## Set attack waves.
+proc setAttackWaves {attackwaves} {
+	set ::group$::group 1
+	applyGroup $::group
+
+puts stderr $attackwaves
+}
+
+
 ## Drop a picked item or pick a dropped one.
 proc dropOrPick {x y} {
 	if {[.screen itemcget pickedimage -state] eq "normal"} {
@@ -484,8 +521,10 @@ foreach opponent {egghead sausageman mrmustard} {
 proc loadLevels {filename} {
 	## Clear.
 	set ::currentLevel 1
+	set ::currentOptionsGroup 1
 	set ::group 1
 	setupGroups
+	switchOptionsGroup
 	.screen delete images labels
 
 	## Load the file.
@@ -531,7 +570,7 @@ proc loadLevels {filename} {
 
 	## Parse level components.
 	set component 1
-	set attackwave {}
+	set attackwaves {}
 	set attackwavepatterns {}
 	set simplecomponentpatterns {}
 	set leveloptionpatterns {}
@@ -546,9 +585,9 @@ proc loadLevels {filename} {
 				incr component
 			} \
 			{^[[:blank:]]*\),[[:blank:]]*$} {
-				if {$attackwave ne {}} {
-					dict lappend levelcomponents $component [dict create item attackwave list $attackwave]
-					set attackwave {}
+				if {$attackwaves ne {}} {
+					dict lappend levelcomponents $component [dict create item attackwaves attackwaves $attackwaves]
+					set attackwaves {}
 				}
 				if {$leveloptions ne {}} {
 					dict lappend levelcomponents $component [dict create item options options $leveloptions]
@@ -576,6 +615,8 @@ proc loadLevels {filename} {
 					lives  {addLives}
 					playerstartpoint   {addPlayerStartpoint}
 					opponentstartpoint {addOpponentStartpoint}
+					options            {setOptions $options}
+					attackwaves        {setAttackWaves $attackwaves}
 				}
 				if {$item in {floor ladder burger plate sign score level bonus}} {
 					.screen moveto pickedimage [sc $x] [sc $y]
@@ -627,6 +668,29 @@ proc saveLevels {filename} {
 		if {$items eq {}} continue
 
 		append levelscomponents "\t/* Component block $g */\n"
+
+		## Add level options, if any.
+		set options {}
+		if {[set ::stompCount$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_STOMP_" [string toupper [set ::stompCount$g]]]
+		}
+		if {[set ::opponentNumber$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_" [string toupper [set ::opponentNumber$g]]]
+		}
+		if {[set ::opponentRandomness$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_" [string toupper [set ::opponentRandomness$g]]]
+		}
+		if {[set ::attackWaveSpeed$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_ATTACK_WAVE_" [string toupper [set ::attackWaveSpeed$g]]]
+		}
+		if {[set ::bonusSpeed$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_BONUS_" [string toupper [set ::bonusSpeed$g]]]
+		}
+		if {$options ne {}} {
+			append levelscomponents "\tLEVEL_COMPONENT_OPTIONS(\n" [join $options "|\n"] "\n\t),\n"
+		}
+
+		## Add screen items.
 		foreach item $items {
 			set tags [.screen gettags $item]
 			if {"images" in $tags} continue
@@ -1082,6 +1146,11 @@ proc setupGroups {} {
 	set ::groups [dict create]
 	for {set g 1} {$g<100} {incr g} {
 		set ::group$g 0
+		set ::stompCount$g {}
+		set ::opponentRandomness$g {}
+		set ::opponentNumber$g {}
+		set ::attackWaveSpeed$g {}
+		set ::bonusSpeed$g {}
 		for {set l 1} {$l<100} {incr l} {
 			dict set ::groups $l $g 0
 		}
@@ -1091,15 +1160,60 @@ setupGroups
 set ::labels 1
 
 
+## Setup options/attack waves frame.
+frame .right
+ttk::label .right.optiongrouplabel -text "Option Group:"
+ttk::spinbox .right.optiongroup \
+	-width 2 -from 1 -to 99 -textvariable ::currentOptionsGroup \
+	-validate focusout -validatecommand {validateInteger %P 1 99} \
+	-command switchOptionsGroup
+frame .right.options
+for {set g 1} {$g<100} {incr g} {
+	frame .right.options.group$g
+	ttk::label    .right.options.group$g.stomplabel              -text "Stomp:"
+	ttk::combobox .right.options.group$g.stomp                   -state readonly -values {{} once twice threetimes} -textvariable ::stompCount$g
+	ttk::label    .right.options.group$g.opponentnumberlabel     -text "Opponent number:"
+	ttk::combobox .right.options.group$g.opponentnumber          -state readonly -values {{} single duo trio quad} -textvariable ::opponentNumber$g
+	ttk::label    .right.options.group$g.opponentrandomnesslabel -text "Opponent randomness:"
+	ttk::combobox .right.options.group$g.opponentrandomness      -state readonly -values {{} minimal normal medium high} -textvariable ::opponentRandomness$g
+	ttk::label    .right.options.group$g.attackwavespeedlabel    -text "Attack wave speed:"
+	ttk::combobox .right.options.group$g.attackwavespeed         -state readonly -values {{} fast medium slow slowest} -textvariable ::attackWaveSpeed$g
+	ttk::label    .right.options.group$g.bonusspeedlabel         -text "Bonus speed:"
+	ttk::combobox .right.options.group$g.bonusspeed              -state readonly -values {{} fast medium slow slowest} -textvariable ::bonusSpeed$g
+
+	grid .right.options.group$g.stomplabel
+	grid .right.options.group$g.stomp
+	grid .right.options.group$g.opponentnumberlabel
+	grid .right.options.group$g.opponentnumber
+	grid .right.options.group$g.opponentrandomnesslabel
+	grid .right.options.group$g.opponentrandomness
+	grid .right.options.group$g.attackwavespeedlabel
+	grid .right.options.group$g.attackwavespeed
+	grid .right.options.group$g.bonusspeedlabel
+	grid .right.options.group$g.bonusspeed
+
+	grid .right.options.group$g
+	grid remove .right.options.group$g
+}
+grid .right.optiongrouplabel
+grid .right.optiongroup
+grid .right.options
+
+frame .right.attackwaves
+grid .right.options
+grid .right.attackwaves
+
+
 ## Setup spinbox/checkbox frame.
 frame .bottom
 frame .bottom.groups
-ttk::label .bottom.grouplabel -text "Group:"
 set ::previousLevel 1
 set ::currentLevel 1
+set ::currentOptionsGroup 1
 ttk::spinbox .bottom.level -width 2 -from 1 -to 99 -textvariable ::currentLevel -validate focusout -validatecommand {validateInteger %P 1 99} -command switchLevel
 ttk::label .bottom.levellabel -text "Level:"
 set ::group 1
+ttk::label .bottom.grouplabel -text "Group:"
 ttk::spinbox .bottom.group -width 2 -from 1 -to 99 -textvariable ::group -validate focusout -validatecommand {validateInteger %P 1 99}
 
 set gs {}
@@ -1218,6 +1332,7 @@ bind . <Control-l> {set labels [expr {!$labels}] ; applyLabels}
 ##
 wm title . "Würgertime Level Editor"
 wm protocol . WM_DELETE_WINDOW exit
+pack .right  -side right  -fill y
 pack .bottom -side bottom -fill x
 pack .screen
 . configure -menu .menu
