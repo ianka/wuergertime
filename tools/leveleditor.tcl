@@ -659,7 +659,7 @@ proc saveLevels {filename} {
 				append levelsdrawings $group , { }
 			}
 		}
-		append levelsdrawings 0 , { } "\n\n"
+		append levelsdrawings "0,\n\n"
 	}
 
 	## Setup LevelComponents part.
@@ -718,19 +718,19 @@ proc saveLevels {filename} {
 			}
 			switch -- $itemtype {
 				score - level - bonus - plate - sign {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%2d,%2d),\n" [string toupper $itemtype] $x $y]
+					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x $y]
 				}
 				burger {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%-12s%2d,%2d),\n" [string toupper $itemtype] [string toupper "$type,"] $x $y]
+					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y]
 				}
 				floor - ladder {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%-11s%2d,%2d,%2d),\n" [string toupper $itemtype] [string toupper "$type,"] $x $y $length]
+					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y $length]
 				}
 				lives {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%2d,%2d),\n" [string toupper $itemtype] $x [expr {$y-1+$::lives_draw_max}]]
+					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x [expr {$y-1+$::lives_draw_max}]]
 				}
 				playerstartpoint - opponentstartpoint {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%s(%2d,%2d),\n" [string toupper $itemtype] [expr {$x+1}] [expr {$y+2}]]
+					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] [expr {$x+1}] [expr {$y+2}]]
 				}
 				default {puts stderr $tags}
 			}
