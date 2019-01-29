@@ -93,7 +93,7 @@
 #define LEVEL_ITEM_OPTION_BONUS_SLOWEST ((3<<LEVEL_ITEM_OPTION_BONUS_SHIFT))
 #define LEVEL_ITEM_PLAYERSTARTPOINT     0x91
 #define LEVEL_ITEM_OPPONENTSTARTPOINT   0x92
-#define LEVEL_ITEM_ATTACK_WAVES         0x93
+#define LEVEL_ITEM_ATTACKWAVES          0x93
 #define LEVEL_ITEM_ATTACK_WAVE_SHIFT    2
 #define LEVEL_ITEM_ATTACK_WAVE_MASK     0x03
 #define LEVEL_ITEM_ATTACK_WAVE_EGGHEAD     1
@@ -128,7 +128,7 @@ typedef struct {
 #define LEVEL_COMPONENT_OPTIONS(opts) { component: LEVEL_ITEM_OPTIONS, { options: opts } }
 #define LEVEL_COMPONENT_PLAYERSTARTPOINT(xc,yc) { component: LEVEL_ITEM_PLAYERSTARTPOINT, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_OPPONENTSTARTPOINT(xc,yc) { component: LEVEL_ITEM_OPPONENTSTARTPOINT, { position: { x: xc, y: yc } } }
-#define LEVEL_COMPONENT_ATTACK_WAVE(a,b,c,d,e,f,g,h) { component: LEVEL_ITEM_ATTACK_WAVES, { options: ((a|(b<<2)|(c<<4)|(d<<6)|(e<<8)|(f<<10)|(g<<12)|(h<<14))) } }
+#define LEVEL_COMPONENT_ATTACKWAVES(a,b,c,d,e,f,g,h) { component: LEVEL_ITEM_ATTACKWAVES, { options: ((a|(b<<2)|(c<<4)|(d<<6)|(e<<8)|(f<<10)|(g<<12)|(h<<14))) } }
 
 #define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_PLATE(xc,yc) { component: LEVEL_ITEM_PLATE, { position: { x: xc, y: yc } } }

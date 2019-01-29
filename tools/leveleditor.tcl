@@ -118,10 +118,21 @@ proc switchLevel {} {
 
 ## Switch displayed options group.
 proc switchOptionsGroup {} {
+	createOptionsGroup $::currentOptionsGroup
 	if {[grid slaves .right.options] ne {}} {
 		grid remove {*}[grid slaves .right.options]
 	}
 	grid .right.options.group$::currentOptionsGroup
+}
+
+
+## Switch displayed attack waves group.
+proc switchAttackWavesGroup {} {
+	createAttackWavesGroup $::currentAttackWavesGroup
+	if {[grid slaves .right.attackwaves] ne {}} {
+		grid remove {*}[grid slaves .right.attackwaves]
+	}
+	grid .right.attackwaves.group$::currentAttackWavesGroup
 }
 
 
@@ -418,10 +429,12 @@ proc setOptions {options} {
 
 ## Set attack waves.
 proc setAttackWaves {attackwaves} {
-	set ::group$::group 1
-	applyGroup $::group
-
-puts stderr $attackwaves
+	createAttackWavesGroup $::group
+	set w 0
+	foreach attackwave $attackwaves {
+		set ::attackWave$::group.$w $attackwave
+		incr w
+	}
 }
 
 
@@ -514,17 +527,19 @@ foreach leveloption {
 }
 foreach opponent {egghead sausageman mrmustard} {
 	lappend attackwavepatterns \
-		[string cat	{^[[:blank:]]*LEVEL_ITEM_ATTACK_WAVE_} [string toupper $opponent] {,[[:blank:]]*$}] \
-		[list lappend attackwave $opponent]
+		[string cat	{^[[:blank:]]*LEVEL_ITEM_ATTACK_WAVE_} [string toupper $opponent] {,?[[:blank:]]*$}] \
+		[list lappend attackwaves $opponent]
 }
 
 proc loadLevels {filename} {
 	## Clear.
 	set ::currentLevel 1
 	set ::currentOptionsGroup 1
+	set ::currentAttackWavesGroup 1
 	set ::group 1
 	setupGroups
 	switchOptionsGroup
+	switchAttackWavesGroup
 	.screen delete images labels
 
 	## Load the file.
@@ -688,6 +703,17 @@ proc saveLevels {filename} {
 		}
 		if {$options ne {}} {
 			append levelscomponents "\tLEVEL_COMPONENT_OPTIONS(\n" [join $options "|\n"] "\n\t),\n"
+		}
+
+		## Add attack waves, if any.
+		set attackwaves {}
+		for {set w 0} {$w<8} {incr w} {
+			if {[set ::attackWave$g.$w] ne {}} {
+				lappend attackwaves [string cat "\t\tLEVEL_ITEM_ATTACK_WAVE_" [string toupper [set ::attackWave$g.$w]]]
+			}
+		}
+		if {$attackwaves ne {}} {
+			append levelscomponents "\tLEVEL_COMPONENT_ATTACKWAVES(\n" [join $attackwaves ",\n"] "\n\t),\n"
 		}
 
 		## Add screen items.
@@ -1151,6 +1177,9 @@ proc setupGroups {} {
 		set ::opponentNumber$g {}
 		set ::attackWaveSpeed$g {}
 		set ::bonusSpeed$g {}
+		for {set w 0} {$w<8} {incr w} {
+			set ::attackWave$g.$w {}
+		}
 		for {set l 1} {$l<100} {incr l} {
 			dict set ::groups $l $g 0
 		}
@@ -1168,7 +1197,9 @@ ttk::spinbox .right.optiongroup \
 	-validate focusout -validatecommand {validateInteger %P 1 99} \
 	-command switchOptionsGroup
 frame .right.options
-for {set g 1} {$g<100} {incr g} {
+proc createOptionsGroup {g} {
+	if {[winfo exists .right.options.group$g]} return
+
 	frame .right.options.group$g
 	ttk::label    .right.options.group$g.stomplabel              -text "Stomp:"
 	ttk::combobox .right.options.group$g.stomp                   -state readonly -values {{} once twice threetimes} -textvariable ::stompCount$g
@@ -1199,8 +1230,28 @@ grid .right.optiongrouplabel
 grid .right.optiongroup
 grid .right.options
 
+ttk::label .right.attackwavesgrouplabel -text "Attack Waves Group:"
+ttk::spinbox .right.attackwavesgroup \
+	-width 2 -from 1 -to 99 -textvariable ::currentAttackWavesGroup \
+	-validate focusout -validatecommand {validateInteger %P 1 99} \
+	-command switchAttackWavesGroup
 frame .right.attackwaves
-grid .right.options
+proc createAttackWavesGroup {g} {
+	if {[winfo exists .right.attackwaves.group$g]} return
+
+	frame .right.attackwaves.group$g
+	for {set w 0} {$w<8} {incr w} {
+		ttk::label    .right.attackwaves.group$g.wavelabel$w -text "Opponent $w:"
+		ttk::combobox .right.attackwaves.group$g.wave$w -state readonly -values {{} egghead sausageman mrmustard} -textvariable ::attackWave$g.$w
+		grid .right.attackwaves.group$g.wavelabel$w
+		grid .right.attackwaves.group$g.wave$w
+	}
+	grid .right.attackwaves.group$g
+	grid remove .right.attackwaves.group$g
+}
+
+grid .right.attackwavesgrouplabel
+grid .right.attackwavesgroup
 grid .right.attackwaves
 
 
@@ -1210,6 +1261,7 @@ frame .bottom.groups
 set ::previousLevel 1
 set ::currentLevel 1
 set ::currentOptionsGroup 1
+set ::currentAttackWavesGroup 1
 ttk::spinbox .bottom.level -width 2 -from 1 -to 99 -textvariable ::currentLevel -validate focusout -validatecommand {validateInteger %P 1 99} -command switchLevel
 ttk::label .bottom.levellabel -text "Level:"
 set ::group 1

@@ -164,7 +164,7 @@ void prepareLevel(void) {
 						opponent_start_index++;
 					}
 					break;
-				case LEVEL_ITEM_ATTACK_WAVES:
+				case LEVEL_ITEM_ATTACKWAVES:
 					/* Remember attack waves. */
 					OpponentAttackWaves=pgm_read_word(&(q->options));
 					break;
@@ -368,7 +368,7 @@ void animateLevelStart(void) {
 			switch (c) {
 				case LEVEL_ITEM_PLAYERSTARTPOINT:
 				case LEVEL_ITEM_OPPONENTSTARTPOINT:
-				case LEVEL_ITEM_ATTACK_WAVES:
+				case LEVEL_ITEM_ATTACKWAVES:
 				case LEVEL_ITEM_OPTIONS:
 				case LEVEL_ITEM_BURGER_PLACEHOLDER:
 				case LEVEL_ITEM_BURGER_BUNTOP:
