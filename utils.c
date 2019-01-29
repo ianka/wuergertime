@@ -34,7 +34,7 @@ uint8_t fastrandom(void) {
 
 
 /* Initialize RAM from program memory. */
-void meminit(void *dst, void *src, uint8_t count) {
+void meminit(void *dst, const void *src, uint8_t count) {
 	uint8_t i;
 	for (i=0;i<count;i++,src++,dst++)
 		*((uint8_t*)dst)=pgm_read_byte(src);
