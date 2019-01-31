@@ -25,7 +25,7 @@
 
 
 /* Number of lives at beginning of game. */
-#define DEFAULT_LIVES 1
+#define DEFAULT_LIVES 3
 
 /* Default bonus whenever a life is lost. */
 #define DEFAULT_BONUS 999
@@ -231,5 +231,6 @@ uint8_t decrementBonus(void);
 uint8_t decrementBonusFast(void);
 uint8_t animateHurry(void);
 void dropAllBurgersOffScreen(void);
+uint8_t allBurgersServed(void);
 
 #endif /* SCREENS_H */

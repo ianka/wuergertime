@@ -425,14 +425,26 @@ void removeOpponentIfHit(uint8_t index) {
 	/* Check if opponent is hit by any burger component. */
 	if (checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite))) {
 		/* Yes. Kick it from the screen. */
-		changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
-
-		/* Initialize hit speed. */
-		Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
+		kickOpponent(index);
 
 		/* Score for hit opponent. */
 		Score+=SCORE_OPPONENT_HIT;
 	}
+}
+
+
+/* Kick an opponent from screen. */
+void kickOpponent(uint8_t index) {
+	/* Skip invalid and hit opponent. */
+	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
+			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
+		return;
+
+	/* Kick opponent from the screen. */
+	changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
+
+	/* Initialize hit speed. */
+	Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
 }
 
 

@@ -105,6 +105,7 @@ void changeOpponentDirection(uint8_t index, uint8_t direction);
 void selectOpponentDirection(uint8_t index);
 void moveOpponent(uint8_t index);
 void removeOpponentIfHit(uint8_t index);
+void kickOpponent(uint8_t index);
 uint8_t checkOpponentCaughtPlayer(uint8_t index);
 
 

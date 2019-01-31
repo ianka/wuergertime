@@ -832,3 +832,33 @@ void dropAllBurgersOffScreen(void) {
 		}
 }
 
+
+/* Check if all burgers are on their plates. */
+uint8_t allBurgersServed() {
+	uint8_t burger;
+
+	/* Check all burgers. */
+	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
+		/* Skip unused plates. */
+		if (GameScreenBurger[burger].component[0].type == LEVEL_ITEM_INVALID) continue;
+
+		/* Check buntop position for small burger. */
+		if (GameScreenBurger[burger].component[2].type == LEVEL_ITEM_BURGER_BUNTOP
+			&& GameScreenBurger[burger].component[2].half_y == (GameScreenBurger[burger].component[0].half_y-6)) continue;
+
+		/* Check buntop position for medium burger. */
+		if (GameScreenBurger[burger].component[3].type == LEVEL_ITEM_BURGER_BUNTOP
+			&& GameScreenBurger[burger].component[3].half_y == (GameScreenBurger[burger].component[0].half_y-8)) continue;
+
+		/* Check buntop position for large burger. */
+		if (GameScreenBurger[burger].component[4].type == LEVEL_ITEM_BURGER_BUNTOP
+			&& GameScreenBurger[burger].component[4].half_y == (GameScreenBurger[burger].component[0].half_y-10)) continue;
+
+		/* Burger not served. */
+		return 0;
+	}
+
+	/* All burgers are served. */
+	return 1;
+}
+

@@ -183,6 +183,10 @@ void updateInGamePlayScreen(void) {
 	/* Check if we are at hurry moment. */
 	if (Bonus == HURRY_BONUS)
 		ChangeGameScreen(GAME_SCREEN_LEVEL_HURRY);
+
+	/* Switch to bonus screen if all burgers are served. */
+	if (allBurgersServed())
+		ChangeGameScreen(GAME_SCREEN_LEVEL_BONUS);
 }
 
 void cleanupInGamePlayScreen(void) {
@@ -207,13 +211,61 @@ void cleanupInGameHurryScreen(void) {
 
 
 /*
- *  The bonus screen is showed when a bonus item was collected.
+ *  The bonus screen is showed when all burgers have been served.
  *  It shows the bonus animation on the level screen.
  */
 void initInGameBonusScreen(void) {
+	uint8_t i;
+
+	/* Kick all opponents off-screen. */
+	for (i=0;i<OPPONENT_MAX;i++)
+		kickOpponent(i);
+
+	/* Fast bonus counting. */
+	GameScreenOptions&=~LEVEL_ITEM_OPTION_BONUS_MASK;
+
+	/* Draw bonus items at all valid opponent start positions. */
+	for (i=0;i<OPPONENT_START_POSITION_MAX;i++) {
+		if (OpponentStartPosition[i].x != OPPONENT_START_POSITION_INVALID) {
+			/* Draw a random bonus item. */
+			if (fastrandom()%2)
+				drawSoda(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2);
+			else
+				drawFries(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2);
+		}
+	}
 }
 
 void updateInGameBonusScreen(void) {
+	uint8_t i;
+	uint8_t directional_buttons_held;
+
+	/* Burger drop animation. */
+	dropHattedComponents();
+	animateBurgers();
+
+	/* Check if player should move. */
+	if ((GameScreenAnimationPhase & 1)) {
+		/* Yes. Get held buttons. */
+		directional_buttons_held=checkControllerButtonsHeld(0,BTN_DIRECTIONS);
+
+		/* Select direction to move player. */
+		selectPlayerDirection(directional_buttons_held);
+
+		/* Move player into selected direction, if possible. */
+		movePlayer(directional_buttons_held);
+
+		/* Move all active opponents. */
+		for (i=0;i<OPPONENT_MAX;i++)
+			moveOpponent(i);
+	}
+
+	/* Update game screen statistics. */
+	updateGameScreenStatistics();
+
+	/* Decrement bonus, win level when bonus is zero. */
+	if (decrementBonus())
+		ChangeGameScreen(GAME_SCREEN_LEVEL_WIN);
 }
 
 void cleanupInGameBonusScreen(void) {
