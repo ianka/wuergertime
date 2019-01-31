@@ -717,11 +717,14 @@ proc saveLevels {filename} {
 		}
 
 		## Add screen items.
+		set xyitems [dict create]
 		foreach item $items {
 			set tags [.screen gettags $item]
 			if {"images" in $tags} continue
 
 			set itemtype {}
+			set type {}
+			set length {}
 			foreach tag $tags {
 				switch -regexp -matchvar match -- $tag {
 					score - level - bonus - lives - plate - sign - playerstartpoint - opponentstartpoint {
@@ -742,23 +745,40 @@ proc saveLevels {filename} {
 					}
 				}
 			}
-			switch -- $itemtype {
-				score - level - bonus - plate - sign {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x $y]
+
+			## Remember item by origin.
+			set xyitem [list [dict create itemtype $itemtype type $type length $length]]
+			if {[dict exists $xyitems $x $y]} {
+				dict set xyitems $x $y [concat [dict get $xyitems $x $y] $xyitem]
+			} else {
+				dict set xyitems $x $y $xyitem
+			}
+		}
+
+		## Output items, sorted by increasing x, then decreasing y origin.
+		dict for {x yitems} [lsort -stride 2 -index 0 -integer $xyitems] {
+			dict for {y items} [lsort -stride 2 -index 0 -integer -decreasing $yitems] {
+				foreach item $items {
+					dict with item {
+						switch -- $itemtype {
+							score - level - bonus - plate - sign {
+								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x $y]
+							}
+							burger {
+								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y]
+							}
+							floor - ladder {
+								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y $length]
+							}
+							lives {
+								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x [expr {$y-1+$::lives_draw_max}]]
+							}
+							playerstartpoint - opponentstartpoint {
+								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] [expr {$x+1}] [expr {$y+2}]]
+							}
+						}
+					}
 				}
-				burger {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y]
-				}
-				floor - ladder {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y $length]
-				}
-				lives {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x [expr {$y-1+$::lives_draw_max}]]
-				}
-				playerstartpoint - opponentstartpoint {
-					append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] [expr {$x+1}] [expr {$y+2}]]
-				}
-				default {puts stderr $tags}
 			}
 		}
 		append levelscomponents "\tLEVEL_COMPONENT_END,\n\n"
