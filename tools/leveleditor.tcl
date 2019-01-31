@@ -153,6 +153,7 @@ proc applyGroup {g} {
 			}
 		}
 	}
+	dict set ::groups $::currentLevel $g [set ::group$g]
 }
 
 
@@ -483,6 +484,38 @@ proc dropOrPick {x y} {
 				removeXyTags pickedlabel
 			}
 		}
+	}
+}
+
+
+## Change group of an item.
+proc changeGroup {x y} {
+	## Get the latest two items at the cursor position.
+	set items [lrange [lsort -integer [.screen find withtag [list xy [gc $x] [gc $y]]]] end-1 end]
+
+	## Remove old group tags.
+	foreach item $items {
+		foreach t [.screen gettags $item] {
+			switch -- [lindex $t 0] {
+				group {.screen dtag $item $t}
+			}
+		}
+	}
+
+	## Insert into new group.
+	foreach item $items {
+		## Add new group tag.
+		.screen addtag [list group $::group] withtag $item
+
+		## Change label.
+		if {"labels" in [.screen gettags $item]} {
+			.screen itemconfigure $item -text [format %02d $::group]
+		}
+
+		## Activate group.
+		set ::group$::group 1
+		dict set ::groups $::currentLevel $::group 1
+		applyGroup $::group
 	}
 }
 
@@ -1181,6 +1214,7 @@ bind .screen <Enter> {applyCursorPosition %x %y}
 bind .screen <Leave> {applyCursorPosition %x %y}
 bind . <KeyPress-Escape> {.screen itemconfigure picked -state hidden}
 bind .screen <ButtonPress-1> {dropOrPick %x %y}
+bind .screen <ButtonPress-3> {changeGroup %x %y}
 
 
 ##
