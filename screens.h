@@ -49,6 +49,7 @@
 
 /* Items in levels. */
 #define LEVEL_ITEM_INVALID              0x00
+#define LEVEL_ITEM_COUNTED              0x01
 #define LEVEL_ITEM_BURGER_PLACEHOLDER   0x80
 #define LEVEL_ITEM_BURGER_BUNTOP        0x81
 #define LEVEL_ITEM_BURGER_TOMATO        0x82
@@ -203,6 +204,10 @@ extern uint8_t Level;
 #define SCORE_COMPONENT_FALLING          10
 #define SCORE_COMPONENT_FALLING_CASCADE  20
 #define SCORE_OPPONENT_HIT              200
+#define SCORE_BURGER_SMALL              300
+#define SCORE_BURGER_MEDIUM             400
+#define SCORE_BURGER_LARGE              500
+
 
 extern uint8_t Scratchpad;
 extern uint32_t Score;
@@ -231,6 +236,6 @@ uint8_t decrementBonus(void);
 uint8_t decrementBonusFast(void);
 uint8_t animateHurry(void);
 void dropAllBurgersOffScreen(void);
-uint8_t allBurgersServed(void);
+uint8_t awardServedBurgers(void);
 
 #endif /* SCREENS_H */

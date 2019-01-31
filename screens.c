@@ -833,32 +833,44 @@ void dropAllBurgersOffScreen(void) {
 }
 
 
-/* Check if all burgers are on their plates. */
-uint8_t allBurgersServed() {
+/* Award any served burger to the score. */
+uint8_t awardServedBurgers(void) {
 	uint8_t burger;
 
 	/* Check all burgers. */
 	for (burger=0;burger<SCREEN_BURGER_MAX;burger++) {
-		/* Skip unused plates. */
-		if (GameScreenBurger[burger].component[0].type == LEVEL_ITEM_INVALID) continue;
+		/* Skip unused and already counted plates. */
+		if (GameScreenBurger[burger].component[0].type == LEVEL_ITEM_INVALID
+			|| GameScreenBurger[burger].component[0].type == LEVEL_ITEM_COUNTED) continue;
 
 		/* Check buntop position for small burger. */
 		if (GameScreenBurger[burger].component[2].type == LEVEL_ITEM_BURGER_BUNTOP
-			&& GameScreenBurger[burger].component[2].half_y == (GameScreenBurger[burger].component[0].half_y-6)) continue;
+			&& GameScreenBurger[burger].component[2].half_y == (GameScreenBurger[burger].component[0].half_y-6)) {
+			Score+=SCORE_BURGER_SMALL;
+			GameScreenBurger[burger].component[0].type = LEVEL_ITEM_COUNTED;
+			continue;
+		}
 
 		/* Check buntop position for medium burger. */
 		if (GameScreenBurger[burger].component[3].type == LEVEL_ITEM_BURGER_BUNTOP
-			&& GameScreenBurger[burger].component[3].half_y == (GameScreenBurger[burger].component[0].half_y-8)) continue;
+			&& GameScreenBurger[burger].component[3].half_y == (GameScreenBurger[burger].component[0].half_y-8)) {
+			Score+=SCORE_BURGER_MEDIUM;
+			GameScreenBurger[burger].component[0].type = LEVEL_ITEM_COUNTED;
+			continue;
+		}
 
 		/* Check buntop position for large burger. */
 		if (GameScreenBurger[burger].component[4].type == LEVEL_ITEM_BURGER_BUNTOP
-			&& GameScreenBurger[burger].component[4].half_y == (GameScreenBurger[burger].component[0].half_y-10)) continue;
+			&& GameScreenBurger[burger].component[4].half_y == (GameScreenBurger[burger].component[0].half_y-10)) {
+			Score+=SCORE_BURGER_LARGE;
+			GameScreenBurger[burger].component[0].type = LEVEL_ITEM_COUNTED;
+			continue;
+		}
 
-		/* Burger not served. */
+		/* At least one burger not served. */
 		return 0;
 	}
 
 	/* All burgers are served. */
 	return 1;
 }
-

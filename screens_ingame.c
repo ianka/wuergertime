@@ -184,8 +184,8 @@ void updateInGamePlayScreen(void) {
 	if (Bonus == HURRY_BONUS)
 		ChangeGameScreen(GAME_SCREEN_LEVEL_HURRY);
 
-	/* Switch to bonus screen if all burgers are served. */
-	if (allBurgersServed())
+	/* Award served burgers with score. Switch to bonus screen if all burgers are served. */
+	if (awardServedBurgers())
 		ChangeGameScreen(GAME_SCREEN_LEVEL_BONUS);
 }
 
