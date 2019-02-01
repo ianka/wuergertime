@@ -46,6 +46,9 @@
 /* Shift for bonus speed. */
 #define BONUS_DEFAULT_SHIFT 1
 
+/* Fast bonus decrement. */
+#define BONUS_FAST_DECREMENT 13
+
 
 /* Items in levels. */
 #define LEVEL_ITEM_INVALID              0x00
@@ -208,6 +211,7 @@ extern position_t GameScreenLevelPosition;
 #define SCORE_COMPONENT_FALLING          10
 #define SCORE_COMPONENT_FALLING_CASCADE  20
 #define SCORE_OPPONENT_HIT              200
+#define SCORE_BONUS_ITEM                100
 #define SCORE_BURGER_SMALL              150
 #define SCORE_BURGER_MEDIUM             200
 #define SCORE_BURGER_LARGE              250

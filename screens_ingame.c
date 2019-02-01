@@ -276,12 +276,8 @@ void initInGameBonusScreen(void) {
 }
 
 void updateInGameBonusScreen(void) {
-	uint8_t i;
-	uint8_t directional_buttons_held;
-
-	/* Burger drop animation. */
-	dropHattedComponents();
-	animateBurgers();
+	uint8_t i, directional_buttons_held;
+	uint8_t cleared=1;
 
 	/* Check if player should move. */
 	if ((GameScreenAnimationPhase & 1)) {
@@ -299,12 +295,48 @@ void updateInGameBonusScreen(void) {
 			moveOpponent(i);
 	}
 
+	/* Check if bonus stage cleared. */
+	for (i=0;i<OPPONENT_START_POSITION_MAX;i++) {
+		if (OpponentStartPosition[i].x != OPPONENT_START_POSITION_INVALID) {
+			/* Not cleared yet. */
+			cleared=0;
+
+			/* Check if bonus item reached. */
+			if (((getSpriteX(Player.sprite)>>3 == OpponentStartPosition[i].x-1)
+				|| (getSpriteX(Player.sprite)>>3 == OpponentStartPosition[i].x))
+				&& (getSpriteY(Player.sprite)>>3 == OpponentStartPosition[i].y)) {
+				/* Reached. Award score. */
+				Score+=SCORE_BONUS_ITEM;
+
+				/* Clear item. */
+				clearQuad(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2);
+				OpponentStartPosition[i].x=OPPONENT_START_POSITION_INVALID;
+			}
+		}
+	}
+
 	/* Update game screen statistics. */
 	updateGameScreenStatistics();
 
-	/* Decrement bonus, next level when bonus is zero. */
-	if (decrementBonus())
-		ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
+	/* Check if all bonus items have been collected. */
+	if (cleared) {
+		/* Yes. Decrement bonus fast. */
+		if (decrementBonusFast()) {
+			/* Next level as soon the bonus is zero and the displayed score is updated. */
+			if (DisplayedScore == Score)
+				ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
+		} else {
+			/* Not zero. Award score for each fast bonus tick. */
+			Score+=BONUS_FAST_DECREMENT;
+		}
+	} else {
+		/* No. Decrement bonus. */
+		if (decrementBonus()) {
+			/* Next level as soon the bonus is zero and the displayed score is updated. */
+			if (DisplayedScore == Score)
+				ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
+		}
+	}
 }
 
 void cleanupInGameBonusScreen(void) {

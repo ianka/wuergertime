@@ -797,8 +797,8 @@ uint8_t decrementBonusFast(void) {
 	if (Bonus == 0) return 1;
 
 	/* High speed bonus decrement. */
-	if (Bonus >= 13)
-		Bonus-=13;
+	if (Bonus >= BONUS_FAST_DECREMENT)
+		Bonus-=BONUS_FAST_DECREMENT;
 	else
 		Bonus=0;
 
