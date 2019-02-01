@@ -104,6 +104,20 @@ const tiles_burger_t ShapeBurgers[26][2] PROGMEM={
 #include "data/shapes.inc"
 
 
+/* Clear line. */
+void clearLine(uint8_t y) {
+	uint8_t space[2]=TILES(SPACE);
+	Fill(0,y,SCREEN_WIDTH,1,space[Tileset]);
+}
+
+
+/* Clear a quad. */
+void clearQuad(uint8_t x, uint8_t y) {
+	uint8_t space[2]=TILES(SPACE);
+	Fill(x,y,2,2,space[Tileset]);
+}
+
+
 /* Clear screen. */
 void clearScreen(void) {
 	uint8_t space[2]=TILES(SPACE);

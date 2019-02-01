@@ -79,6 +79,8 @@ extern const uint8_t ShapeHighscoreSignPoleRightLong[] PROGMEM;
 #define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);
 
 
+void clearLine(uint8_t y);
+void clearQuad(uint8_t x, uint8_t y);
 void clearScreen(void);
 void drawShape(uint8_t x, uint8_t y, const uint8_t *p, uint8_t options);
 void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase);
