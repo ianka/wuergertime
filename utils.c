@@ -32,6 +32,11 @@ uint8_t fastrandom(void) {
 	return (uint8_t) random_seed;
 }
 
+void pushentropy(uint32_t entropy) {
+	random_seed<<=2;
+	random_seed|=(entropy & 3);
+}
+
 
 /* Initialize RAM from program memory. */
 void meminit(void *dst, const void *src, uint8_t count) {

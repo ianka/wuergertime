@@ -39,6 +39,7 @@ typedef	struct { uint8_t x, y; } position_t;
 
 /* Random generator. */
 uint8_t fastrandom(void);
+void pushentropy(uint32_t entropy);
 
 
 /* Initialize RAM from program memory. */
