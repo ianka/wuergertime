@@ -36,6 +36,10 @@ void initHighscoresScreen(void);
 void updateHighscoresScreen(void);
 void cleanupHighscoresScreen(void);
 
+void initGameOverScreen(void);
+void updateGameOverScreen(void);
+void cleanupGameOverScreen(void);
+
 void initNewHighscoreScreen(void);
 void updateNewHighscoreScreen(void);
 void cleanupNewHighscoreScreen(void);

@@ -185,10 +185,11 @@ extern const level_item_t LevelComponents[] PROGMEM;
 #define GAME_SCREEN_CREDITS           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|2))
 #define GAME_SCREEN_DEMO              ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|3))
 #define GAME_SCREEN_HIGHSCORES        ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|4))
-#define GAME_SCREEN_NEW_HIGHSCORE     ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|5))
-#define GAME_SCREEN_ENTER_HIGHSCORE   ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|6))
-#define GAME_SCREEN_ENTERED_HIGHSCORE ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|7))
-#define GAME_SCREEN_INVALID           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|8))
+#define GAME_SCREEN_GAME_OVER         ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|5))
+#define GAME_SCREEN_NEW_HIGHSCORE     ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|6))
+#define GAME_SCREEN_ENTER_HIGHSCORE   ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|7))
+#define GAME_SCREEN_ENTERED_HIGHSCORE ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|8))
+#define GAME_SCREEN_INVALID           ((GAME_SCREEN_OUTOFGAME|GAME_SCREEN_TILESET1|9))
 
 /* Game screen switch, level number, animation phase and update function pointer. */
 extern uint8_t GameScreenPrevious;
@@ -197,6 +198,8 @@ extern uint16_t GameScreenAnimationPhase;
 extern uint16_t GameScreenOptions;
 extern void (*GameScreenUpdateFunction)(void);
 extern uint8_t Level;
+extern position_t GameScreenScorePosition;
+extern position_t GameScreenLevelPosition;
 
 
 /* Games stats. */
@@ -204,9 +207,9 @@ extern uint8_t Level;
 #define SCORE_COMPONENT_FALLING          10
 #define SCORE_COMPONENT_FALLING_CASCADE  20
 #define SCORE_OPPONENT_HIT              200
-#define SCORE_BURGER_SMALL              300
-#define SCORE_BURGER_MEDIUM             400
-#define SCORE_BURGER_LARGE              500
+#define SCORE_BURGER_SMALL              150
+#define SCORE_BURGER_MEDIUM             200
+#define SCORE_BURGER_LARGE              250
 
 
 extern uint8_t Scratchpad;
@@ -215,7 +218,6 @@ extern uint32_t DisplayedScore;
 extern uint16_t Bonus;
 extern uint8_t Lives;
 
-
 /* Switch to new game screen. */
 static inline void ChangeGameScreen(uint8_t screen) {
 	GameScreen=screen;
@@ -223,6 +225,7 @@ static inline void ChangeGameScreen(uint8_t screen) {
 
 
 void selectLevel(uint8_t level);
+void prepareLevelDescription(uint8_t sy);
 void prepareLevel(void);
 uint8_t animateBurgers(void);
 void animateLevelStart(void);

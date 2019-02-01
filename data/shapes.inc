@@ -299,6 +299,93 @@ const uint8_t ShapeSignLevelStart[] PROGMEM={
 };
 
 
+/* Shapes for burger sign in level description screen. */
+const uint8_t ShapeSignLevelDescriptionTop[] PROGMEM={
+	5, /* Width */
+	2, /* Height */
+
+	/* Line 0 */
+	TILES1_SIGN_TOP,
+	TILES1_SIGN_TOP,
+	TILES1_SIGN_TOP,
+	TILES1_SIGN_TOP,
+	TILES1_SIGN_TOP,
+
+	/* Line 1 */
+	TILES1_SIGN_LEFT,
+	TILES1_BURGER_BUNTOP_LEFT,
+	TILES1_BURGER_BUNTOP_MIDDLE,
+	TILES1_BURGER_BUNTOP_RIGHT,
+	TILES1_SIGN_RIGHT
+};
+
+const uint8_t ShapeSignLevelDescriptionTomato[] PROGMEM={
+	5, /* Width */
+	1, /* Height */
+
+	TILES1_SIGN_LEFT,
+	TILES1_BURGER_TOMATO_LEFT,
+	TILES1_BURGER_TOMATO_MIDDLE,
+	TILES1_BURGER_TOMATO_RIGHT,
+	TILES1_SIGN_RIGHT
+};
+
+const uint8_t ShapeSignLevelDescriptionPatty[] PROGMEM={
+	5, /* Width */
+	1, /* Height */
+
+	TILES1_SIGN_LEFT,
+	TILES1_BURGER_PATTY_LEFT,
+	TILES1_BURGER_PATTY_MIDDLE,
+	TILES1_BURGER_PATTY_RIGHT,
+	TILES1_SIGN_RIGHT
+};
+
+const uint8_t ShapeSignLevelDescriptionCheesesalad[] PROGMEM={
+	5, /* Width */
+	1, /* Height */
+
+	TILES1_SIGN_LEFT,
+	TILES1_BURGER_CHEESESALAD_LEFT,
+	TILES1_BURGER_CHEESESALAD_MIDDLE,
+	TILES1_BURGER_CHEESESALAD_RIGHT,
+	TILES1_SIGN_RIGHT
+};
+
+const uint8_t ShapeSignLevelDescriptionPost[] PROGMEM={
+	5, /* Width */
+	4, /* Height */
+
+	/* Line 0 */
+	TILES1_SIGN_LEFT,
+	TILES1_BURGER_BUNBOTTOM_LEFT,
+	TILES1_BURGER_BUNBOTTOM_MIDDLE,
+	TILES1_BURGER_BUNBOTTOM_RIGHT,
+	TILES1_SIGN_RIGHT,
+
+	/* Line 1 */
+	TILES1_PLATE_LEFT,
+	TILES1_PLATE_MIDDLE,
+	TILES1_PLATE_MIDDLE,
+	TILES1_PLATE_MIDDLE,
+	TILES1_PLATE_RIGHT,
+
+	/* Line 2 */
+	TILES1_SIGN_RIGHT,
+	TILES1_SPACE,
+	TILES1_SPACE,
+	TILES1_SPACE,
+	TILES1_SIGN_LEFT,
+
+	/* Line 2 */
+	TILES1_SIGN_RIGHT,
+	TILES1_SPACE,
+	TILES1_SPACE,
+	TILES1_SPACE,
+	TILES1_SIGN_LEFT,
+};
+
+
 /* Food truck used in start screen. */
 const uint8_t ShapeFoodTruck[] PROGMEM={
 	16, /* Width */

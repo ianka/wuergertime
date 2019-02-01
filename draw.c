@@ -484,60 +484,57 @@ void drawPlate(uint8_t x, uint8_t y) {
 }
 
 
-/* Draw score. */
-void drawScore(uint8_t x, uint8_t y, uint32_t value) {
-  uint8_t c,i;
-
-	/* Print header. */
-	setTile(x,y,TILES0_SCORE_LEFT);
-	setTile(x+1,y,TILES0_SCORE_MIDDLE);
-	setTile(x+2,y,TILES0_SCORE_RIGHT);
+/* Draw a value. */
+void drawValue(uint8_t x, uint8_t y, uint8_t width, uint32_t value) {
+	uint8_t c,i;
 
 	/* Print value. */
-	x+=7;
-	for(i=0;i<7;i++) {
+	x+=width;
+	for(i=0;i<width;i++) {
 		c=value%10;
-		setTile(x--,y+1,TILES0_NUMBER_0+c);
+		setTile(x--,y,(Tileset?TILES1_NUMBER_0:TILES0_NUMBER_0)+c);
 		value=value/10;
 	}
+}
+
+
+/* Draw score. */
+void drawScore(uint8_t x, uint8_t y, uint32_t value) {
+	tiles_trio_t score[2]=TILES_COMPOUND(TILES_TRIO,SCORE);
+
+	/* Print header. */
+	setTile(x,y,score[Tileset].left);
+	setTile(x+1,y,score[Tileset].middle);
+	setTile(x+2,y,score[Tileset].right);
+
+	/* Print value. */
+	drawValue(x,y+1,7,value);
 }
 
 
 /* Draw level. */
 void drawLevel(uint8_t x, uint8_t y, uint16_t value) {
-  uint8_t c,i;
+	tiles_trio_t level[2]=TILES_COMPOUND(TILES_TRIO,LEVEL);
 
 	/* Print header. */
-	setTile(x,y,TILES0_LEVEL_LEFT);
-	setTile(x+1,y,TILES0_LEVEL_MIDDLE);
-	setTile(x+2,y,TILES0_LEVEL_RIGHT);
+	setTile(x,y,level[Tileset].left);
+	setTile(x+1,y,level[Tileset].middle);
+	setTile(x+2,y,level[Tileset].right);
 
 	/* Print value. */
-	x+=2;
-	for(i=0;i<2;i++) {
-		c=value%10;
-		setTile(x--,y+1,TILES0_NUMBER_0+c);
-		value=value/10;
-	}
+	drawValue(x,y+1,2,value);
 }
 
 
 /* Draw bonus. */
 void drawBonus(uint8_t x, uint8_t y, uint16_t value) {
-  uint8_t c,i;
-
 	/* Print header. */
 	setTile(x,y,TILES0_BONUS_LEFT);
 	setTile(x+1,y,TILES0_BONUS_MIDDLE);
 	setTile(x+2,y,TILES0_BONUS_RIGHT);
 
 	/* Print value. */
-	x+=3;
-	for(i=0;i<3;i++) {
-		c=value%10;
-		setTile(x--,y+1,TILES0_NUMBER_0+c);
-		value=value/10;
-	}
+	drawValue(x,y+1,3,value);
 }
 
 
@@ -591,7 +588,7 @@ void drawHighscore(uint8_t x, uint8_t y, uint32_t name, uint32_t score) {
 		setTile(x+15-i,y,SHARED_TILES_COUNT-FONT_BEFORE_BORDER_TILES_COUNT+0x10+(score%10));
 
 		/* Next char, break if only zeroes are left. */
- 	  score=score/10;
+		score=score/10;
 		if (score == 0) break;
   }
 }

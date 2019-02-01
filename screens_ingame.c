@@ -26,18 +26,53 @@
 #include "opponents.h"
 
 
+/* Fixed strings. */
+const char TextHeatUp[] PROGMEM = "READY FOR HEAT UP!";
+
+
 /*
  *  The description screen is the first screen for each level to be showed.
  *  It places a signpost with some description what this level will be like.
  *  Tileset 1 is selected as we need an alphabet.
  */
 void initInGameDescriptionScreen(void) {
+	/* Draw level description picture. */
+	clearScreen();
+	drawFloor(0,20,SCREEN_WIDTH,0);
+	prepareLevelDescription(20);
+
+	/* Fade in.*/
+	FadeIn(1,0);
+
+	/* Setup cook start position and direction. */
+	Player.flags=PLAYER_FLAGS_DIRECTION_RIGHT|PLAYER_FLAGS_SPEED_NORMAL;
+	placeSprite(Player.sprite,
+		DESCRIPTION_COOK_START_POSITION_X*8,
+		DESCRIPTION_COOK_START_POSITION_Y*8,
+		SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
 }
 
 void updateInGameDescriptionScreen(void) {
+	/* Animate "Ready for Heat Up". */
+	if (GameScreenAnimationPhase & 8) {
+		drawStringCentered(8,TextHeatUp);
+	} else {
+		clearLine(8);
+	}
+
+	/* Move cook until end position reached. */
+	if (getSpriteX(Player.sprite) < DESCRIPTION_COOK_END_POSITION_X*8)
+		moveSprite(Player.sprite,1,0);
+	else
+		ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
 }
 
 void cleanupInGameDescriptionScreen(void) {
+	/* Fade out. */
+	FadeOut(1,1);
+
+	/* Unmap the cook.*/
+	unmapSprite(Player.sprite);
 }
 
 
@@ -184,8 +219,12 @@ void updateInGamePlayScreen(void) {
 	if (Bonus == HURRY_BONUS)
 		ChangeGameScreen(GAME_SCREEN_LEVEL_HURRY);
 
-	/* Award served burgers with score. Switch to bonus screen if all burgers are served. */
-	if (awardServedBurgers())
+	/*
+	 * Award served burgers with score.
+	 * Switch to bonus screen if all burgers are served
+	 * and displayed score is updated.
+	 */
+	if (awardServedBurgers() && DisplayedScore == Score)
 		ChangeGameScreen(GAME_SCREEN_LEVEL_BONUS);
 }
 
@@ -263,12 +302,17 @@ void updateInGameBonusScreen(void) {
 	/* Update game screen statistics. */
 	updateGameScreenStatistics();
 
-	/* Decrement bonus, win level when bonus is zero. */
+	/* Decrement bonus, next level when bonus is zero. */
 	if (decrementBonus())
-		ChangeGameScreen(GAME_SCREEN_LEVEL_WIN);
+		ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
 }
 
 void cleanupInGameBonusScreen(void) {
+	/* Fade out. */
+	FadeOut(1,1);
+
+	/* Advance to next level. */
+	selectLevel(Level+1);
 }
 
 
@@ -347,9 +391,8 @@ void updateInGameOverScreen(void) {
 	updateGameScreenStatistics();
 
 	/* Change screen when burger drop animation is done, no bonus left and displayed score updated. */
-	if (o && b == 0 && DisplayedScore == Score) {
-		ChangeGameScreen(GAME_SCREEN_NEW_HIGHSCORE);
-	}
+	if (o && b == 0 && DisplayedScore == Score)
+		ChangeGameScreen(GAME_SCREEN_GAME_OVER);
 }
 
 void cleanupInGameOverScreen(void) {

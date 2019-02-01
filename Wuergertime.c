@@ -110,6 +110,7 @@ int main(void) {
 				case GAME_SCREEN_CREDITS:           cleanupCreditsScreen(); break;
 				case GAME_SCREEN_DEMO:              cleanupDemoScreen(); break;
 				case GAME_SCREEN_HIGHSCORES:        cleanupHighscoresScreen(); break;
+				case GAME_SCREEN_GAME_OVER:         cleanupGameOverScreen(); break;
 				case GAME_SCREEN_NEW_HIGHSCORE:     cleanupNewHighscoreScreen(); break;
 				case GAME_SCREEN_ENTER_HIGHSCORE:   cleanupEnterHighscoreScreen(); break;
 				case GAME_SCREEN_ENTERED_HIGHSCORE: cleanupEnteredHighscoreScreen(); break;
@@ -153,6 +154,10 @@ int main(void) {
 				case GAME_SCREEN_HIGHSCORES:
 					GameScreenUpdateFunction=&updateHighscoresScreen;
 					initHighscoresScreen();
+					break;
+				case GAME_SCREEN_GAME_OVER:
+					GameScreenUpdateFunction=&updateGameOverScreen;
+					initGameOverScreen();
 					break;
 				case GAME_SCREEN_NEW_HIGHSCORE:
 					GameScreenUpdateFunction=&updateNewHighscoreScreen;

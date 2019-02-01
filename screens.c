@@ -107,6 +107,77 @@ void selectLevel(uint8_t level) {
 }
 
 
+/* Prepare current level description. */
+void prepareLevelDescription(uint8_t sy) {
+	const uint8_t *p=LevelDrawing;
+	const level_item_t *q;
+	uint8_t b, c, x, y, by;
+
+	/* Go through level specific screen list. */
+	while ((b=pgm_read_byte(p))) {
+		/* Start at first component block. */
+		q=LevelComponents;
+
+		/* Skip to selected drawing components block. */
+		while (--b) {
+			while (pgm_read_byte(&(q->component))) q++;
+			q++;
+		}
+
+		/* Go through all drawing components in that block. */
+		by=sy-4;
+		while ((c=pgm_read_byte(&(q->component)))) {
+			/* Get coordinate */
+			x=pgm_read_byte(&(q->position.x));
+			y=pgm_read_byte(&(q->position.y));
+
+			/* Check for type of level item. */
+			switch (c) {
+				case LEVEL_ITEM_BURGER_BUNTOP:
+					/* Draw top of sign and bun top. */
+					drawShape(x,by-1,ShapeSignLevelDescriptionTop,0);
+					by=sy-4;
+					break;
+				case LEVEL_ITEM_BURGER_TOMATO:
+					/* Draw tomato part of sign. */
+					drawShape(x,by,ShapeSignLevelDescriptionTomato,0);
+					by--;
+					break;
+				case LEVEL_ITEM_BURGER_PATTY:
+					/* Draw patty part of sign. */
+					drawShape(x,by,ShapeSignLevelDescriptionPatty,0);
+					by--;
+					break;
+				case LEVEL_ITEM_BURGER_CHEESESALAD:
+					/* Draw cheese salad part of sign. */
+					drawShape(x,by,ShapeSignLevelDescriptionCheesesalad,0);
+					by--;
+					break;
+				case LEVEL_ITEM_BURGER_BUNBOTTOM:
+					/* Draw bun bottom bottom of sign and poles. */
+					drawShape(x,by,ShapeSignLevelDescriptionPost,0);
+					by--;
+					break;
+				case LEVEL_ITEM_SCORE:
+					/* Draw score. */
+					drawScore(x,y,Score);
+					break;
+				case LEVEL_ITEM_LEVEL:
+					/* Draw level. */
+					drawLevel(x,y,Level);
+					break;
+			}
+
+			/* Next element in drawing component. */
+			q++;
+		}
+
+		/* Next block. */
+		p++;
+	}
+}
+
+
 /* Prepare current level. */
 void prepareLevel(void) {
 	const uint8_t *p=LevelDrawing;

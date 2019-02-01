@@ -32,6 +32,7 @@ const char TextByJanKandziora[] PROGMEM = "BY JAN KANDZIORA";
 const char TextCopyleft[] PROGMEM = ";2012 JAN KANDZIORA";
 const char TextLicense[] PROGMEM = "USE AND DISTRIBUTE UNDER THE";
 const char TextGPL[] PROGMEM = "TERMS OF GNU GPL V3";
+const char TextGameOver[] PROGMEM = "GAME OVER";
 
 
 /*
@@ -111,7 +112,7 @@ void updateStartScreen(void) {
 		case BTN_START:
 			/* Change to level 1 as soon start is pressed. */
 			selectLevel(1);
-			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
+			ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
 			break;
 		default:
 			/* Switch to highscore screen after a while. */
@@ -180,7 +181,7 @@ void updateHighscoresScreen(void) {
 		case BTN_START:
 			/* Change to level 1 as soon start is pressed. */
 			selectLevel(1);
-			ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
+			ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
 			break;
 		default:
 			/* Switch to start screen after a while. */
@@ -190,6 +191,45 @@ void updateHighscoresScreen(void) {
 }
 
 void cleanupHighscoresScreen(void) {
+	/* Fade out and wait to complete */
+	FadeOut(1,1);
+}
+
+
+/*
+ *  The game over screen is shown after the in-game over screen.
+ */
+void initGameOverScreen(void) {
+	/* Fade into clear screen */
+	clearScreen();
+	FadeIn(1,0);
+}
+
+void updateGameOverScreen(void) {
+	/* Draw score and reached level. */
+	drawScore(GameScreenScorePosition.x,GameScreenScorePosition.y,DisplayedScore);
+	drawLevel(GameScreenLevelPosition.x,GameScreenLevelPosition.y,Level);
+
+	/* Draw "Game Over" text. */
+	drawStringCentered(13,TextGameOver);
+
+	/* Check buttons. */
+	switch (checkControllerButtonsPressed(0,BTN_NONDIRECTION)) {
+		case BTN_A:
+		case BTN_B:
+		case BTN_X:
+		case BTN_Y:
+		case BTN_SR:
+		case BTN_SL:
+		case BTN_START:
+		case BTN_SELECT:
+			/* Switch to new highscore screen as soon a button is pressed. */
+			ChangeGameScreen(GAME_SCREEN_NEW_HIGHSCORE);
+			break;
+	}
+}
+
+void cleanupGameOverScreen(void) {
 	/* Fade out and wait to complete */
 	FadeOut(1,1);
 }

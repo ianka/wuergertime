@@ -57,7 +57,11 @@ extern const uint8_t ShapeHighscoreSignPoleLeftShort[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignPoleRightShort[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignPoleLeftLong[] PROGMEM;
 extern const uint8_t ShapeHighscoreSignPoleRightLong[] PROGMEM;
-
+extern const uint8_t ShapeSignLevelDescriptionPost[] PROGMEM;
+extern const uint8_t ShapeSignLevelDescriptionCheesesalad[] PROGMEM;
+extern const uint8_t ShapeSignLevelDescriptionPatty[] PROGMEM;
+extern const uint8_t ShapeSignLevelDescriptionTomato[] PROGMEM;
+extern const uint8_t ShapeSignLevelDescriptionTop[] PROGMEM;
 
 /* Screen size. */
 #define SCREEN_WIDTH  30
@@ -74,6 +78,11 @@ extern const uint8_t ShapeHighscoreSignPoleRightLong[] PROGMEM;
 #define HIGHSCORE_COOK_START_POSITION_X 5
 #define HIGHSCORE_COOK_START_POSITION_Y (SCREEN_HEIGHT+1)
 #define HIGHSCORE_COOK_END_POSITION_X 6
+
+/* Description screen constants. */
+#define DESCRIPTION_COOK_START_POSITION_X 2
+#define DESCRIPTION_COOK_START_POSITION_Y 20
+#define DESCRIPTION_COOK_END_POSITION_X 28
 
 /* Center strings. */
 #define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);
@@ -94,6 +103,7 @@ void drawSoda(uint8_t x, uint8_t y);
 void drawFries(uint8_t x, uint8_t y);
 void drawCrown(uint8_t x, uint8_t y);
 void drawPlate(uint8_t x, uint8_t y);
+void drawValue(uint8_t x, uint8_t y, uint8_t width, uint32_t value);
 void drawScore(uint8_t x, uint8_t y, uint32_t value);
 void drawLevel(uint8_t x, uint8_t y, uint16_t value);
 void drawBonus(uint8_t x, uint8_t y, uint16_t value);

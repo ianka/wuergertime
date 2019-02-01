@@ -10,6 +10,15 @@
 /* Level descriptions. */
 const uint8_t LevelDrawings[] PROGMEM={
 	/* Level 1 */
+	1, 2, 3, 0,
+
+	/* Level 2 */
+	1, 3, 0,
+
+	/* Level 3 */
+	1, 2, 0,
+
+	/* Level 4 */
 	1, 0,
 
 	/* End of level drawings */
@@ -41,7 +50,6 @@ const level_item_t LevelComponents[] PROGMEM={
 	LEVEL_COMPONENT_PLAYERSTARTPOINT(    2,20),
 	LEVEL_COMPONENT_FLOOR(CAP_BOTH,      6,16,18),
 	LEVEL_COMPONENT_FLOOR(CAP_BOTH,      6, 5,18),
-	LEVEL_COMPONENT_LADDER(SIMPLE,       6, 5,11),
 	LEVEL_COMPONENT_LADDER(SIMPLE,       8,16, 4),
 	LEVEL_COMPONENT_FLOOR(CAP_BOTH,      8,12,21),
 	LEVEL_COMPONENT_LADDER(SIMPLE,       8, 5, 7),
@@ -57,12 +65,19 @@ const level_item_t LevelComponents[] PROGMEM={
 	LEVEL_COMPONENT_LADDER(SIMPLE,      17, 8, 4),
 	LEVEL_COMPONENT_OPPONENTSTARTPOINT( 19, 5),
 	LEVEL_COMPONENT_LADDER(SIMPLE,      22,16, 4),
-	LEVEL_COMPONENT_LADDER(CONTINUED,   22,12, 4),
 	LEVEL_COMPONENT_LADDER(CONTINUED,   22, 5, 7),
 	LEVEL_COMPONENT_LEVEL(              22, 0),
 	LEVEL_COMPONENT_OPPONENTSTARTPOINT( 26,12),
 	LEVEL_COMPONENT_BONUS(              26, 0),
 	LEVEL_COMPONENT_LADDER(SIMPLE,      27,12, 8),
+	LEVEL_COMPONENT_END,
+
+	/* Component block 2 */
+	LEVEL_COMPONENT_LADDER(SIMPLE,       6, 5,11),
+	LEVEL_COMPONENT_END,
+
+	/* Component block 3 */
+	LEVEL_COMPONENT_LADDER(CONTINUED,   22,12, 4),
 	LEVEL_COMPONENT_END,
 
 };
