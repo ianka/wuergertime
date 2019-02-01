@@ -72,7 +72,7 @@ void resetOpponents(void) {
 /* Create new opponent, if there isn't the maximum active for this level. */
 void nextOpponent(void) {
 	uint8_t i,o;
-	uint16_t s;
+	uint16_t s=0;
 
 	/* Count occupied opponent slots. */
 	o=0;
@@ -100,16 +100,18 @@ void nextOpponent(void) {
 					Opponent[i].info.target=getRandomBurgerComponentPosition();
 					break;
 				case LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN:
-					s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT;
-					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
+					s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LEFT;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_LEFT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
 					break;
 				case LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD:
 					s=SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT;
 					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
 					break;
-				default:
-					s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
-					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
+				case LEVEL_ITEM_ATTACK_WAVE_ANTICOOK:
+					s=SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LEFT;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_LEFT|OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER;
+					Opponent[i].info.target=getRandomBurgerComponentPosition();
+					break;
 			}
 
 			/* Setup flags. */

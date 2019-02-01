@@ -558,7 +558,7 @@ foreach leveloption {
 			[string cat {^[[:blank:]]*LEVEL_ITEM_OPTION_} [string toupper $leveloption] {\|?[[:blank:]]*$}] \
 			[list lappend leveloptions $leveloption]
 }
-foreach opponent {egghead sausageman mrmustard} {
+foreach opponent {egghead sausageman mrmustard anticook} {
 	lappend attackwavepatterns \
 		[string cat	{^[[:blank:]]*LEVEL_ITEM_ATTACK_WAVE_} [string toupper $opponent] {,?[[:blank:]]*$}] \
 		[list lappend attackwaves $opponent]
@@ -1296,7 +1296,7 @@ proc createAttackWavesGroup {g} {
 	frame .right.attackwaves.group$g
 	for {set w 0} {$w<8} {incr w} {
 		ttk::label    .right.attackwaves.group$g.wavelabel$w -text "Opponent $w:"
-		ttk::combobox .right.attackwaves.group$g.wave$w -state readonly -values {{} egghead sausageman mrmustard} -textvariable ::attackWave$g.$w
+		ttk::combobox .right.attackwaves.group$g.wave$w -state readonly -values {{} egghead sausageman mrmustard anticook} -textvariable ::attackWave$g.$w
 		grid .right.attackwaves.group$g.wavelabel$w
 		grid .right.attackwaves.group$g.wave$w
 	}
