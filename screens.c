@@ -707,9 +707,8 @@ uint8_t stomp(uint8_t x, uint8_t y) {
 
 
 /* Get the position of a random burger component. Used for patrolling opponents. */
-position_t getRandomBurgerComponentPosition(uint8_t type) {
+position_t getRandomBurgerComponentPosition() {
 	uint8_t burger, component;
-	burger_component_t *p;
 
 	/* Try endless, until we have the required component. */
 	for(;;) {
@@ -719,13 +718,16 @@ position_t getRandomBurgerComponentPosition(uint8_t type) {
 		/* Retry if the burger is invalid. */
 		if (GameScreenBurger[burger].x == SCREEN_BURGER_INVALID) continue;
 
-		/* Get component of burger. */
-		for (component=0;component<SCREEN_BURGER_COMPONENT_MAX;component++) {
-			p=&(GameScreenBurger[burger].component[component]);
+		/* Try endless, until we have the required component. */
+		for(;;) {
+			/* Choose a random component. */
+			component=fastrandom()%5;
 
-			/* Return component position if matching. */
-			if (p->type == type)
-				return (position_t){ x: (GameScreenBurger[burger].x+2)*8, y: (p->half_y*4+4) };
+			/* Retry if the component is invalid. */
+			if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) continue;
+
+			/* Return component position. */
+			return (position_t){ x: (GameScreenBurger[burger].x+2)<<3, y: (GameScreenBurger[burger].component[component].half_y+4)<<2 };
 		}
 
 		/* The burger doesn't have this component. Try another. */

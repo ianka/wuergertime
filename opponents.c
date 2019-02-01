@@ -96,8 +96,8 @@ void nextOpponent(void) {
 			switch (o) {
 				case LEVEL_ITEM_ATTACK_WAVE_EGGHEAD:
 					s=SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT;
-					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER;
-					Opponent[i].info.target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER;
+					Opponent[i].info.target=getRandomBurgerComponentPosition();
 					break;
 				case LEVEL_ITEM_ATTACK_WAVE_SAUSAGEMAN:
 					s=SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT;
@@ -236,7 +236,7 @@ void selectOpponentDirectionNearerToTarget(uint8_t index, uint8_t directions, ui
 		else
 			/* Not possible to catch the target on this floor. Choose a possible direction randomly, prefer current direction. */
 			changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
-	}	else {
+	} else {
 		/* On same ladder? */
 		if (x == getSpriteX(Opponent[index].sprite)) {
 			/* Yes. Try to catch the target on this ladder. */
@@ -247,7 +247,7 @@ void selectOpponentDirectionNearerToTarget(uint8_t index, uint8_t directions, ui
 			else
 				/* Not possible to catch the target on this ladder. Choose a possible direction randomly, prefer current direction. */
 				changeOpponentDirection(index,selectPossibleOpponentDirection(index,directions));
-		}	else {
+		} else {
 			/* Neither on same floor nor ladder. Check if we are on floor or ladder. */
 			switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
 				case OPPONENT_FLAGS_DIRECTION_LEFT:
@@ -352,12 +352,12 @@ void selectOpponentDirection(uint8_t index) {
 				Opponent[index].flags&=~OPPONENT_FLAGS_MAD;
 
 			break;
-		case OPPONENT_FLAGS_ALGORITHM_BUNTOP_PATROLLER:
+		case OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER:
 			/* Target reached? */
 			if (((getSpriteX(Opponent[index].sprite) & 0xf0) == (Opponent[index].info.target.x & 0xf0))
 					&& ((getSpriteY(Opponent[index].sprite) & 0xf0) == (Opponent[index].info.target.y & 0xf0))) {
 				/* Yes. Get a new target position, random buntop. */
-				Opponent[index].info.target=getRandomBurgerComponentPosition(LEVEL_ITEM_BURGER_BUNTOP);
+				Opponent[index].info.target=getRandomBurgerComponentPosition();
 
 				/* Reset mad flag. */
 				Opponent[index].flags&=~OPPONENT_FLAGS_MAD;
