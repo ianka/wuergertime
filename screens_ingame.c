@@ -313,6 +313,7 @@ void cleanupInGameBonusScreen(void) {
 
 	/* Advance to next level. */
 	selectLevel(Level+1);
+	pushentropy(GameScreenAnimationPhase);
 }
 
 

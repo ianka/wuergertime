@@ -33,6 +33,7 @@ const char TextCopyleft[] PROGMEM = ";2012 JAN KANDZIORA";
 const char TextLicense[] PROGMEM = "USE AND DISTRIBUTE UNDER THE";
 const char TextGPL[] PROGMEM = "TERMS OF GNU GPL V3";
 const char TextGameOver[] PROGMEM = "GAME OVER";
+const char TextGameOverOff[] PROGMEM = "         ";
 
 
 /*
@@ -112,6 +113,7 @@ void updateStartScreen(void) {
 		case BTN_START:
 			/* Change to level 1 as soon start is pressed. */
 			selectLevel(1);
+			pushentropy(GameScreenAnimationPhase);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
 			break;
 		default:
@@ -181,6 +183,7 @@ void updateHighscoresScreen(void) {
 		case BTN_START:
 			/* Change to level 1 as soon start is pressed. */
 			selectLevel(1);
+			pushentropy(GameScreenAnimationPhase);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
 			break;
 		default:
@@ -205,13 +208,43 @@ void initGameOverScreen(void) {
 	FadeIn(1,0);
 }
 
+
+void scrollTileDown(uint8_t x, uint8_t y) {
+	if (x>=9 && x<20 && y==14)
+		setTile(x,y,getTile(x,y-3));
+	else
+		setTile(x,y,getTile(x,y-1));
+}
+
 void updateGameOverScreen(void) {
+	uint8_t y;
+
+	/* Add a random tiny burger, fries or soda. */
+	if (fastrandom()%5)
+		setTile((GameScreenAnimationPhase*7)%SCREEN_WIDTH,2,TILES1_SPACE);
+	else
+		drawRandomTinyBurger((GameScreenAnimationPhase*7)%SCREEN_WIDTH,2);
+
+	/* Scroll a column down. */
+	for (y=SCREEN_HEIGHT-1;y>2;y--) {
+		scrollTileDown((GameScreenAnimationPhase*3)%SCREEN_WIDTH,y);
+		scrollTileDown((GameScreenAnimationPhase*7)%SCREEN_WIDTH,y);
+		scrollTileDown((GameScreenAnimationPhase*11)%SCREEN_WIDTH,y);
+		scrollTileDown((GameScreenAnimationPhase*13)%SCREEN_WIDTH,y);
+		scrollTileDown((GameScreenAnimationPhase*17)%SCREEN_WIDTH,y);
+	}
+
 	/* Draw score and reached level. */
 	drawScore(GameScreenScorePosition.x,GameScreenScorePosition.y,DisplayedScore);
 	drawLevel(GameScreenLevelPosition.x,GameScreenLevelPosition.y,Level);
 
 	/* Draw "Game Over" text. */
-	drawStringCentered(13,TextGameOver);
+	/* Animate "Ready for Heat Up". */
+	if (GameScreenAnimationPhase & 32) {
+		drawStringCentered(13,TextGameOver);
+	} else {
+		drawStringCentered(13,TextGameOverOff);
+	}
 
 	/* Check buttons. */
 	switch (checkControllerButtonsPressed(0,BTN_NONDIRECTION)) {

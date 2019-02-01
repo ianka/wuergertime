@@ -112,6 +112,7 @@ void drawHighscoreBillboard();
 void drawHighscore(uint8_t x, uint8_t y, uint32_t name, uint32_t score);
 void drawHurry(uint8_t x, uint8_t y, uint8_t buffer[3]);
 void restoreHurryBackground(uint8_t x, uint8_t y, uint8_t buffer[3]);
+void drawRandomTinyBurger(uint8_t x, uint8_t y);
 
 
 /* Read VRAM and honor RAM tile offset. */

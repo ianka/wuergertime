@@ -628,3 +628,13 @@ void restoreHurryBackground(uint8_t x, uint8_t y, uint8_t buffer[3]) {
 	setTile(xh+2,yh,buffer[2]);
 }
 
+
+/* Draw a tiny burger. */
+void drawRandomTinyBurger(uint8_t x, uint8_t y) {
+	uint8_t burgers[2][6]={
+		{ TILES0_BURGER_DELUXE, TILES0_BURGER_CHEESESALAD, TILES0_BURGER_TOMATO, TILES0_BURGER_SIMPLE, TILES0_FRIES_SMALL, TILES0_SODA_SMALL },
+		{ TILES1_BURGER_DELUXE, TILES1_BURGER_CHEESESALAD, TILES1_BURGER_TOMATO, TILES1_BURGER_SIMPLE, TILES1_FRIES_SMALL, TILES1_SODA_SMALL } };
+
+	setTile(x,y,burgers[Tileset][fastrandom()%6]);
+}
+
