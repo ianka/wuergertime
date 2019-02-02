@@ -160,6 +160,7 @@ proc applyGroup {g} {
 ## Apply cursor position.
 set xdiff 0
 set ydiff 0
+set cursorindicator {}
 proc applyCursorPosition {x y} {
 	if {[gc $x]<0 || [gc $x]>=$::screen_width || [gc $y]<0 || [gc $y]>=$::screen_height} {
 		## Hide cursor.
@@ -174,6 +175,9 @@ proc applyCursorPosition {x y} {
 
 		## Raise the cursor.
 		.screen raise cursor picked
+
+		## Update coordinate indicator.
+		set ::cursorindicator {}
 	} else {
 		## Show and move cursor.
 		.screen itemconfigure cursor -state normal
@@ -182,6 +186,9 @@ proc applyCursorPosition {x y} {
 		## Move picked item.
 		.screen moveto pickedimage [sc [expr {[gc $x]+$::xdiff}]] [sc [expr {[gc $y]+$::ydiff}]]
 		.screen moveto pickedlabel [sc [expr {[gc $x]+$::xdiff-1}]] [sc [expr {[gc $y]+$::ydiff-1}]]
+
+		## Update coordinate indicator.
+		set ::cursorindicator "[gc $x],[gc $y]"
 	}
 }
 
@@ -1255,6 +1262,11 @@ set ::labels 1
 
 ## Setup options/attack waves frame.
 frame .right
+ttk::label .right.cursorindicatorlabel -text "Cursor Position:"
+ttk::entry .right.cursorindicator -width 6 -state readonly -textvariable ::cursorindicator
+grid .right.cursorindicatorlabel
+grid .right.cursorindicator
+
 ttk::label .right.leveldesignlabel -text "Level Design:"
 ttk::entry .right.leveldesign -textvariable ::leveldesign
 ttk::label .right.levelauthorlabel -text "Level Author:"
