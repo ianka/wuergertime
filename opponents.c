@@ -105,7 +105,7 @@ void nextOpponent(void) {
 					break;
 				case LEVEL_ITEM_ATTACK_WAVE_MRMUSTARD:
 					s=SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT;
-					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_RIGHT|OPPONENT_FLAGS_ALGORITHM_MESS_UP_LADDERS;
 					break;
 				case LEVEL_ITEM_ATTACK_WAVE_ANTICOOK:
 					s=SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LEFT;
@@ -154,6 +154,9 @@ void changeOpponentDirection(uint8_t index, uint8_t direction) {
 			break;
 		case OPPONENT_FLAGS_DIRECTION_RIGHT:
 			changeSpriteDirection(Opponent[index].sprite,SPRITE_FLAGS_DIRECTION_RIGHT);
+			break;
+		case OPPONENT_FLAGS_DIRECTION_SQUIRT:
+			changeSpriteDirection(Opponent[index].sprite,SPRITE_FLAGS_DIRECTION_SQUIRT);
 			break;
 		default:
 			changeSpriteDirection(Opponent[index].sprite,SPRITE_FLAGS_DIRECTION_LADDER);
@@ -299,9 +302,22 @@ void selectOpponentDirection(uint8_t index) {
 			directions|=((checkSpriteAtLeftFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_LEFT;
 			directions|=((checkSpriteAtRightFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_RIGHT;
 
-			/* Check if we could step on a ladder */
-			directions|=(checkSpriteAtLadderEntryUp(Opponent[index].sprite))<<OPPONENT_DIRECTION_UP;
+			/* Check if we could step on a ladder downwards. */
 			directions|=(checkSpriteAtLadderEntryDown(Opponent[index].sprite))<<OPPONENT_DIRECTION_DOWN;
+
+			/* Check if we could step on a ladder upwards. */
+			if (checkSpriteAtLadderEntryUp(Opponent[index].sprite)) {
+				/*
+				 * Yes. Check if the opponent should mess up ladders.
+				 * Squirt if the player is above the opponent.
+				 * Add up as a possible direction if not.
+				 */
+				if (((Opponent[index].flags & OPPONENT_FLAGS_ALGORITHM_MASK) == OPPONENT_FLAGS_ALGORITHM_MESS_UP_LADDERS)
+					&& (getSpriteY(Player.sprite) < getSpriteY(Opponent[index].sprite)))
+					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_SQUIRT);
+				else
+					directions|=1<<OPPONENT_DIRECTION_UP;
+			}
 			break;
 		case OPPONENT_FLAGS_DIRECTION_UP:
 		case OPPONENT_FLAGS_DIRECTION_DOWN:
@@ -314,6 +330,24 @@ void selectOpponentDirection(uint8_t index) {
 				directions|=((checkSpriteAtLeftFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_LEFT;
 				directions|=((checkSpriteAtRightFloorEnd(Opponent[index].sprite))^1)<<OPPONENT_DIRECTION_RIGHT;
 			}
+			break;
+		case OPPONENT_FLAGS_DIRECTION_SQUIRT:
+			/* Check if the player is still above the opponent. */
+			if (getSpriteY(Player.sprite) < getSpriteY(Opponent[index].sprite)) {
+				/* Yes. Continue squirting until the whole ladder is messed up. */
+				if (!(GameScreenAnimationPhase & OPPONENT_SQUIRT_PHASE)) {
+					if (!(squirtOnLadder((getSpriteX(Opponent[index].sprite)>>3)-1,(getSpriteY(Opponent[index].sprite)>>3)-1))) {
+						/* Do not select a new direction. */
+						return;
+					}
+				} else {
+					/* Do not select a new direction. */
+					return;
+				}
+			}
+
+			/* Add up to possible directions. */
+			directions|=1<<OPPONENT_DIRECTION_UP;
 			break;
 		case OPPONENT_FLAGS_DIRECTION_HIT:
 			/* Do not select a new direction once an opponent is hit. */
@@ -345,6 +379,7 @@ void selectOpponentDirection(uint8_t index) {
 	/* Feed possible directions into movement algorithm. */
 	switch (Opponent[index].flags & OPPONENT_FLAGS_ALGORITHM_MASK) {
 		case OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER:
+		case OPPONENT_FLAGS_ALGORITHM_MESS_UP_LADDERS:
 			/* Target position is player position. */
 			selectOpponentDirectionNearerToTarget(index,directions,
 				getSpriteX(Player.sprite),getSpriteY(Player.sprite));
@@ -394,6 +429,9 @@ void moveOpponent(uint8_t index) {
 			break;
 		case OPPONENT_FLAGS_DIRECTION_DOWN:
 			moveSprite(Opponent[index].sprite,0,1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT));
+			break;
+		case OPPONENT_FLAGS_DIRECTION_SQUIRT:
+			moveSpriteUncondionally(Opponent[index].sprite,0,0);
 			break;
 		case OPPONENT_FLAGS_DIRECTION_HIT:
 			/* Move to invalid coordinate? */

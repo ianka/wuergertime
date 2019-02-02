@@ -20,7 +20,7 @@
 #include "utils.h"
 #include "player.h"
 #include "opponents.h"
-#include "tiles.h" /* for TILES0_SPACE */
+#include "tiles.h"
 #include "sprites.h"
 
 
@@ -943,3 +943,24 @@ uint8_t awardServedBurgers(void) {
 	/* All burgers are served. */
 	return 1;
 }
+
+
+/* Squirt on a ladder. */
+uint8_t squirtOnLadder(uint8_t x, uint8_t y) {
+	/* Skip squirted ladder pieces. */
+	while (getTile(x,y) == TILES0_LADDER_SQUIRTED_LEFT)
+		y--;
+
+	/* Check if still a piece to squirt. */
+	if (getTile(x,y) == TILES0_LADDER_LEFT) {
+		/* Squirt it. */
+		drawSquirtedLadderPiece(x,y);
+
+		/* Not fully squirted. */
+		return 0;
+	}
+
+	/* Fully squirted. */
+	return 1;
+}
+
