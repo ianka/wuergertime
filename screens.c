@@ -15,10 +15,6 @@
 #include <avr/io.h> /* for uint8_t */
 
 
-/* Actual level data */
-#include "data/levels.inc"
-
-
 /* Local Includes */
 #include "draw.h"
 #include "utils.h"

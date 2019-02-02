@@ -15,6 +15,10 @@
 #include <uzebox.h>
 
 
+/* Actual level data */
+#include "data/levels.inc"
+
+
 /* Local includes. */
 #include "screens.h"
 #include "draw.h"
@@ -29,6 +33,8 @@
 const char TextDebug[] PROGMEM = "DEBUG";
 const char TextProgrammingAndArtwork[] PROGMEM = "PROGRAMMING AND ARTWORK";
 const char TextByJanKandziora[] PROGMEM = "BY JAN KANDZIORA";
+const char TextLevelDesign[] PROGMEM = "LEVEL DESIGN \"" LEVEL_DESIGN "\"";
+const char TextLevelAuthor[] PROGMEM = "BY " LEVEL_AUTHOR;
 const char TextCopyleft[] PROGMEM = ";2012 JAN KANDZIORA";
 const char TextLicense[] PROGMEM = "USE AND DISTRIBUTE UNDER THE";
 const char TextGPL[] PROGMEM = "TERMS OF GNU GPL V3";
@@ -84,8 +90,6 @@ void initStartScreen(void) {
 	drawLadder(4,-1,21,0);
 
 	/* Draw credits and licensing strings. */
-	drawStringCentered(21,TextProgrammingAndArtwork);
-	drawStringCentered(22,TextByJanKandziora);
 	drawStringCentered(24,TextCopyleft);
 	drawStringCentered(25,TextLicense);
 	drawStringCentered(26,TextGPL);
@@ -108,6 +112,23 @@ void updateStartScreen(void) {
 		drawShape(15,10,ShapePressStartBlink,0);
 	}
 
+	/* Animate credits. */
+	switch (GameScreenAnimationPhase & 511) {
+		case 0:
+			drawStringCentered(21,TextProgrammingAndArtwork);
+			drawStringCentered(22,TextByJanKandziora);
+			break;
+		case 240:
+		case 496:
+			clearLine(21);
+			clearLine(22);
+			break;
+		case 256:
+			drawStringCentered(21,TextLevelDesign);
+			drawStringCentered(22,TextLevelAuthor);
+			break;
+	}
+
 	/* Check buttons. */
 	switch (checkControllerButtonsPressed(0,BTN_START)) {
 		case BTN_START:
@@ -118,7 +139,7 @@ void updateStartScreen(void) {
 			break;
 		default:
 			/* Switch to highscore screen after a while. */
-			if (GameScreenAnimationPhase>500)
+			if (GameScreenAnimationPhase>1024)
 				ChangeGameScreen(GAME_SCREEN_HIGHSCORES);
 	}
 }

@@ -582,21 +582,26 @@ proc loadLevels {filename} {
 	set part 0
 	set levelsdrawingspart {}
 	set levelscomponentspart {}
-	set levelsdrawings   "const uint8_t LevelDrawings\[\] PROGMEM=\{"
-	set levelscomponents "const level_item_t LevelComponents\[\] PROGMEM=\{"
-	set levelsendpart    "\}\;"
 	set levelsparts [dict create]
 	foreach line [split $levels \n] {
-		if {$line eq $levelsdrawings} {
-			incr part
-			set levelsdrawingspart $part
-		}
-		if {$line eq $levelscomponents} {
-			incr part
-			set levelscomponentspart $part
-		}
-		if {$line eq $levelsendpart} {
-			incr part
+		switch -regexp -match match -- $line {
+			{^const uint8_t LevelDrawings\[\] PROGMEM=\{$} {
+				incr part
+				set levelsdrawingspart $part
+			}
+			{^const level_item_t LevelComponents\[\] PROGMEM=\{$} {
+				incr part
+				set levelscomponentspart $part
+			}
+			{^\}\;$} {
+				incr part
+			}
+			{#define LEVEL_DESIGN "(.*)"$} {
+				set ::leveldesign [lindex $match 1]
+			}
+			{#define LEVEL_AUTHOR "(.*)"$} {
+				set ::levelauthor [lindex $match 1]
+			}
 		}
 		dict lappend levelsparts $part $line
 	}
@@ -790,6 +795,7 @@ proc saveLevels {filename} {
 
 		## Output items, sorted by increasing x, then decreasing y origin.
 		dict for {x yitems} [lsort -stride 2 -index 0 -integer $xyitems] {
+			append levelscomponents "\n"
 			dict for {y items} [lsort -stride 2 -index 0 -integer -decreasing $yitems] {
 				foreach item $items {
 					dict with item {
@@ -827,6 +833,10 @@ proc saveLevels {filename} {
 
 /* Local includes */
 #include "../screens.h" /* for level_item_t */
+
+/* Level design description. */
+#define LEVEL_DESIGN "} [string toupper $::leveldesign] {"
+#define LEVEL_AUTHOR "} [string toupper $::levelauthor] {"
 
 /* Level descriptions. */
 const uint8_t LevelDrawings[] PROGMEM=} "\{\n" $levelsdrawings {	/* End of level drawings */
@@ -1245,6 +1255,15 @@ set ::labels 1
 
 ## Setup options/attack waves frame.
 frame .right
+ttk::label .right.leveldesignlabel -text "Level Design:"
+ttk::entry .right.leveldesign -textvariable ::leveldesign
+ttk::label .right.levelauthorlabel -text "Level Author:"
+ttk::entry .right.levelauthor -textvariable ::levelauthor
+grid .right.leveldesignlabel
+grid .right.leveldesign
+grid .right.levelauthorlabel
+grid .right.levelauthor
+
 ttk::label .right.optiongrouplabel -text "Option Group:"
 ttk::spinbox .right.optiongroup \
 	-width 2 -from 1 -to 99 -textvariable ::currentOptionsGroup \
