@@ -186,7 +186,7 @@ void freeSpriteSlot(uint8_t slot) {
 
 /* Update sprite on screen. */
 void updateSprite(uint8_t slot) {
-	uint8_t tile, i, view_right;
+	uint8_t tile, i, j, view_right;
 	const uint8_t *p;
 
 	/* Setup kernel sprite shape according to flags. */
@@ -237,6 +237,14 @@ void updateSprite(uint8_t slot) {
 		}
 	}
 
+	/* Get address of first tile number for given animation step. */
+	i=slot*4;
+
+	/* Get view direction. */
+	view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
+	if ((GameSpriteSlots[slot].flags & SPRITE_FLAGS_TYPE_MASK) == SPRITE_FLAGS_TYPE_ANTICOOK)
+		view_right^=1;
+
 	/* Setup kernel sprites according to flags. */
 	switch (GameSpriteSlots[slot].flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
@@ -247,142 +255,60 @@ void updateSprite(uint8_t slot) {
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
 		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT:
-			/* Get address of first tile number for given animation step. */
-			i=slot*4;
-			view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
-			if ((GameSpriteSlots[slot].flags & SPRITE_FLAGS_TYPE_MASK) == SPRITE_FLAGS_TYPE_ANTICOOK)
-				view_right^=1;
-
 			/* Place tiles, honor mirroring. */
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-(view_right?0:8);
-			sprites[i].y=GameSpriteSlots[slot].y-16;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-(view_right?8:0);
-			sprites[i].y=GameSpriteSlots[slot].y-16;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-(view_right?0:8);
-			sprites[i].y=GameSpriteSlots[slot].y-8;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-(view_right?8:0);
-			sprites[i].y=GameSpriteSlots[slot].y-8;
+			for (j=0;j<4;j++) {
+				tile=pgm_read_byte(p);
+				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+				sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+				sprites[i].x=GameSpriteSlots[slot].x-((j&1)^view_right?0:8);
+				sprites[i].y=GameSpriteSlots[slot].y-16+(j&2)*4;
+				p++;
+				i++;
+			}
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
 		case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LADDER:
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
-			/* Get address of first tile number for given animation step. */
-			i=slot*4;
-
 			/* Place tiles, honor mirroring. */
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-8;
-			sprites[i].y=GameSpriteSlots[slot].y-16;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x;
-			sprites[i].y=GameSpriteSlots[slot].y-16;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-8;
-			sprites[i].y=GameSpriteSlots[slot].y-8;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x;
-			sprites[i].y=GameSpriteSlots[slot].y-8;
+			for (j=0;j<4;j++) {
+				tile=pgm_read_byte(p);
+				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+				sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
+				sprites[i].x=GameSpriteSlots[slot].x-8+(j&1)*8;
+				sprites[i].y=GameSpriteSlots[slot].y-16+(j&2)*4;
+				p++;
+				i++;
+			}
 			break;
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
-			/* Get address of first tile number for given animation step. */
-			i=slot*4;
-
 			/* Place tiles, honor mirroring. */
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
-			sprites[i].x=GameSpriteSlots[slot].x-8;
-			sprites[i].y=GameSpriteSlots[slot].y-8;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
-			sprites[i].x=GameSpriteSlots[slot].x;
-			sprites[i].y=GameSpriteSlots[slot].y-8;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
-			sprites[i].x=GameSpriteSlots[slot].x-8;
-			sprites[i].y=GameSpriteSlots[slot].y-16;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
-			sprites[i].x=GameSpriteSlots[slot].x;
-			sprites[i].y=GameSpriteSlots[slot].y-16;
+			for (j=0;j<4;j++) {
+				tile=pgm_read_byte(p);
+				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+				sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
+				sprites[i].x=GameSpriteSlots[slot].x-8+(j&1)*8;
+				sprites[i].y=GameSpriteSlots[slot].y-8-(j&2)*4;
+				p++;
+				i++;
+			}
 			break;
 		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LADDER:
 		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_RIGHT:
 		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_LADDER:
 		case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_SQUIRT:
-			/* Get address of first tile number for given animation step. */
-			i=slot*4;
-			view_right=((GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) == SPRITE_FLAGS_DIRECTION_RIGHT);
-
 			/* Place tiles, honor mirroring. */
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-4;
-			sprites[i].y=GameSpriteSlots[slot].y-16;
-			p++;
-			i++;
-
-			tile=pgm_read_byte(p);
-			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-4;
-			sprites[i].y=GameSpriteSlots[slot].y-8;
-
+			for (j=0;j<2;j++) {
+				tile=pgm_read_byte(p);
+				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+				sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+				sprites[i].x=GameSpriteSlots[slot].x-4;
+				sprites[i].y=GameSpriteSlots[slot].y-16+(j&1)*8;
+				p++;
+				i++;
+			}
 
 			/* Remove unneeded sprite tiles from screen. */
-			i++;
 			sprites[i].x=OFF_SCREEN;
 			i++;
 			sprites[i].x=OFF_SCREEN;
