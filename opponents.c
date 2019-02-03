@@ -317,7 +317,8 @@ void selectOpponentDirection(uint8_t index) {
 					changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_SQUIRT);
 				else
 					directions|=1<<OPPONENT_DIRECTION_UP;
-			}
+			} else if (checkSpriteAtSquirtedLadderEntryUp(Opponent[index].sprite))
+				directions|=1<<OPPONENT_DIRECTION_UP;
 			break;
 		case OPPONENT_FLAGS_DIRECTION_UP:
 		case OPPONENT_FLAGS_DIRECTION_DOWN:

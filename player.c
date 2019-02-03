@@ -79,6 +79,7 @@ void selectPlayerDirection(uint8_t buttons) {
 			buttons&=~BTN_RIGHT;
 			break;
 		case PLAYER_FLAGS_DIRECTION_UP:
+		case PLAYER_FLAGS_DIRECTION_CLEAN:
 			buttons&=~BTN_UP;
 			break;
 		case PLAYER_FLAGS_DIRECTION_DOWN:
@@ -110,8 +111,12 @@ void selectPlayerDirection(uint8_t buttons) {
 			break;
 		case BTN_DOWN:
 			/* Change direction on ladder if player direction is currently up. */
-			if ((Player.flags & PLAYER_FLAGS_DIRECTION_MASK) == PLAYER_FLAGS_DIRECTION_UP)
-				changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
+			switch (Player.flags & PLAYER_FLAGS_DIRECTION_MASK) {
+				case PLAYER_FLAGS_DIRECTION_UP:
+				case PLAYER_FLAGS_DIRECTION_CLEAN:
+					changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
+					break;
+			}
 
 			/* Change direction from floor to ladder if player is onto a ladder top. */
 			if (checkSpriteAtLadderEntryDown(Player.sprite))
@@ -126,6 +131,10 @@ void selectPlayerDirection(uint8_t buttons) {
 			/* Change direction from floor to ladder if player is at a ladder. */
 			if (checkSpriteAtLadderEntryUp(Player.sprite))
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_UP);
+
+			/* Change direction from floor to ladder if player is at a squirted ladder. */
+			if (checkSpriteAtSquirtedLadderEntryUp(Player.sprite))
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_CLEAN);
 
 			break;
 	}
@@ -165,9 +174,27 @@ void movePlayer(uint8_t buttons) {
 
 			break;
 		case PLAYER_FLAGS_DIRECTION_UP:
-			/* Move sprite if nothing should stop us. */
-			if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_UP)) && (!checkSpriteAtLadderTop(Player.sprite)))
+			/* Change direction from ladder up to clean if player is at a squirted ladder. */
+			/* Else, move sprite if nothing should stop us. */
+			if (checkSpriteAtSquirtedLadderEntryUp(Player.sprite))
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_CLEAN);
+			else if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_UP)) && (!checkSpriteAtLadderTop(Player.sprite)))
 				moveSprite(Player.sprite,0,-(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
+			break;
+		case PLAYER_FLAGS_DIRECTION_CLEAN:
+			/* Clean ladder if nothing should stop us. */
+			if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_UP))
+				&& (!checkSpriteAtLadderTop(Player.sprite))
+				&& !(GameScreenAnimationPhase & PLAYER_CLEAN_PHASE)) {
+				/* Clean ladder tile, or change to up direction if all done. */
+				if (checkSpriteAtSquirtedLadderEntryUp(Player.sprite))
+					cleanLadderAtSprite(Player.sprite);
+				else
+					changePlayerDirection(PLAYER_FLAGS_DIRECTION_UP);
+
+				/* Move player slowly. */
+				moveSprite(Player.sprite,0,-1);
+			}
 			break;
 	}
 }

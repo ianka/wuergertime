@@ -410,7 +410,6 @@ uint8_t checkSpriteAtLadderEntryUp(uint8_t slot) {
 	/* On an exact tile coordinate. Check ladder. */
 	switch (getSpriteLadderTile(slot)) {
 		case TILES0_LADDER_RIGHT:
-		case TILES0_LADDER_SQUIRTED_RIGHT:
 		case TILES0_LADDER_CLEANED_RIGHT:
 		case TILES0_LADDER_TOP_RIGHT:
 		case TILES0_LADDER_TOP_FLOOREND_RIGHT:
@@ -420,6 +419,21 @@ uint8_t checkSpriteAtLadderEntryUp(uint8_t slot) {
 			/* Not on a ladder up entry. */
 			return 0;
 	}
+}
+
+
+/* Check if at squirted ladder up entry. */
+uint8_t checkSpriteAtSquirtedLadderEntryUp(uint8_t slot) {
+	/* Fail if not at exact tile coordinate. */
+	if (getSpriteX(slot) & 0x07) return 0;
+
+	/* On an exact tile coordinate. Check ladder. */
+	if (getSpriteLadderTile(slot) == TILES0_LADDER_SQUIRTED_RIGHT)
+			/* On ladder up entry. */
+			return 1;
+
+	/* Not on a ladder up entry. */
+	return 0;
 }
 
 
@@ -546,6 +560,12 @@ uint8_t checkSpriteAtRightFloorEnd(uint8_t slot) {
 			/* Not at left floor end. */
 			return 0;
 	}
+}
+
+
+/* Clean ladder piece at sprite. */
+void cleanLadderAtSprite(uint8_t slot) {
+	drawCleanedLadderPiece((getSpriteX(slot)>>3)-1,(getSpriteY(slot)>>3)-1);
 }
 
 

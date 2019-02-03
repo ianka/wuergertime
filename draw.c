@@ -274,6 +274,13 @@ void drawSquirtedLadderPiece(uint8_t x, uint8_t y) {
 }
 
 
+/* Draw a cleaned ladder piece. */
+void drawCleanedLadderPiece(uint8_t x, uint8_t y) {
+	setTile(x,y,TILES0_LADDER_CLEANED_LEFT);
+	setTile(x+1,y,TILES0_LADDER_CLEANED_RIGHT);
+}
+
+
 /* Draw a burger component. */
 void drawBurgerComponentTile(uint8_t index, uint8_t x, uint8_t half_y, uint8_t component, uint8_t stomped, uint8_t buffer[2][5]) {
 	uint8_t tile_y, existing_component=SHAPE_BURGER_HALFTILE_AIR, upper_combination, lower_combination;
