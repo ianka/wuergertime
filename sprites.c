@@ -563,6 +563,34 @@ uint8_t checkSpriteAtRightFloorEnd(uint8_t slot) {
 }
 
 
+/* Squirt on a ladder at sprite. */
+uint8_t squirtOnLadderAtSprite(uint8_t slot) {
+	uint8_t x, y;
+
+	/* Get position. */
+	x=(getSpriteX(slot)>>3)-1;
+	y=(getSpriteY(slot)>>3)-1;
+
+	/* Skip squirted ladder pieces. */
+	while (getTile(x,y) == TILES0_LADDER_SQUIRTED_LEFT)
+		y--;
+
+	/* Check if still a piece to squirt. */
+	switch (getTile(x,y)) {
+		case TILES0_LADDER_LEFT:
+		case TILES0_LADDER_CLEANED_LEFT:
+			/* Squirt it. */
+			drawSquirtedLadderPiece(x,y);
+
+			/* Not fully squirted. */
+			return 0;
+	}
+
+	/* Fully squirted. */
+	return 1;
+}
+
+
 /* Clean ladder piece at sprite. */
 void cleanLadderAtSprite(uint8_t slot) {
 	drawCleanedLadderPiece((getSpriteX(slot)>>3)-1,(getSpriteY(slot)>>3)-1);

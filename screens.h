@@ -245,6 +245,5 @@ uint8_t decrementBonusFast(void);
 uint8_t animateHurry(void);
 void dropAllBurgersOffScreen(void);
 uint8_t awardServedBurgers(void);
-uint8_t squirtOnLadder(uint8_t x, uint8_t y);
 
 #endif /* SCREENS_H */

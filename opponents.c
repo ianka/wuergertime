@@ -337,7 +337,7 @@ void selectOpponentDirection(uint8_t index) {
 			if (getSpriteY(Player.sprite) < getSpriteY(Opponent[index].sprite)) {
 				/* Yes. Continue squirting until the whole ladder is messed up. */
 				if (!(GameScreenAnimationPhase & OPPONENT_SQUIRT_PHASE)) {
-					if (!(squirtOnLadder((getSpriteX(Opponent[index].sprite)>>3)-1,(getSpriteY(Opponent[index].sprite)>>3)-1))) {
+					if (!(squirtOnLadderAtSprite(Opponent[index].sprite))) {
 						/* Do not select a new direction. */
 						return;
 					}

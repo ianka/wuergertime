@@ -944,23 +944,3 @@ uint8_t awardServedBurgers(void) {
 	return 1;
 }
 
-
-/* Squirt on a ladder. */
-uint8_t squirtOnLadder(uint8_t x, uint8_t y) {
-	/* Skip squirted ladder pieces. */
-	while (getTile(x,y) == TILES0_LADDER_SQUIRTED_LEFT)
-		y--;
-
-	/* Check if still a piece to squirt. */
-	if (getTile(x,y) == TILES0_LADDER_LEFT) {
-		/* Squirt it. */
-		drawSquirtedLadderPiece(x,y);
-
-		/* Not fully squirted. */
-		return 0;
-	}
-
-	/* Fully squirted. */
-	return 1;
-}
-
