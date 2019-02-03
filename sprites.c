@@ -186,7 +186,7 @@ void freeSpriteSlot(uint8_t slot) {
 
 /* Update sprite on screen. */
 void updateSprite(uint8_t slot) {
-	uint8_t tile, i, j, view_right;
+	uint8_t tile, i, j, view_right, flip_y;
 	const uint8_t *p;
 
 	/* Setup kernel sprite shape according to flags. */
@@ -245,8 +245,23 @@ void updateSprite(uint8_t slot) {
 	if ((GameSpriteSlots[slot].flags & SPRITE_FLAGS_TYPE_MASK) == SPRITE_FLAGS_TYPE_ANTICOOK)
 		view_right^=1;
 
+	/* No vertical flip. */
+	flip_y=0;
+
 	/* Setup kernel sprites according to flags. */
 	switch (GameSpriteSlots[slot].flags & (SPRITE_FLAGS_TYPE_MASK|SPRITE_FLAGS_DIRECTION_MASK)) {
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
+			/* Vertical flip. */
+			flip_y=1;
+
+			/* Fall through. */
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
+		case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LADDER:
+		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
+			/* Ignore view for these pieces. */
+			view_right=0;
+
+			/* Fall through. */
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT:
 		case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LEFT:
@@ -255,39 +270,13 @@ void updateSprite(uint8_t slot) {
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
 		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_LEFT:
 		case SPRITE_FLAGS_TYPE_SAUSAGEMAN|SPRITE_FLAGS_DIRECTION_RIGHT:
-			/* Place tiles, honor mirroring. */
+			/* Place tiles, honor mirroring and flipping. */
 			for (j=0;j<4;j++) {
 				tile=pgm_read_byte(p);
 				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-				sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+				sprites[i].flags=(((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0)|(flip_y*SPRITE_FLIP_Y);
 				sprites[i].x=GameSpriteSlots[slot].x-((j&1)^view_right?0:8);
-				sprites[i].y=GameSpriteSlots[slot].y-16+(j&2)*4;
-				p++;
-				i++;
-			}
-			break;
-		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
-		case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LADDER:
-		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
-			/* Place tiles, honor mirroring. */
-			for (j=0;j<4;j++) {
-				tile=pgm_read_byte(p);
-				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-				sprites[i].flags=(tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0;
-				sprites[i].x=GameSpriteSlots[slot].x-8+(j&1)*8;
-				sprites[i].y=GameSpriteSlots[slot].y-16+(j&2)*4;
-				p++;
-				i++;
-			}
-			break;
-		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
-			/* Place tiles, honor mirroring. */
-			for (j=0;j<4;j++) {
-				tile=pgm_read_byte(p);
-				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
-				sprites[i].flags=((tile & SPRITE_MIRROR)?SPRITE_FLIP_X:0)|SPRITE_FLIP_Y;
-				sprites[i].x=GameSpriteSlots[slot].x-8+(j&1)*8;
-				sprites[i].y=GameSpriteSlots[slot].y-8-(j&2)*4;
+				sprites[i].y=GameSpriteSlots[slot].y-8-((~j^(flip_y*2))&2)*4;
 				p++;
 				i++;
 			}
