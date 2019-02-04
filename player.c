@@ -62,6 +62,9 @@ void changePlayerDirection(uint8_t direction) {
 			/* Initialize hit speed. */
 			Player.hit_speed=min(getSpriteY(Player.sprite)*getSpriteY(Player.sprite),PLAYER_START_HIT_SPEED_Y);
 			break;
+		case PLAYER_FLAGS_DIRECTION_SLIDE:
+			changeSpriteDirection(Player.sprite,SPRITE_FLAGS_DIRECTION_SLIDE);
+			break;
 		default:
 			changeSpriteDirection(Player.sprite,SPRITE_FLAGS_DIRECTION_LADDER);
 	}
@@ -82,6 +85,9 @@ void selectPlayerDirection(uint8_t buttons) {
 		case PLAYER_FLAGS_DIRECTION_CLEAN:
 			buttons&=~BTN_UP;
 			break;
+		case PLAYER_FLAGS_DIRECTION_SLIDE:
+			buttons&=~BTN_UP;
+			/* Fall through. */
 		case PLAYER_FLAGS_DIRECTION_DOWN:
 			buttons&=~BTN_DOWN;
 			break;
@@ -168,9 +174,23 @@ void movePlayer(uint8_t buttons) {
 
 			break;
 		case PLAYER_FLAGS_DIRECTION_DOWN:
-			/* Move sprite if nothing should stop us. */
-			if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_DOWN)) && (!checkSpriteAtLadderBottom(Player.sprite)))
+			/* Change direction from ladder down to slide if player is at a squirted ladder. */
+			/* Else, move sprite if nothing should stop us. */
+			if (checkSpriteAtSquirtedLadderEntryUp(Player.sprite))
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_SLIDE);
+			else if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_DOWN)) && (!checkSpriteAtLadderBottom(Player.sprite)))
 				moveSprite(Player.sprite,0,(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
+
+			break;
+		case PLAYER_FLAGS_DIRECTION_SLIDE:
+			/* Move sprite if nothing should stop us. */
+			if (!checkSpriteAtLadderBottom(Player.sprite)) {
+				moveSprite(Player.sprite,0,(1<<((PLAYER_FLAGS_SPEED_FAST>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
+			} else {
+				/* Else, align sprite to platform level and switch to normal down direction. */
+				alignSpriteToPlatform(Player.sprite);
+				changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
+			}
 
 			break;
 		case PLAYER_FLAGS_DIRECTION_UP:
@@ -180,6 +200,7 @@ void movePlayer(uint8_t buttons) {
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_CLEAN);
 			else if ((buttons & (BTN_RIGHT|BTN_LEFT|BTN_UP)) && (!checkSpriteAtLadderTop(Player.sprite)))
 				moveSprite(Player.sprite,0,-(1<<min(0,((Player.flags & PLAYER_FLAGS_SPEED_MASK)>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
+
 			break;
 		case PLAYER_FLAGS_DIRECTION_CLEAN:
 			/* Clean ladder if nothing should stop us. */
@@ -195,6 +216,7 @@ void movePlayer(uint8_t buttons) {
 				/* Move player slowly. */
 				moveSprite(Player.sprite,0,-1);
 			}
+
 			break;
 	}
 }

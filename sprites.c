@@ -67,6 +67,12 @@ const uint8_t SpriteAnimationCookCaught[SPRITE_ANIMATION_COOK_CAUGHT_MAX][4] PRO
 };
 
 
+#define SPRITE_ANIMATION_COOK_SLIDE_MAX 1
+const uint8_t SpriteAnimationCookSlide[SPRITE_ANIMATION_COOK_SLIDE_MAX][4] PROGMEM = {
+	TILES_BLOCK(TILES2_COOK_LADDER_ANIMATE0),
+};
+
+
 #define SPRITE_ANIMATION_EGGHEAD_SIDE_MAX 4
 const uint8_t SpriteAnimationEggheadSide[SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][4] PROGMEM = {
 	TILES_BLOCK(TILES2_EGGHEAD_SIDE_ANIMATE0),
@@ -210,6 +216,10 @@ void updateSprite(uint8_t slot) {
 			case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_CAUGHT:
 				p=&SpriteAnimationCookCaught[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_CAUGHT_MAX][0];
 				break;
+			case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_SLIDE:
+			case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_SLIDE:
+				p=&SpriteAnimationCookSlide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_COOK_SLIDE_MAX][0];
+				break;
 			case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LEFT:
 			case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_RIGHT:
 				p=&SpriteAnimationEggheadSide[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_EGGHEAD_SIDE_MAX][0];
@@ -257,6 +267,8 @@ void updateSprite(uint8_t slot) {
 			/* Fall through. */
 		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER:
 		case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LADDER:
+		case SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_SLIDE:
+		case SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_SLIDE:
 		case SPRITE_FLAGS_TYPE_EGGHEAD|SPRITE_FLAGS_DIRECTION_LADDER:
 			/* Ignore view for these pieces. */
 			view_right=0;
@@ -334,6 +346,16 @@ void moveSpriteUncondionally(uint8_t slot, int8_t x, int8_t y) {
 
 	/* Next animation step. */
 	GameSpriteSlots[slot].flags=(GameSpriteSlots[slot].flags & ~SPRITE_FLAGS_ANIMATION_MASK) | ((GameSpriteSlots[slot].flags+1) & SPRITE_FLAGS_ANIMATION_MASK);
+
+	/* Update sprite. */
+	updateSprite(slot);
+}
+
+
+/* Align a sprite to nearby platform level. */
+void alignSpriteToPlatform(uint8_t slot) {
+	/* Align. */
+	GameSpriteSlots[slot].y&=0xf8;
 
 	/* Update sprite. */
 	updateSprite(slot);
