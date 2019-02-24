@@ -68,8 +68,8 @@
 #define OPPONENT_RANDOMNESS_MEDIUM  0x0f
 #define OPPONENT_RANDOMNESS_HIGH    0x03
 #define OPPONENT_MAD_RANDOMNESS     0x01
-#define OPPONENT_MAD_RESET_PHASE    0xfc
-#define OPPONENT_SQUIRT_PHASE       0x3c
+#define OPPONENT_MAD_RESET_PHASE    0xfe
+#define OPPONENT_SQUIRT_PHASE       0x3e
 
 /* For animation when opponent is hit. */
 #define OPPONENT_HIT_SPEED_X        2
