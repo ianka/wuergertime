@@ -29,7 +29,7 @@ extern const char SpriteTiles[] PROGMEM;
 
 
 /*  Tile offsets. */
-#define SPRITEMAP_WIDTH 8
+#define SPRITEMAP_WIDTH 7
 #define SPRITE_MIRROR 0x80
 
 
