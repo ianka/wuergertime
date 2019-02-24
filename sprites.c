@@ -601,6 +601,7 @@ uint8_t squirtOnLadderAtSprite(uint8_t slot) {
 	switch (getTile(x,y)) {
 		case TILES0_LADDER_LEFT:
 		case TILES0_LADDER_CLEANED_LEFT:
+		case TILES0_LADDER_WAILED_LEFT:
 			/* Squirt it. */
 			drawSquirtedLadderPiece(x,y);
 
@@ -616,6 +617,52 @@ uint8_t squirtOnLadderAtSprite(uint8_t slot) {
 /* Clean ladder piece at sprite. */
 void cleanLadderAtSprite(uint8_t slot) {
 	drawCleanedLadderPiece((getSpriteX(slot)>>3)-1,(getSpriteY(slot)>>3)-1);
+}
+
+
+/* Wail on a ladder at sprite. */
+uint8_t wailOnLadderAtSprite(uint8_t slot) {
+	uint8_t x, y;
+
+	/* Get position. */
+	x=(getSpriteX(slot)>>3)-1;
+	y=(getSpriteY(slot)>>3)-1;
+
+	/* Skip wailed ladder pieces. */
+	while (getTile(x,y) == TILES0_LADDER_WAILED_LEFT)
+		y--;
+
+	/* Check if still a piece to wail over. */
+	if (getTile(x,y) == TILES0_LADDER_SQUIRTED_LEFT) {
+		/* Wail on that piece. */
+		drawWailedLadderPiece(x,y);
+
+		/* Not fully wailed. */
+		return 0;
+	}
+
+	/* Unwail the ladder. */
+	unwailLadderAtSprite(slot);
+
+	/* Tell caller we are done with wailing. */
+	return 1;
+}
+
+
+/* Unwail a ladder. */
+void unwailLadderAtSprite(uint8_t slot) {
+	uint8_t x, y;
+
+	/* Get position. */
+	x=(getSpriteX(slot)>>3)-1;
+	y=(getSpriteY(slot)>>3)-1;
+
+	/* Replace the wail by squirt. */
+	while (getTile(x,y) == TILES0_LADDER_WAILED_LEFT)
+	{
+		drawSquirtedLadderPiece(x,y);
+		y--;
+	}
 }
 
 

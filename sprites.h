@@ -90,6 +90,8 @@ uint8_t checkSpriteAtLadderBottom(uint8_t slot);
 uint8_t checkSpriteAtLeftFloorEnd(uint8_t slot);
 uint8_t checkSpriteAtRightFloorEnd(uint8_t slot);
 uint8_t squirtOnLadderAtSprite(uint8_t slot);
+uint8_t wailOnLadderAtSprite(uint8_t slot);
+void unwailLadderAtSprite(uint8_t slot);
 void cleanLadderAtSprite(uint8_t slot);
 void setSpriteTransparency(uint8_t slot, uint16_t transparent);
 

@@ -86,8 +86,8 @@ void selectPlayerDirection(uint8_t buttons) {
 			buttons&=~BTN_UP;
 			break;
 		case PLAYER_FLAGS_DIRECTION_SLIDE:
-			buttons&=~BTN_UP;
-			/* Fall through. */
+			buttons=0;
+			break;
 		case PLAYER_FLAGS_DIRECTION_DOWN:
 			buttons&=~BTN_DOWN;
 			break;
@@ -187,9 +187,16 @@ void movePlayer(uint8_t buttons) {
 			if (!checkSpriteAtLadderBottom(Player.sprite)) {
 				moveSprite(Player.sprite,0,(1<<((PLAYER_FLAGS_SPEED_FAST>>PLAYER_FLAGS_SPEED_SHIFT)-1)));
 			} else {
-				/* Else, align sprite to platform level and switch to normal down direction. */
+				/* Else, align sprite to platform level. */
 				alignSpriteToPlatform(Player.sprite);
-				changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
+
+				/* Yes. Continue wailing until the whole ladder is messed up. */
+				if (!(GameScreenAnimationPhase & PLAYER_WAIL_PHASE)) {
+					if (wailOnLadderAtSprite(Player.sprite)) {
+						/* Switch to clean direction as soon the wailing is done. */
+						changePlayerDirection(PLAYER_FLAGS_DIRECTION_CLEAN);
+					}
+				}
 			}
 
 			break;

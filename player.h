@@ -51,7 +51,10 @@
 #define PLAYER_START_BLINKCODE 0xe733aa55
 
 /* Ladder clean speed. */
-#define PLAYER_CLEAN_PHASE 0x1c
+#define PLAYER_CLEAN_PHASE 0x1e
+
+/* Ladder wail phase. */
+#define PLAYER_WAIL_PHASE 0x3e
 
 
 typedef struct {

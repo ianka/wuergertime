@@ -354,6 +354,9 @@ void cleanupInGameBonusScreen(void) {
  *  It shows the lose animation on the level screen.
  */
 void initInGameLoseScreen(void) {
+	/* Unwail the ladder the player is at, if any. */
+	unwailLadderAtSprite(Player.sprite);
+
 	/* Kick player from screen. */
 	changePlayerDirection(PLAYER_FLAGS_DIRECTION_CAUGHT);
 }

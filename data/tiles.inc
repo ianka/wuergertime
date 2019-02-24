@@ -155,14 +155,6 @@
 #define TILES0_HURRY_MIDDLE utile(0,3,14)
 #define TILES0_HURRY_RIGHT utile(0,3,15)
 
-#define TILES0_OUCH_LEFT utile(0,4,13)
-#define TILES0_OUCH_MIDDLE utile(0,4,14)
-#define TILES0_OUCH_RIGHT utile(0,4,15)
-
-#define TILES0_KING_LEFT utile(0,4,7)
-#define TILES0_KING_MIDDLE utile(0,4,8)
-#define TILES0_KING_RIGHT utile(0,4,9)
-
 #define TILES0_W_UPPER_LEFT stile(0,0,5)
 #define TILES0_W_UPPER_RIGHT stile(0,0,6)
 #define TILES0_W_LOWER_LEFT stile(0,1,5)
@@ -289,6 +281,9 @@
 
 #define TILES0_LADDER_SQUIRTED_LEFT utile(0,3,7)
 #define TILES0_LADDER_SQUIRTED_RIGHT utile(0,3,8)
+
+#define TILES0_LADDER_WAILED_LEFT utile(0,4,13)
+#define TILES0_LADDER_WAILED_RIGHT utile(0,4,14)
 
 
 /* Burger parts */
