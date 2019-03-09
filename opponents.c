@@ -537,6 +537,10 @@ void kickOpponentIfPeppered(uint8_t index) {
 	if (checkInvalidOrHitOpponent(index))
 		return;
 
+	/* Skip unused pepper. */
+	if (!Pepper.flags)
+		return;
+
 	/* Get coordinates. */
 	px=getSpriteX(Pepper.sprite);
 	py=getSpriteY(Pepper.sprite);
