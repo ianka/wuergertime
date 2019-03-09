@@ -271,24 +271,40 @@ void cleanupInGameHurryScreen(void) {
  *  It shows the bonus animation on the level screen.
  */
 void initInGameBonusScreen(void) {
-	uint8_t i;
-
-	/* Kick all opponents off-screen. */
-	for (i=0;i<OPPONENT_MAX;i++)
-		kickOpponent(i);
+	uint8_t i,j;
 
 	/* Fast bonus counting. */
 	GameScreenOptions&=~LEVEL_ITEM_OPTION_BONUS_MASK;
 
-	/* Draw bonus items at all valid opponent start positions. */
-	for (i=0;i<OPPONENT_START_POSITION_MAX;i++) {
-		if (OpponentStartPosition[i].x != OPPONENT_START_POSITION_INVALID) {
-			/* Draw a random bonus item. */
-			if (fastrandom()%2)
-				drawSoda(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2);
-			else
-				drawFries(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2);
+	/* Handle all opponents. */
+	for (i=0,j=0;i<OPPONENT_MAX;i++,j++) {
+		/* Skip invalid or hit opponents. */
+		if (checkInvalidOrHitOpponent(i))
+			continue;
+
+		/* Wrap invalid start positions. */
+		if ((j>=OPPONENT_START_POSITION_MAX)
+			|| (OpponentStartPosition[j].x == OPPONENT_START_POSITION_INVALID))
+			j=0;
+
+		/* Draw bonus item depending on opponent. */
+		switch (Opponent[i].flags & OPPONENT_FLAGS_ALGORITHM_MASK) {
+			case OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER:
+				drawSoda(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				break;
+			case OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER:
+				drawFries(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				break;
+			case OPPONENT_FLAGS_ALGORITHM_MESS_UP_LADDERS:
+				drawPepper(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				break;
+			case OPPONENT_FLAGS_ALGORITHM_STOMPER:
+				drawCrown(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				break;
 		}
+
+		/* Kick opponent off-screen. */
+		kickOpponent(i);
 	}
 }
 
@@ -322,8 +338,23 @@ void updateInGameBonusScreen(void) {
 			if (((getSpriteX(Player.sprite)>>3 == OpponentStartPosition[i].x-1)
 				|| (getSpriteX(Player.sprite)>>3 == OpponentStartPosition[i].x))
 				&& (getSpriteY(Player.sprite)>>3 == OpponentStartPosition[i].y)) {
-				/* Reached. Award score. */
-				Score+=SCORE_BONUS_ITEM;
+				/* Reached. Get item type.*/
+				switch (getTile(OpponentStartPosition[i].x,OpponentStartPosition[i].y)) {
+					case TILES0_SODA_UPPER_LEFT:
+						Score+=SCORE_BONUS_ITEM_SODA;
+						break;
+					case TILES0_FRIES_UPPER_LEFT:
+						Score+=SCORE_BONUS_ITEM_FRIES;
+						break;
+					case TILES0_PEPPER_UPPER_LEFT:
+						Score+=SCORE_BONUS_ITEM_PEPPER;
+						Peppers++;
+						break;
+					case TILES0_CROWN_UPPER_LEFT:
+						Score+=SCORE_BONUS_ITEM_CROWN;
+						Lives++;
+						break;
+				}
 
 				/* Clear item. */
 				clearQuad(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2);

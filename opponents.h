@@ -111,6 +111,7 @@ void changeOpponentDirectionWithoutAnimationReset(uint8_t index, uint8_t directi
 void changeOpponentDirection(uint8_t index, uint8_t direction);
 void selectOpponentDirection(uint8_t index);
 void moveOpponent(uint8_t index);
+uint8_t checkInvalidOrHitOpponent(uint8_t index);
 void kickOpponent(uint8_t index);
 void kickOpponentIfHit(uint8_t index);
 void kickOpponentIfPeppered(uint8_t index);

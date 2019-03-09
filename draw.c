@@ -493,6 +493,17 @@ void drawCrown(uint8_t x, uint8_t y) {
 }
 
 
+/* Draw pepper. */
+void drawPepper(uint8_t x, uint8_t y) {
+	tiles_block_t pepper[2]=TILES_COMPOUND(TILES_BLOCK,PEPPER);
+
+	setTile(x,y,pepper[Tileset].upperleft);
+	setTile(x+1,y,pepper[Tileset].upperright);
+	setTile(x,y+1,pepper[Tileset].lowerleft);
+	setTile(x+1,y+1,pepper[Tileset].lowerright);
+}
+
+
 /* Draw plate. */
 void drawPlate(uint8_t x, uint8_t y) {
 	tiles_burger_t plate[2]=TILES_COMPOUND(TILES_BURGER,PLATE);

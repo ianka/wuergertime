@@ -216,10 +216,13 @@ extern position_t GameScreenLevelPosition;
 #define SCORE_COMPONENT_FALLING          10
 #define SCORE_COMPONENT_FALLING_CASCADE  20
 #define SCORE_OPPONENT_HIT              200
-#define SCORE_BONUS_ITEM                100
-#define SCORE_BURGER_SMALL              150
-#define SCORE_BURGER_MEDIUM             200
-#define SCORE_BURGER_LARGE              250
+#define SCORE_BONUS_ITEM_SODA           100
+#define SCORE_BONUS_ITEM_FRIES          150
+#define SCORE_BONUS_ITEM_PEPPER         250
+#define SCORE_BONUS_ITEM_CROWN          500
+#define SCORE_BURGER_SMALL             1000
+#define SCORE_BURGER_MEDIUM            1500
+#define SCORE_BURGER_LARGE             2000
 
 
 extern uint8_t Scratchpad;
