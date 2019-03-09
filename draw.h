@@ -111,6 +111,7 @@ void drawScore(uint8_t x, uint8_t y, uint32_t value);
 void drawLevel(uint8_t x, uint8_t y, uint16_t value);
 void drawBonus(uint8_t x, uint8_t y, uint16_t value);
 void drawLives(uint8_t x, uint8_t y, uint8_t value);
+void drawPeppers(uint8_t x, uint8_t y, uint8_t value);
 void drawHighscoreBillboard();
 void drawHighscore(uint8_t x, uint8_t y, uint32_t name, uint32_t score);
 void drawHurry(uint8_t x, uint8_t y, uint8_t buffer[3]);

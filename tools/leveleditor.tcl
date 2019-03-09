@@ -85,7 +85,7 @@ proc applyLabels {} {
 
 ## Rearrange by layer.
 proc rearrangeByLayer {} {
-	foreach tag {grid floors ladders burgers plates scores levels bonuses lives signs opponentstartpoints playerstartpoints labels picked cursor} {
+	foreach tag {grid floors ladders burgers plates scores levels bonuses lives peppers signs opponentstartpoints playerstartpoints labels picked cursor} {
 		.screen raise $tag
 	}
 }
@@ -231,7 +231,7 @@ proc addXyTags {tag x y} {
 						.screen addtag [list xy [expr {$x+$i}] [expr {$y+1}]] withtag $item
 					}
 				}
-				lives {
+				lives - peppers {
 					for {set i 0} {$i<$::lives_draw_max} {incr i} {
 						.screen addtag [list xy $x [expr {$y+$i}]] withtag $item
 					}
@@ -375,6 +375,20 @@ proc addLives {} {
 		-state normal -image $::lives \
 		-tags [list images pickedimage picked lives [list lives]]
 }
+
+
+## Add peppers field.
+proc addPeppers {} {
+	set ::xdiff 0
+	set ::ydiff 0
+	set ::group$::group 1
+	applyGroup $::group
+	addPickedGroupLabel $::group [list [list peppers]]
+	.screen itemconfigure pickedimage \
+		-state normal -image $::peppers \
+		-tags [list images pickedimage picked peppers [list peppers]]
+}
+
 
 
 ## Add game sign.
@@ -536,6 +550,7 @@ foreach {simplecomponent params} {
 	level              {x y}
 	bonus              {x y}
 	lives              {x y}
+	peppers            {x y}
 	plate              {x y}
 	burger             {type x y}
 	floor              {type x y length}
@@ -664,15 +679,16 @@ proc loadLevels {filename} {
 			set ::group $group
 			dict with component {
 				switch -- $item {
-					floor  {addFloor  $type $length}
-					ladder {addLadder $type $length}
-					burger {addBurger $type}
-					plate  {addPlate}
-					sign   {addSign}
-					score  {addScore}
-					level  {addLevel}
-					bonus  {addBonus}
-					lives  {addLives}
+					floor   {addFloor  $type $length}
+					ladder  {addLadder $type $length}
+					burger  {addBurger $type}
+					plate   {addPlate}
+					sign    {addSign}
+					score   {addScore}
+					level   {addLevel}
+					bonus   {addBonus}
+					lives   {addLives}
+					peppers {addPeppers}
 					playerstartpoint   {addPlayerStartpoint}
 					opponentstartpoint {addOpponentStartpoint}
 					options            {setOptions $options}
@@ -683,7 +699,7 @@ proc loadLevels {filename} {
 					.screen moveto pickedlabel [sc [expr {$x-1}]] [sc [expr {$y-1}]]
 					dropOrPick [sc $x] [sc $y]
 				}
-				if {$item eq {lives}} {
+				if {$item in {lives peppers}} {
 					.screen moveto pickedimage [sc $x] [sc [expr {$y+1-$::lives_draw_max}]]
 					.screen moveto pickedlabel [sc [expr {$x-1}]] [sc [expr {$y-$::lives_draw_max}]]
 					dropOrPick [sc $x] [sc [expr {$y+1-$::lives_draw_max}]]
@@ -772,7 +788,7 @@ proc saveLevels {filename} {
 			set length {}
 			foreach tag $tags {
 				switch -regexp -matchvar match -- $tag {
-					score - level - bonus - lives - plate - sign - playerstartpoint - opponentstartpoint {
+					score - level - bonus - lives - peppers - plate - sign - playerstartpoint - opponentstartpoint {
 						set itemtype $tag
 					}
 					{^burger (.+)$} {
@@ -816,7 +832,7 @@ proc saveLevels {filename} {
 							floor - ladder {
 								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y $length]
 							}
-							lives {
+							lives - peppers {
 								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x [expr {$y-1+$::lives_draw_max}]]
 							}
 							playerstartpoint - opponentstartpoint {
@@ -1163,6 +1179,15 @@ for {set y 0} {$y<$::lives_draw_max} {incr y} {
 set lives $photo
 
 
+## Create peppers.
+set photo [image create photo]
+for {set y 0} {$y<$::lives_draw_max} {incr y} {
+	lassign [dict get $::coords tiles [list pepper]] row column
+	copyTile $::tilesphoto $photo $row $column 0 $y
+}
+set peppers $photo
+
+
 ## Create "Würgertime" game sign.
 set photo [image create photo]
 set y 0
@@ -1435,10 +1460,11 @@ menu .menu.misc
 .menu.misc add command -command [list addPlayerStartpoint] -label "Player Startpoint"
 .menu.misc add command -command [list addOpponentStartpoint] -label "Opponent Startpoint"
 .menu.misc add separator
-.menu.misc add command -command [list addScore] -label "Score"
-.menu.misc add command -command [list addLevel] -label "Level"
-.menu.misc add command -command [list addBonus] -label "Bonus"
-.menu.misc add command -command [list addLives] -label "Lives"
+.menu.misc add command -command [list addScore]   -label "Score"
+.menu.misc add command -command [list addLevel]   -label "Level"
+.menu.misc add command -command [list addBonus]   -label "Bonus"
+.menu.misc add command -command [list addLives]   -label "Lives"
+.menu.misc add command -command [list addPeppers] -label "Peppers"
 .menu.misc add separator
 .menu.misc add command -command [list addSign] -label "Game Sign"
 

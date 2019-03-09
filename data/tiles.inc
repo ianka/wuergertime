@@ -39,7 +39,7 @@
 
 /* Small icons */
 #define TILES0_COOK_SMALL utile(0,2,0)
-#define TILES0_PEPPERPOT utile(0,2,1)
+#define TILES0_PEPPER utile(0,2,1)
 
 #define TILES0_SPATULA_LEFT utile(0,3,0)
 #define TILES0_SPATULA_RIGHT utile(0,3,1)

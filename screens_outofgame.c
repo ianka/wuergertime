@@ -76,6 +76,7 @@ void initStartScreen(void) {
 	Score=0;
 	Bonus=0;
 	Lives=DEFAULT_LIVES;
+	Peppers=DEFAULT_PEPPERS;
 
 	/* Fade into clear screen */
 	clearScreen();

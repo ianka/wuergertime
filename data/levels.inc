@@ -97,6 +97,8 @@ const level_item_t LevelComponents[] PROGMEM={
 	/* Component block 3 */
 
 	LEVEL_COMPONENT_LADDER(CONTINUED,   22,12, 4),
+
+	LEVEL_COMPONENT_PEPPERS(            29,27),
 	LEVEL_COMPONENT_END,
 
 };

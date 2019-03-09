@@ -51,11 +51,13 @@ uint32_t Score;
 uint32_t DisplayedScore;
 uint16_t Bonus;
 uint8_t Lives;
+uint8_t Peppers;
 position_t GameScreenSignPosition;
 position_t GameScreenScorePosition;
 position_t GameScreenLevelPosition;
 position_t GameScreenBonusPosition;
 position_t GameScreenLivesPosition;
+position_t GameScreenPeppersPosition;
 typedef struct {
 	int8_t  half_y;
 	uint8_t occupied_by;
@@ -333,6 +335,11 @@ void prepareLevel(void) {
 					GameScreenLivesPosition.x=x;
 					GameScreenLivesPosition.y=y;
 					break;
+				case LEVEL_ITEM_PEPPERS:
+					/* Remember peppers position. */
+					GameScreenPeppersPosition.x=x;
+					GameScreenPeppersPosition.y=y;
+					break;
 				default:
 					/* Ladders and floors. */
 					if ((c & LEVEL_ITEM_LADDER) == LEVEL_ITEM_LADDER) {
@@ -479,6 +486,10 @@ void animateLevelStart(void) {
 				case LEVEL_ITEM_LIVES:
 					/* Draw lives. */
 					drawLives(x,y,Lives);
+					break;
+				case LEVEL_ITEM_PEPPERS:
+					/* Draw peppers. */
+					drawPeppers(x,y,Peppers);
 					break;
 				case LEVEL_ITEM_PLATE:
 					/* Draw sign shape */
@@ -755,7 +766,7 @@ uint8_t checkFallingBurgerComponentPosition(uint8_t x, uint8_t y) {
 }
 
 
-/* Update statistics on screen (score, level, bonus, lives etc.) */
+/* Update statistics on screen (score, level, bonus, lives, peppers etc.) */
 void updateGameScreenStatistics(void) {
 	/* Crawl to actual score. */
 	if (DisplayedScore+13 < Score)
@@ -765,9 +776,10 @@ void updateGameScreenStatistics(void) {
 	else if (DisplayedScore < Score)
 		DisplayedScore++;
 
-	/* Finally update the displayed score and lives. */
+	/* Finally update the displayed score, lives, and peppers. */
 	drawScore(GameScreenScorePosition.x,GameScreenScorePosition.y,DisplayedScore);
 	drawLives(GameScreenLivesPosition.x,GameScreenLivesPosition.y,Lives);
+	drawPeppers(GameScreenPeppersPosition.x,GameScreenPeppersPosition.y,Peppers);
 }
 
 

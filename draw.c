@@ -576,6 +576,23 @@ void drawLives(uint8_t x, uint8_t y, uint8_t value) {
 }
 
 
+/* Draw peppers. */
+void drawPeppers(uint8_t x, uint8_t y, uint8_t value) {
+	uint8_t i;
+
+	/* Limit number of drawn peppers. */
+	value=min(value,LIVES_DRAW_MAX);
+
+	/* Draw a vertical line of peppers. */
+	for(i=0;i<LIVES_DRAW_MAX;i++) {
+		if (i<(value-1))
+				setTile(x,y-i,TILES0_PEPPER);
+			else
+				setTile(x,y-i,TILES0_SPACE);
+	}
+}
+
+
 /* Draw the billboard used in the highscore screens. */
 void drawHighscoreBillboard() {
 	drawShape(12,1,ShapeHighscoreSignBurger,0);

@@ -24,8 +24,11 @@
 #include "utils.h"
 
 
-/* Number of lives at beginning of game. */
+/* Number of lives at beginning of the game. */
 #define DEFAULT_LIVES 3
+
+/* Number of peppers at the beginning of the game. */
+#define DEFAULT_PEPPERS 3
 
 /* Default bonus whenever a life is lost. */
 #define DEFAULT_BONUS 999
@@ -65,6 +68,7 @@
 #define LEVEL_ITEM_LEVEL                0x89
 #define LEVEL_ITEM_BONUS                0x8a
 #define LEVEL_ITEM_LIVES                0x8b
+#define LEVEL_ITEM_PEPPERS              0x8c
 #define LEVEL_ITEM_OPTIONS              0x90
 #define LEVEL_ITEM_OPTION_STOMP_SHIFT   0
 #define LEVEL_ITEM_OPTION_STOMP_MASK    ((0x03<<LEVEL_ITEM_OPTION_STOMP_SHIFT))
@@ -144,6 +148,7 @@ typedef struct {
 #define LEVEL_COMPONENT_LEVEL(xc,yc) { component: LEVEL_ITEM_LEVEL, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_BONUS(xc,yc) { component: LEVEL_ITEM_BONUS, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_LIVES(xc,yc) { component: LEVEL_ITEM_LIVES, { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_PEPPERS(xc,yc) { component: LEVEL_ITEM_PEPPERS, { position: { x: xc, y: yc } } }
 
 
 /* Levels */
@@ -222,6 +227,7 @@ extern uint32_t Score;
 extern uint32_t DisplayedScore;
 extern uint16_t Bonus;
 extern uint8_t Lives;
+extern uint8_t Peppers;
 
 /* Switch to new game screen. */
 static inline void ChangeGameScreen(uint8_t screen) {
