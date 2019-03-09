@@ -467,8 +467,10 @@ proc dropOrPick {x y} {
 		## Add xy tags to picked items.
 		addXyTags picked [expr {[gc $x]+$::xdiff}] [expr {[gc $y]+$::ydiff}]
 
-		## Add group tag.
-		.screen addtag [list group $::group] withtag picked
+		## Add group tag if there isn't any yet.
+		if {[lsearch -glob [.screen gettags picked] {group *}] < 0} {
+			.screen addtag [list group $::group] withtag picked
+		}
 
 		## Remove the picked tags from all items that had it.
 		.screen dtag picked picked
