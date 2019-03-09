@@ -499,31 +499,4 @@ void cleanupInGameOverScreen(void) {
 }
 
 
-/*
- *  The win screen is showed when a level is completed.
- *  It shows the winning animation on the level screen.
- */
-void initInGameWinScreen(void) {
-}
-
-void updateInGameWinScreen(void) {
-}
-
-void cleanupInGameWinScreen(void) {
-}
-
-
-/*
- *  The aftermath screen is showed after the win screen.
- *  It shows individual collected items and bonus added to the score.
- *  Tileset 1 is selected as we need an alphabet.
- */
-void initInGameAftermathScreen(void) {
-}
-
-void updateInGameAftermathScreen(void) {
-}
-
-void cleanupInGameAftermathScreen(void) {
-}
 

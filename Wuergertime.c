@@ -34,14 +34,6 @@
 
 
 /*
- *  Debugging.
- */
-#ifdef DEBUG
-uint8_t DebugSingleStepAnimation;
-#endif
-
-
-/*
  *  Main funcion
  */
 int main(void) {
@@ -49,9 +41,6 @@ int main(void) {
 	resetControllers();
 
 	/* Setup game-wide global variables. */
-#ifdef DEBUG
-	DebugSingleStepAnimation=0;
-#endif
 	Tileset=TILESET1;
 	GameScreenPrevious=GAME_SCREEN_INVALID;
 	GameScreen=GAME_SCREEN_START;
@@ -79,36 +68,14 @@ int main(void) {
 			GameScreenUpdateFunction();
 
 			/* Next animation phase. */
-#ifdef DEBUG
-			if (!DebugSingleStepAnimation)
-#endif
-				GameScreenAnimationPhase++;
-
-#ifdef DEBUG
-			/* Check for single step animation. */
-			switch (checkControllerButtonsPressed(0,BTN_SL)) {
-				case BTN_SL:
-					/* Activate single step	animation, if not yet activated. */
-					DebugSingleStepAnimation=1;
-
-					/* Animate a single step. */
-					GameScreenAnimationPhase++;
-
-					/* Print animation phase. */
-					PrintInt(29,27,GameScreenAnimationPhase,1);
-					break;
-			}
-#endif
+			GameScreenAnimationPhase++;
 
 			/* Wait for next frame (let the interrupt kernel work). */
 			WaitVsync(1);
 		} else {
 			/* Changed. Cleanup previous screen. */
 			switch (GameScreenPrevious) {
-				case GAME_SCREEN_DEBUG:             cleanupDebugScreen(); break;
 				case GAME_SCREEN_START:             cleanupStartScreen(); break;
-				case GAME_SCREEN_CREDITS:           cleanupCreditsScreen(); break;
-				case GAME_SCREEN_DEMO:              cleanupDemoScreen(); break;
 				case GAME_SCREEN_HIGHSCORES:        cleanupHighscoresScreen(); break;
 				case GAME_SCREEN_GAME_OVER:         cleanupGameOverScreen(); break;
 				case GAME_SCREEN_NEW_HIGHSCORE:     cleanupNewHighscoreScreen(); break;
@@ -122,8 +89,6 @@ int main(void) {
 				case GAME_SCREEN_LEVEL_GAME_OVER:   cleanupInGameOverScreen(); break;
 				case GAME_SCREEN_LEVEL_HURRY:       cleanupInGameHurryScreen(); break;
 				case GAME_SCREEN_LEVEL_BONUS:       cleanupInGameBonusScreen(); break;
-				case GAME_SCREEN_LEVEL_WIN:         cleanupInGameWinScreen(); break;
-				case GAME_SCREEN_LEVEL_AFTERMATH:   cleanupInGameAftermathScreen(); break;
 			}
 
 			/* Initialize new screen. */
@@ -135,21 +100,9 @@ int main(void) {
 
 			/* Call screen dependent init function. */
 			switch (GameScreen) {
-				case GAME_SCREEN_DEBUG:
-					GameScreenUpdateFunction=&updateDebugScreen;
-					initDebugScreen();
-					break;
 				case GAME_SCREEN_START:
 					GameScreenUpdateFunction=&updateStartScreen;
 					initStartScreen();
-					break;
-				case GAME_SCREEN_CREDITS:
-					GameScreenUpdateFunction=&updateCreditsScreen;
-					initCreditsScreen();
-					break;
-				case GAME_SCREEN_DEMO:
-					GameScreenUpdateFunction=&updateDemoScreen;
-					initDemoScreen();
 					break;
 				case GAME_SCREEN_HIGHSCORES:
 					GameScreenUpdateFunction=&updateHighscoresScreen;
@@ -203,17 +156,6 @@ int main(void) {
 					GameScreenUpdateFunction=&updateInGameBonusScreen;
 					initInGameBonusScreen();
 					break;
-				case GAME_SCREEN_LEVEL_WIN:
-					GameScreenUpdateFunction=&updateInGameWinScreen;
-					initInGameWinScreen();
-					break;
-				case GAME_SCREEN_LEVEL_AFTERMATH:
-					GameScreenUpdateFunction=&updateInGameAftermathScreen;
-					initInGameAftermathScreen();
-					break;
-				default:
-					/* Invalid. Change to debug screen. */
-					ChangeGameScreen(GAME_SCREEN_DEBUG);
 			}
 
 			/* Screen change done. */

@@ -30,7 +30,6 @@
 
 
 /* Fixed strings. */
-const char TextDebug[] PROGMEM = "DEBUG";
 const char TextProgrammingAndArtwork[] PROGMEM = "PROGRAMMING AND ARTWORK";
 const char TextByJanKandziora[] PROGMEM = "BY JAN KANDZIORA";
 const char TextLevelDesign[] PROGMEM = "LEVEL DESIGN \"" LEVEL_DESIGN "\"";
@@ -40,31 +39,6 @@ const char TextLicense[] PROGMEM = "USE AND DISTRIBUTE UNDER THE";
 const char TextGPL[] PROGMEM = "TERMS OF GNU GPL V3";
 const char TextGameOver[] PROGMEM = "GAME OVER";
 const char TextGameOverOff[] PROGMEM = "         ";
-
-
-/*
- *  The debug screen is showed when all else fails.
- */
-void initDebugScreen(void) {
-	uint8_t x, y;
-
-	FadeIn(1,0);
-	clearScreen();
-	Print(0,0,TextDebug);
-	for(y=0;y<16;y++) {
-		for(x=0;x<16;x++)
-			SetTile(x+10,y,y*16+x);
-	}
-}
-
-void updateDebugScreen(void) {
-	if (GameScreenAnimationPhase>100)
-		ChangeGameScreen(GAME_SCREEN_START);
-}
-
-void cleanupDebugScreen(void) {
-	FadeOut(1,1);
-}
 
 
 /*
@@ -148,32 +122,6 @@ void updateStartScreen(void) {
 void cleanupStartScreen(void) {
 	/* Fade out and wait to complete */
 	FadeOut(1,1);
-}
-
-
-/*
- *  The credits screen is showed in rotation with start, highscore and demo.
- */
-void initCreditsScreen(void) {
-}
-
-void updateCreditsScreen(void) {
-}
-
-void cleanupCreditsScreen(void) {
-}
-
-
-/*
- *  The demo screen is showed in rotation with start, highscore and credits.
- */
-void initDemoScreen(void) {
-}
-
-void updateDemoScreen(void) {
-}
-
-void cleanupDemoScreen(void) {
 }
 
 
