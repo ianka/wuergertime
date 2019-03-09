@@ -351,7 +351,8 @@ void selectOpponentDirection(uint8_t index) {
 			/* Add up to possible directions. */
 			directions|=1<<OPPONENT_DIRECTION_UP;
 			break;
-		case OPPONENT_FLAGS_DIRECTION_HIT:
+		case OPPONENT_FLAGS_DIRECTION_HIT_LEFT:
+		case OPPONENT_FLAGS_DIRECTION_HIT_RIGHT:
 			/* Do not select a new direction once an opponent is hit. */
 			return;
 	}
@@ -414,6 +415,7 @@ void selectOpponentDirection(uint8_t index) {
 /* Move opponent into selected direction. */
 void moveOpponent(uint8_t index) {
 	int16_t y;
+	int8_t dir=1;
 
 	/* Skip invalid opponent. */
 	if (Opponent[index].flags == OPPONENT_FLAGS_INVALID) return;
@@ -435,7 +437,9 @@ void moveOpponent(uint8_t index) {
 		case OPPONENT_FLAGS_DIRECTION_SQUIRT:
 			moveSpriteUncondionally(Opponent[index].sprite,0,0);
 			break;
-		case OPPONENT_FLAGS_DIRECTION_HIT:
+		case OPPONENT_FLAGS_DIRECTION_HIT_LEFT:
+			dir=-1;
+		case OPPONENT_FLAGS_DIRECTION_HIT_RIGHT:
 			/* Move to invalid coordinate? */
 			y=getSpriteY(Opponent[index].sprite);
 			y+=Opponent[index].info.hit_speed;
@@ -447,7 +451,7 @@ void moveOpponent(uint8_t index) {
 				Opponent[index].flags=OPPONENT_FLAGS_INVALID;
 			} else {
 				/* No. Move with hit speed. */
-				moveSpriteUncondionally(Opponent[index].sprite,OPPONENT_HIT_SPEED_X,Opponent[index].info.hit_speed);
+				moveSpriteUncondionally(Opponent[index].sprite,dir*OPPONENT_HIT_SPEED_X,Opponent[index].info.hit_speed);
 
 				/* Turn hit speed from negative to more positive for next step. */
 				Opponent[index].info.hit_speed++;
@@ -457,46 +461,67 @@ void moveOpponent(uint8_t index) {
 }
 
 
-/* Remove an opponent if it is hit by a burger component. */
-void removeOpponentIfHit(uint8_t index) {
-	/* Skip invalid and hit opponent. */
-	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
-			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
-		return;
-
-	/* Check if opponent is hit by any burger component. */
-	if (checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite))) {
-		/* Yes. Kick it from the screen. */
-		kickOpponent(index);
-
-		/* Score for hit opponent. */
-		Score+=SCORE_OPPONENT_HIT;
-	}
+/* Check for invalid and hit opponent. */
+uint8_t checkInvalidOrHitOpponent(uint8_t index) {
+	return ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
+			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_HIT_LEFT)
+			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) == OPPONENT_FLAGS_DIRECTION_HIT_RIGHT));
 }
 
 
-/* Kick an opponent from screen. */
-void kickOpponent(uint8_t index) {
-	/* Skip invalid and hit opponent. */
-	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
-			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
-		return;
-
-	/* Kick opponent from the screen. */
-	changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
+/* Kick an opponent from the screen in a specified direction. */
+void kickOpponentInDirection(uint8_t index, uint8_t direction) {
+	/* Change opponent direction. */
+	changeOpponentDirection(index,direction);
 
 	/* Initialize hit speed. */
 	Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
 }
 
 
-/* Confuse opponent if peppered. */
-void confuseOpponentIfPeppered(uint8_t index) {
+/* Kick an opponent from screen. */
+void kickOpponent(uint8_t index) {
+	/* Skip invalid and hit opponent. */
+	if (checkInvalidOrHitOpponent(index))
+		return;
+
+	/* Kick opponent off the screen. */
+	switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
+		case OPPONENT_FLAGS_DIRECTION_NONE:
+		case OPPONENT_FLAGS_DIRECTION_RIGHT:
+		case OPPONENT_FLAGS_DIRECTION_UP:
+			kickOpponentInDirection(index,OPPONENT_FLAGS_DIRECTION_HIT_RIGHT);
+			break;
+		default:
+			kickOpponentInDirection(index,OPPONENT_FLAGS_DIRECTION_HIT_LEFT);
+	}
+}
+
+
+/* Kick an opponent if it is hit by a burger component. */
+void kickOpponentIfHit(uint8_t index) {
+	/* Skip invalid and hit opponent. */
+	if (checkInvalidOrHitOpponent(index))
+		return;
+
+	/* Skip if opponent is nothit by any burger component. */
+	if (!checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite)))
+		return;
+
+	/* Collision. Kick it off the screen. */
+	kickOpponent(index);
+
+	/* Score for hit opponent. */
+	Score+=SCORE_OPPONENT_HIT;
+}
+
+
+/* Kick an opponent if it is hit by pepper. */
+void kickOpponentIfPeppered(uint8_t index) {
 	int16_t px, py, ox, oy;
 
 	/* Skip invalid and hit opponent. */
-	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
-			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
+	if (checkInvalidOrHitOpponent(index))
 		return;
 
 	/* Get coordinates. */
@@ -513,12 +538,17 @@ void confuseOpponentIfPeppered(uint8_t index) {
 	if (abs(px-ox) > OPPONENT_PEPPER_COLLISION_DISTANCE_ON_FLOOR)
 		return;
 
-	/* Collision. */
-	/* Kick opponent from the screen. */
-	changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
+	/* Collision. Kick opponent off the screen. */
+	switch (Pepper.flags & PEPPER_FLAGS_DIRECTION_MASK) {
+		case PEPPER_FLAGS_DIRECTION_RIGHT:
+			kickOpponentInDirection(index,OPPONENT_FLAGS_DIRECTION_HIT_RIGHT);
+			break;
+		default:
+			kickOpponentInDirection(index,OPPONENT_FLAGS_DIRECTION_HIT_LEFT);
+	}
 
-	/* Initialize hit speed. */
-	Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
+	/* Score for hit opponent. */
+	Score+=SCORE_OPPONENT_HIT;
 }
 
 
@@ -527,8 +557,7 @@ uint8_t checkOpponentCaughtPlayer(uint8_t index) {
 	int16_t px, py, ox, oy;
 
 	/* Skip invalid and hit opponent. */
-	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
-			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
+	if (checkInvalidOrHitOpponent(index))
 		return 0;
 
 	/* Get coordinates. */

@@ -204,11 +204,11 @@ void updateInGamePlayScreen(void) {
 
 		/* Handle all opponents. */
 		for (i=0;i<OPPONENT_MAX;i++) {
-			/* Remove opponent if it is hit by a burger component. */
-			removeOpponentIfHit(i);
+			/* Kick opponent if it is hit by a burger component. */
+			kickOpponentIfHit(i);
 
-			/* Confuse opponent if it is hit by pepper. */
-			confuseOpponentIfPeppered(i);
+			/* Kick opponent if it is hit by pepper. */
+			kickOpponentIfPeppered(i);
 
 			/* Select direction and move all active opponents. */
 			selectOpponentDirection(i);
@@ -387,10 +387,16 @@ void updateInGameLoseScreen(void) {
 	/* Update game screen statistics. */
 	updateGameScreenStatistics();
 
+	/* Move pepper if present. */
+	movePepper();
+
 	/* Handle all opponents. */
 	for (i=0;i<OPPONENT_MAX;i++) {
-		/* Remove opponent if it is hit by a burger component. */
-		removeOpponentIfHit(i);
+		/* Kick opponent if it is hit by a burger component. */
+		kickOpponentIfHit(i);
+
+		/* Kick opponent if it is hit by pepper. */
+		kickOpponentIfPeppered(i);
 
 		/* Select direction and move all active opponents. */
 		selectOpponentDirection(i);
