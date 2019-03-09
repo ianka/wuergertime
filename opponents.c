@@ -19,6 +19,7 @@
 /* Local includes. */
 #include "utils.h"
 #include "player.h"
+#include "pepper.h"
 #include "opponents.h"
 #include "sprites.h"
 #include "screens.h"
@@ -481,6 +482,38 @@ void kickOpponent(uint8_t index) {
 			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
 		return;
 
+	/* Kick opponent from the screen. */
+	changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
+
+	/* Initialize hit speed. */
+	Opponent[index].info.hit_speed=min(getSpriteY(Opponent[index].sprite)*getSpriteY(Opponent[index].sprite),OPPONENT_START_HIT_SPEED_Y);
+}
+
+
+/* Confuse opponent if peppered. */
+void confuseOpponentIfPeppered(uint8_t index) {
+	int16_t px, py, ox, oy;
+
+	/* Skip invalid and hit opponent. */
+	if ((Opponent[index].flags == OPPONENT_FLAGS_INVALID)
+			|| ((Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK)) == OPPONENT_FLAGS_DIRECTION_HIT)
+		return;
+
+	/* Get coordinates. */
+	px=getSpriteX(Pepper.sprite);
+	py=getSpriteY(Pepper.sprite);
+	ox=getSpriteX(Opponent[index].sprite);
+	oy=getSpriteY(Opponent[index].sprite);
+
+	/* Skip if the opponent is roughly on same floor as the pepper. */
+	if (abs(py-oy) > OPPONENT_PEPPER_COLLISION_DISTANCE_FLOOR)
+		return;
+
+	/* Same floor. Skip if not in roughly the same position on the floor. */
+	if (abs(px-ox) > OPPONENT_PEPPER_COLLISION_DISTANCE_ON_FLOOR)
+		return;
+
+	/* Collision. */
 	/* Kick opponent from the screen. */
 	changeOpponentDirection(index,OPPONENT_FLAGS_DIRECTION_HIT);
 

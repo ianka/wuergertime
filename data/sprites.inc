@@ -26,7 +26,10 @@
 
 
 /* Pepper animation. */
-#define TILES2_PEPPER mtile(3,3,0)
+#define TILES2_PEPPER_UPPER_LEFT mtile(3,3,0)
+#define TILES2_PEPPER_UPPER_RIGHT mtile(3,3,0)
+#define TILES2_PEPPER_LOWER_LEFT mtile(3,3,0)
+#define TILES2_PEPPER_LOWER_RIGHT mtile(3,3,0)
 
 
 /* Cook animation steps */

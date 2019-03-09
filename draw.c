@@ -581,7 +581,7 @@ void drawPeppers(uint8_t x, uint8_t y, uint8_t value) {
 	uint8_t i;
 
 	/* Limit number of drawn peppers. */
-	value=min(value,LIVES_DRAW_MAX);
+	value=min(value+1,LIVES_DRAW_MAX);
 
 	/* Draw a vertical line of peppers. */
 	for(i=0;i<LIVES_DRAW_MAX;i++) {

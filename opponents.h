@@ -82,6 +82,9 @@
 #define OPPONENT_PLAYER_COLLISION_DISTANCE_LADDER 2
 #define OPPONENT_PLAYER_COLLISION_DISTANCE_ON_LADDER 8
 
+/* Pepper/Opponent collision distance. */
+#define OPPONENT_PEPPER_COLLISION_DISTANCE_FLOOR 4
+#define OPPONENT_PEPPER_COLLISION_DISTANCE_ON_FLOOR 8
 
 typedef struct {
 	uint8_t flags;
@@ -108,6 +111,7 @@ void selectOpponentDirection(uint8_t index);
 void moveOpponent(uint8_t index);
 void removeOpponentIfHit(uint8_t index);
 void kickOpponent(uint8_t index);
+void confuseOpponentIfPeppered(uint8_t index);
 uint8_t checkOpponentCaughtPlayer(uint8_t index);
 
 

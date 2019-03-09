@@ -35,6 +35,12 @@ const uint8_t SpriteTransparent[1][4] PROGMEM = {
 };
 
 
+/* Pepper sprite. */
+const uint8_t SpritePepper[1][4] PROGMEM = {
+	TILES_BLOCK(TILES2_PEPPER)
+};
+
+
 /* Megasprite animations. */
 #define SPRITE_ANIMATION_COOK_SIDE_MAX 4
 const uint8_t SpriteAnimationCookSide[SPRITE_ANIMATION_COOK_SIDE_MAX][4] PROGMEM = {
@@ -242,6 +248,10 @@ void updateSprite(uint8_t slot) {
 			case SPRITE_FLAGS_TYPE_MRMUSTARD|SPRITE_FLAGS_DIRECTION_SQUIRT:
 				p=&SpriteAnimationMrMustardSquirt[((GameSpriteSlots[slot].flags & SPRITE_FLAGS_ANIMATION_MASK)>>1) % SPRITE_ANIMATION_MRMUSTARD_SQUIRT_MAX][0];
 				break;
+			case SPRITE_FLAGS_TYPE_PEPPER|SPRITE_FLAGS_DIRECTION_LEFT:
+			case SPRITE_FLAGS_TYPE_PEPPER|SPRITE_FLAGS_DIRECTION_RIGHT:
+				p=&SpritePepper[0][0];
+				break;
 			default:
 				return;
 		}
@@ -314,6 +324,23 @@ void updateSprite(uint8_t slot) {
 			i++;
 			sprites[i].x=OFF_SCREEN;
 			break;
+		case SPRITE_FLAGS_TYPE_PEPPER|SPRITE_FLAGS_DIRECTION_LEFT:
+		case SPRITE_FLAGS_TYPE_PEPPER|SPRITE_FLAGS_DIRECTION_RIGHT:
+			/* Place tiles, honor mirroring. */
+			tile=pgm_read_byte(p);
+			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
+			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
+			sprites[i].x=GameSpriteSlots[slot].x-4;
+			sprites[i].y=GameSpriteSlots[slot].y-16;
+			i++;
+
+			/* Remove unneeded sprite tiles from screen. */
+			sprites[i].x=OFF_SCREEN;
+			i++;
+			sprites[i].x=OFF_SCREEN;
+			i++;
+			sprites[i].x=OFF_SCREEN;
+			break;
 	}
 }
 
@@ -331,12 +358,16 @@ void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint16_t flags) {
 
 
 /* Move a sprite. */
-void moveSprite(uint8_t slot, int8_t x, int8_t y) {
-	/* Skip if horizontal position is not within boundaries. */
-	if ((GameSpriteSlots[slot].x+x<8) || (GameSpriteSlots[slot].x+x>(SCREEN_WIDTH<<3)-8)) return;
+uint8_t moveSprite(uint8_t slot, int8_t x, int8_t y) {
+	/* Fail if horizontal position is not within boundaries. */
+	if ((GameSpriteSlots[slot].x+x<8) || (GameSpriteSlots[slot].x+x>(SCREEN_WIDTH<<3)-8))
+		return 0;
 
 	/* Actuall move sprite. */
 	moveSpriteUncondionally(slot,x,y);
+
+	/* Sucess. */
+	return 1;
 }
 
 void moveSpriteUncondionally(uint8_t slot, int8_t x, int8_t y) {

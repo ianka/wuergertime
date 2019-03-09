@@ -23,6 +23,7 @@
 #include "sprites.h"
 #include "controllers.h"
 #include "player.h"
+#include "pepper.h"
 #include "opponents.h"
 
 
@@ -104,6 +105,7 @@ void cleanupInGamePrepareScreen(void) {
 	/* Reset sprites. */
 	resetSpriteSlots();
 	Player.sprite=occupySpriteSlot();
+	Pepper.sprite=occupySpriteSlot();
 	Opponent[0].sprite=occupySpriteSlot();
 	Opponent[1].sprite=occupySpriteSlot();
 	Opponent[2].sprite=occupySpriteSlot();
@@ -181,7 +183,7 @@ void updateInGamePlayScreen(void) {
 
 	/* Check if player and opponents should move. */
 	if ((Bonus < HURRY_BONUS) || (GameScreenAnimationPhase & 1)) {
-		/* Yes. Get held buttons. */
+		/* Yes. Get held direction buttons. */
 		directional_buttons_held=checkControllerButtonsHeld(0,BTN_DIRECTIONS);
 
 		/* Select direction to move player. */
@@ -190,10 +192,23 @@ void updateInGamePlayScreen(void) {
 		/* Move player into selected direction, if possible. */
 		movePlayer(directional_buttons_held);
 
+		/* Try to throw pepper if fire button is pressed and the cook has peppers. */
+		if (checkControllerButtonsPressed(0,BTN_A) && Peppers>0) {
+			/* Decrement the amount of available peppers if throwing was possible. */
+			if (throwPepper())
+				Peppers--;
+		}
+
+		/* Move pepper if present. */
+		movePepper();
+
 		/* Handle all opponents. */
 		for (i=0;i<OPPONENT_MAX;i++) {
 			/* Remove opponent if it is hit by a burger component. */
 			removeOpponentIfHit(i);
+
+			/* Confuse opponent if it is hit by pepper. */
+			confuseOpponentIfPeppered(i);
 
 			/* Select direction and move all active opponents. */
 			selectOpponentDirection(i);
@@ -202,6 +217,7 @@ void updateInGamePlayScreen(void) {
 			/* Change to lose screen when an opponent caught a player. */
 			if ((GameScreenAnimationPhase >= PLAYER_START_BLINKING_ENDED) && checkOpponentCaughtPlayer(i))
 				ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
+
 		}
 	}
 
