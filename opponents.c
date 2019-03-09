@@ -110,7 +110,7 @@ void nextOpponent(void) {
 					break;
 				case LEVEL_ITEM_ATTACK_WAVE_ANTICOOK:
 					s=SPRITE_FLAGS_TYPE_ANTICOOK|SPRITE_FLAGS_DIRECTION_LEFT;
-					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_LEFT|OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER;
+					Opponent[i].flags=OPPONENT_FLAGS_SPEED_SLOW|OPPONENT_FLAGS_DIRECTION_LEFT|OPPONENT_FLAGS_ALGORITHM_STOMPER;
 					Opponent[i].info.target=getRandomBurgerComponentPosition();
 					break;
 			}
@@ -393,6 +393,7 @@ void selectOpponentDirection(uint8_t index) {
 
 			break;
 		case OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER:
+		case OPPONENT_FLAGS_ALGORITHM_STOMPER:
 			/* Target reached? */
 			if (((getSpriteX(Opponent[index].sprite) & 0xf0) == (Opponent[index].info.target.x & 0xf0))
 					&& ((getSpriteY(Opponent[index].sprite) & 0xf0) == (Opponent[index].info.target.y & 0xf0))) {
@@ -423,10 +424,22 @@ void moveOpponent(uint8_t index) {
 	/* Move by direction. */
 	switch (Opponent[index].flags & OPPONENT_FLAGS_DIRECTION_MASK) {
 		case OPPONENT_FLAGS_DIRECTION_LEFT:
+			/* Move opponent. */
 			moveSprite(Opponent[index].sprite,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)),0);
+
+			/* Stomp tiles under stomper opponents. */
+			if ((Opponent[index].flags & OPPONENT_FLAGS_ALGORITHM_MASK) == OPPONENT_FLAGS_ALGORITHM_STOMPER)
+				stompUnderSprite(Opponent[index].sprite);
+
 			break;
 		case OPPONENT_FLAGS_DIRECTION_RIGHT:
+			/* Move opponent. */
 			moveSprite(Opponent[index].sprite,1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT),0);
+
+			/* Stomp tiles under stomper opponents. */
+			if ((Opponent[index].flags & OPPONENT_FLAGS_ALGORITHM_MASK) == OPPONENT_FLAGS_ALGORITHM_STOMPER)
+				stompUnderSprite(Opponent[index].sprite);
+
 			break;
 		case OPPONENT_FLAGS_DIRECTION_UP:
 			moveSprite(Opponent[index].sprite,0,-(1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT)));
