@@ -38,11 +38,8 @@
 
 
 /* Small icons */
-#define TILES0_COOK_SMALL utile(0,2,0)
-#define TILES0_PEPPER utile(0,2,1)
-
-#define TILES0_COOK_LEFT utile(0,4,5)
-#define TILES0_COOK_RIGHT utile(0,4,6)
+#define TILES0_COOK_SMALL utile(0,2,2)
+#define TILES0_PEPPER utile(0,3,2)
 
 #define TILES0_BURGER_DELUXE stile(0,0,15)
 #define TILES1_BURGER_DELUXE stile(1,0,15)
@@ -99,6 +96,15 @@
 #define TILES1_PEPPER_UPPER_RIGHT utile(1,2,4)
 #define TILES1_PEPPER_LOWER_LEFT utile(1,3,3)
 #define TILES1_PEPPER_LOWER_RIGHT utile(1,3,4)
+
+#define TILES0_ROACH_UPPER_LEFT utile(0,2,0)
+#define TILES0_ROACH_UPPER_RIGHT utile(0,2,1)
+#define TILES0_ROACH_LOWER_LEFT utile(0,3,0)
+#define TILES0_ROACH_LOWER_RIGHT utile(0,3,1)
+#define TILES1_ROACH_UPPER_LEFT utile(0,2,0)
+#define TILES1_ROACH_UPPER_RIGHT utile(0,2,1)
+#define TILES1_ROACH_LOWER_LEFT utile(0,3,0)
+#define TILES1_ROACH_LOWER_RIGHT utile(0,3,1)
 
 
 /* Plate and sign frame */
@@ -288,8 +294,8 @@
 #define TILES0_LADDER_SQUIRTED_LEFT utile(0,3,7)
 #define TILES0_LADDER_SQUIRTED_RIGHT utile(0,3,8)
 
-#define TILES0_LADDER_WAILED_LEFT utile(0,3,0)
-#define TILES0_LADDER_WAILED_RIGHT utile(0,3,1)
+#define TILES0_LADDER_WAILED_LEFT utile(0,4,5)
+#define TILES0_LADDER_WAILED_RIGHT utile(0,4,6)
 
 
 /* Burger parts */

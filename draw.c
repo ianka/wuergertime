@@ -504,6 +504,18 @@ void drawPepper(uint8_t x, uint8_t y) {
 }
 
 
+/* Draw roach. */
+void drawRoach(uint8_t x, uint8_t y) {
+	tiles_block_t roach[2]=TILES_COMPOUND(TILES_BLOCK,ROACH);
+
+	setTile(x,y,roach[Tileset].upperleft);
+	setTile(x+1,y,roach[Tileset].upperright);
+	setTile(x,y+1,roach[Tileset].lowerleft);
+	setTile(x+1,y+1,roach[Tileset].lowerright);
+}
+
+
+
 /* Draw plate. */
 void drawPlate(uint8_t x, uint8_t y) {
 	tiles_burger_t plate[2]=TILES_COMPOUND(TILES_BURGER,PLATE);

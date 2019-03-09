@@ -106,6 +106,7 @@ void drawSoda(uint8_t x, uint8_t y);
 void drawFries(uint8_t x, uint8_t y);
 void drawCrown(uint8_t x, uint8_t y);
 void drawPepper(uint8_t x, uint8_t y);
+void drawRoach(uint8_t x, uint8_t y);
 void drawPlate(uint8_t x, uint8_t y);
 void drawValue(uint8_t x, uint8_t y, uint8_t width, uint32_t value);
 void drawScore(uint8_t x, uint8_t y, uint32_t value);

@@ -236,12 +236,8 @@ void updateInGamePlayScreen(void) {
 	if (Bonus == HURRY_BONUS)
 		ChangeGameScreen(GAME_SCREEN_LEVEL_HURRY);
 
-	/*
-	 * Award served burgers with score.
-	 * Switch to bonus screen if all burgers are served
-	 * and displayed score is updated.
-	 */
-	if (awardServedBurgers() && DisplayedScore == Score)
+	/* Award served burgers with score. Switch to bonus screen if all burgers are served. */
+	if (awardServedBurgers())
 		ChangeGameScreen(GAME_SCREEN_LEVEL_BONUS);
 }
 
@@ -271,16 +267,18 @@ void cleanupInGameHurryScreen(void) {
  *  It shows the bonus animation on the level screen.
  */
 void initInGameBonusScreen(void) {
-	uint8_t i,j;
+	uint8_t i, j;
 
 	/* Fast bonus counting. */
 	GameScreenOptions&=~LEVEL_ITEM_OPTION_BONUS_MASK;
 
 	/* Handle all opponents. */
 	for (i=0,j=0;i<OPPONENT_MAX;i++,j++) {
-		/* Skip invalid or hit opponents. */
-		if (checkInvalidOrHitOpponent(i))
+		/* Draw a roach for invalid or hit opponents. */
+		if (checkInvalidOrHitOpponent(i)) {
+			drawRoach(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
 			continue;
+		}
 
 		/* Wrap invalid start positions. */
 		if ((j>=OPPONENT_START_POSITION_MAX)
@@ -312,6 +310,10 @@ void updateInGameBonusScreen(void) {
 	uint8_t i, directional_buttons_held;
 	uint8_t cleared=1;
 
+	/* Burger drop animation. */
+	dropHattedComponents();
+	animateBurgers();
+
 	/* Check if player should move. */
 	if ((GameScreenAnimationPhase & 1)) {
 		/* Yes. Get held buttons. */
@@ -339,7 +341,10 @@ void updateInGameBonusScreen(void) {
 				|| (getSpriteX(Player.sprite)>>3 == OpponentStartPosition[i].x))
 				&& (getSpriteY(Player.sprite)>>3 == OpponentStartPosition[i].y)) {
 				/* Reached. Get item type.*/
-				switch (getTile(OpponentStartPosition[i].x,OpponentStartPosition[i].y)) {
+				switch (getTile(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2)) {
+					case TILES0_ROACH_UPPER_LEFT:
+						Score+=SCORE_BONUS_ITEM_ROACH;
+						break;
 					case TILES0_SODA_UPPER_LEFT:
 						Score+=SCORE_BONUS_ITEM_SODA;
 						break;

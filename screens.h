@@ -216,6 +216,7 @@ extern position_t GameScreenLevelPosition;
 #define SCORE_COMPONENT_FALLING          10
 #define SCORE_COMPONENT_FALLING_CASCADE  20
 #define SCORE_OPPONENT_HIT              200
+#define SCORE_BONUS_ITEM_ROACH           50
 #define SCORE_BONUS_ITEM_SODA           100
 #define SCORE_BONUS_ITEM_FRIES          150
 #define SCORE_BONUS_ITEM_PEPPER         250
