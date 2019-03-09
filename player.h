@@ -73,6 +73,7 @@ void changePlayerDirection(uint8_t direction);
 void selectPlayerDirection(uint8_t buttons);
 void movePlayer(uint8_t buttons);
 uint8_t animateCaughtPlayer(void);
+uint8_t checkIfPlayerIsHit(void);
 
 
 #endif /* PLAYER_H */

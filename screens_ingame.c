@@ -215,7 +215,8 @@ void updateInGamePlayScreen(void) {
 			moveOpponent(i);
 
 			/* Change to lose screen when an opponent caught a player. */
-			if ((GameScreenAnimationPhase >= PLAYER_START_BLINKING_ENDED) && checkOpponentCaughtPlayer(i))
+			if ((GameScreenAnimationPhase >= PLAYER_START_BLINKING_ENDED)
+				&& (checkIfOpponentCaughtPlayer(i) || checkIfPlayerIsHit()))
 				ChangeGameScreen(GAME_SCREEN_LEVEL_LOSE);
 
 		}

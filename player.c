@@ -253,3 +253,10 @@ uint8_t animateCaughtPlayer(void) {
 		return 0;
 	}
 }
+
+
+/* Check if the player is hit by a burger component. */
+uint8_t checkIfPlayerIsHit(void) {
+	return (checkFallingBurgerComponentPosition(getSpriteX(Player.sprite),getSpriteY(Player.sprite)));
+}
+

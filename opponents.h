@@ -114,7 +114,7 @@ void moveOpponent(uint8_t index);
 void kickOpponent(uint8_t index);
 void kickOpponentIfHit(uint8_t index);
 void kickOpponentIfPeppered(uint8_t index);
-uint8_t checkOpponentCaughtPlayer(uint8_t index);
+uint8_t checkIfOpponentCaughtPlayer(uint8_t index);
 
 
 #endif /* OPPONENTS_H */

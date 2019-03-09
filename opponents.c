@@ -517,7 +517,7 @@ void kickOpponentIfHit(uint8_t index) {
 	if (checkInvalidOrHitOpponent(index))
 		return;
 
-	/* Skip if opponent is nothit by any burger component. */
+	/* Skip if opponent is not hit by any burger component. */
 	if (!checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite)))
 		return;
 
@@ -570,7 +570,7 @@ void kickOpponentIfPeppered(uint8_t index) {
 
 
 /* Check if opponent has caught player. */
-uint8_t checkOpponentCaughtPlayer(uint8_t index) {
+uint8_t checkIfOpponentCaughtPlayer(uint8_t index) {
 	int16_t px, py, ox, oy;
 
 	/* Skip invalid and hit opponent. */
