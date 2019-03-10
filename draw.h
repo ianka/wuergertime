@@ -41,6 +41,14 @@
 #define SHAPE_BURGER_BUNBOTTOM 4
 
 
+/* Bonus items are selected by number. */
+#define SHAPE_BONUS_ROACH 0
+#define SHAPE_BONUS_SODA 1
+#define SHAPE_BONUS_FRIES 2
+#define SHAPE_BONUS_PEPPER 3
+#define SHAPE_BONUS_CROWN 4
+
+
 /* Other shapes are selected by pointer. */
 extern const uint8_t ShapeSignInGame[] PROGMEM;
 extern const uint8_t ShapeSignOutOfGame[] PROGMEM;
@@ -102,11 +110,7 @@ void drawBurgerComponent(uint8_t x, uint8_t yhalf, uint8_t component, uint8_t st
 void drawBurgerComponentTile(uint8_t index, uint8_t x, uint8_t yhalf, uint8_t component, uint8_t stomped, uint8_t buffer[2][5]);
 void handleBurgerBackground(uint8_t x, int8_t half_y, uint8_t stomped, uint8_t buffer[2][5]);
 void handleBurgerBackgroundTile(uint8_t index, uint8_t x, int8_t half_y, uint8_t stomped, uint8_t buffer[2][5]);
-void drawSoda(uint8_t x, uint8_t y);
-void drawFries(uint8_t x, uint8_t y);
-void drawCrown(uint8_t x, uint8_t y);
-void drawPepper(uint8_t x, uint8_t y);
-void drawRoach(uint8_t x, uint8_t y);
+void drawBonusItem(uint8_t x, uint8_t y, uint8_t type);
 void drawPlate(uint8_t x, uint8_t y);
 void drawValue(uint8_t x, uint8_t y, uint8_t width, uint32_t value);
 void drawScore(uint8_t x, uint8_t y, uint32_t value);

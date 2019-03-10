@@ -276,7 +276,7 @@ void initInGameBonusScreen(void) {
 	for (i=0,j=0;i<OPPONENT_MAX;i++,j++) {
 		/* Draw a roach for invalid or hit opponents. */
 		if (checkInvalidOrHitOpponent(i)) {
-			drawRoach(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+			drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_ROACH);
 			continue;
 		}
 
@@ -288,16 +288,16 @@ void initInGameBonusScreen(void) {
 		/* Draw bonus item depending on opponent. */
 		switch (Opponent[i].flags & OPPONENT_FLAGS_ALGORITHM_MASK) {
 			case OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER:
-				drawSoda(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_SODA);
 				break;
 			case OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER:
-				drawFries(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_FRIES);
 				break;
 			case OPPONENT_FLAGS_ALGORITHM_MESS_UP_LADDERS:
-				drawPepper(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_PEPPER);
 				break;
 			case OPPONENT_FLAGS_ALGORITHM_STOMPER:
-				drawCrown(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2);
+				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_CROWN);
 				break;
 		}
 

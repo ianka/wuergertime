@@ -100,6 +100,16 @@ const tiles_burger_t ShapeBurgers[26][2] PROGMEM={
 };
 
 
+/* Bonus items. */
+const tiles_block_t ShapeBonusItems[5][2]={
+	TILES_COMPOUND(TILES_BLOCK,ROACH),
+	TILES_COMPOUND(TILES_BLOCK,SODA),
+	TILES_COMPOUND(TILES_BLOCK,FRIES),
+	TILES_COMPOUND(TILES_BLOCK,PEPPER),
+	TILES_COMPOUND(TILES_BLOCK,CROWN)
+};
+
+
 /* Other shape data. */
 #include "data/shapes.inc"
 
@@ -460,60 +470,13 @@ void handleBurgerBackground(uint8_t x, int8_t half_y, uint8_t stomped, uint8_t b
 }
 
 
-/* Draw a soda can. */
-void drawSoda(uint8_t x, uint8_t y) {
-	tiles_block_t soda[2]=TILES_COMPOUND(TILES_BLOCK,SODA);
-
-	setTile(x,y,soda[Tileset].upperleft);
-	setTile(x+1,y,soda[Tileset].upperright);
-	setTile(x,y+1,soda[Tileset].lowerleft);
-	setTile(x+1,y+1,soda[Tileset].lowerright);
+/* Draw bonus item. */
+void drawBonusItem(uint8_t x, uint8_t y, uint8_t type) {
+	setTile(x,y,ShapeBonusItems[type][Tileset].upperleft);
+	setTile(x+1,y,ShapeBonusItems[type][Tileset].upperright);
+	setTile(x,y+1,ShapeBonusItems[type][Tileset].lowerleft);
+	setTile(x+1,y+1,ShapeBonusItems[type][Tileset].lowerright);
 }
-
-
-/* Draw fries packet. */
-void drawFries(uint8_t x, uint8_t y) {
-	tiles_block_t fries[2]=TILES_COMPOUND(TILES_BLOCK,FRIES);
-
-	setTile(x,y,fries[Tileset].upperleft);
-	setTile(x+1,y,fries[Tileset].upperright);
-	setTile(x,y+1,fries[Tileset].lowerleft);
-	setTile(x+1,y+1,fries[Tileset].lowerright);
-}
-
-
-/* Draw crown. */
-void drawCrown(uint8_t x, uint8_t y) {
-	tiles_block_t crown[2]=TILES_COMPOUND(TILES_BLOCK,CROWN);
-
-	setTile(x,y,crown[Tileset].upperleft);
-	setTile(x+1,y,crown[Tileset].upperright);
-	setTile(x,y+1,crown[Tileset].lowerleft);
-	setTile(x+1,y+1,crown[Tileset].lowerright);
-}
-
-
-/* Draw pepper. */
-void drawPepper(uint8_t x, uint8_t y) {
-	tiles_block_t pepper[2]=TILES_COMPOUND(TILES_BLOCK,PEPPER);
-
-	setTile(x,y,pepper[Tileset].upperleft);
-	setTile(x+1,y,pepper[Tileset].upperright);
-	setTile(x,y+1,pepper[Tileset].lowerleft);
-	setTile(x+1,y+1,pepper[Tileset].lowerright);
-}
-
-
-/* Draw roach. */
-void drawRoach(uint8_t x, uint8_t y) {
-	tiles_block_t roach[2]=TILES_COMPOUND(TILES_BLOCK,ROACH);
-
-	setTile(x,y,roach[Tileset].upperleft);
-	setTile(x+1,y,roach[Tileset].upperright);
-	setTile(x,y+1,roach[Tileset].lowerleft);
-	setTile(x+1,y+1,roach[Tileset].lowerright);
-}
-
 
 
 /* Draw plate. */
