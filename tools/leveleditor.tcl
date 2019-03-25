@@ -630,21 +630,6 @@ proc loadLevels {filename} {
 		dict lappend levelsparts $part $line
 	}
 
-	## Parse level drawings.
-	set level 1
-	foreach line [lrange [dict get $levelsparts $levelsdrawingspart] 1 end] {
-		if {[regexp -- {^[[:blank:]]*([[:digit:]]+,[[:blank:]]*)+$} $line match]} {
-			foreach value [lrange [split $match ,] 0 end-1] {
-				set value [expr $value]
-				if {$value == 0} {
-					incr level
-				} else {
-					dict set ::groups $level $value 1
-				}
-			}
-		}
-	}
-
 	## Parse level components.
 	set component 1
 	set attackwaves {}
@@ -714,6 +699,26 @@ proc loadLevels {filename} {
 			}
 		}
 	}
+
+	## Parse level drawings.
+	setupLevels
+	set level 1
+	foreach line [lrange [dict get $levelsparts $levelsdrawingspart] 1 end] {
+		if {[regexp -- {^[[:blank:]]*([[:digit:]]+,[[:blank:]]*)+$} $line match]} {
+			foreach value [lrange [split $match ,] 0 end-1] {
+				set value [expr $value]
+				if {$value == 0} {
+					incr level
+				} else {
+					set ::group$value 1
+					dict set ::groups $level $value 1
+				}
+			}
+		}
+	}
+
+	## Hide/show groups.
+	applyGroups
 }
 
 
@@ -1274,11 +1279,9 @@ bind .screen <ButtonPress-3> {changeGroup %x %y}
 ## Levels and groups.
 ##
 
-## Setup groups dict.
+## Setup groups and levels.
 proc setupGroups {} {
-	set ::groups [dict create]
 	for {set g 1} {$g<100} {incr g} {
-		set ::group$g 0
 		set ::stompCount$g {}
 		set ::opponentRandomness$g {}
 		set ::opponentNumber$g {}
@@ -1287,12 +1290,20 @@ proc setupGroups {} {
 		for {set w 0} {$w<8} {incr w} {
 			set ::attackWave$g.$w {}
 		}
+	}
+}
+
+proc setupLevels {} {
+	set ::groups [dict create]
+	for {set g 1} {$g<100} {incr g} {
+		set ::group$g 0
 		for {set l 1} {$l<100} {incr l} {
 			dict set ::groups $l $g 0
 		}
 	}
 }
 setupGroups
+setupLevels
 set ::labels 1
 
 
