@@ -460,6 +460,27 @@ proc setAttackWaves {attackwaves} {
 }
 
 
+## Get items at position.
+proc getItemsAt {x y} {
+	## Get visible items to match.
+	set match {}
+	for {set g 1} {$g<100} {incr g} {
+		if {[set ::group$g]} {
+			lappend match [list group $g]
+		}
+	}
+
+	## Skip if no match.
+	if {$match eq {}} return
+
+	## Make an expression from the match.
+	set match "[list xy [gc $x] [gc $y]]&&([join $match ||])"
+
+	## Get the latest two items at the cursor position.
+	lrange [lsort -integer [.screen find withtag $match]] end-1 end
+}
+
+
 ## Drop a picked item or pick a dropped one.
 proc dropOrPick {x y} {
 	if {[.screen itemcget pickedimage -state] eq "normal"} {
@@ -485,7 +506,7 @@ proc dropOrPick {x y} {
 		rearrangeByLayer
 	} else {
 		## Pick the latest two items at the cursor position.
-		foreach item [lrange [lsort -integer [.screen find withtag [list xy [gc $x] [gc $y]]]] end-1 end] {
+		foreach item [getItemsAt $x $y] {
 			if {"images" in [.screen gettags $item]} {
 				## Set diff to cursor for image item.
 				lassign [.screen coords $item] xi yi
@@ -514,7 +535,7 @@ proc dropOrPick {x y} {
 ## Change group of an item.
 proc changeGroup {x y} {
 	## Get the latest two items at the cursor position.
-	set items [lrange [lsort -integer [.screen find withtag [list xy [gc $x] [gc $y]]]] end-1 end]
+	set items [getItemsAt $x $y]
 
 	## Remove old group tags.
 	foreach item $items {
