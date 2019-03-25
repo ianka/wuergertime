@@ -740,105 +740,114 @@ proc saveLevels {filename} {
 		append levelsdrawings "0,\n\n"
 	}
 
-	## Setup LevelComponents part.
+	## Get last level component in use.
+	set m 0
 	for {set g 1} {$g<100} {incr g} {
+		if {[.screen find withtag [list group $g]] ne {}} {
+			set m $g
+		}
+	}
+
+	## Setup LevelComponents part.
+	for {set g 1} {$g<=$m} {incr g} {
 		set items [.screen find withtag [list group $g]]
-		if {$items eq {}} continue
 
 		append levelscomponents "\t/* Component block $g */\n"
 
-		## Add level options, if any.
-		set options {}
-		if {[set ::stompCount$g] ne {}} {
-			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_STOMP_" [string toupper [set ::stompCount$g]]]
-		}
-		if {[set ::opponentNumber$g] ne {}} {
-			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_" [string toupper [set ::opponentNumber$g]]]
-		}
-		if {[set ::opponentRandomness$g] ne {}} {
-			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_" [string toupper [set ::opponentRandomness$g]]]
-		}
-		if {[set ::attackWaveSpeed$g] ne {}} {
-			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_ATTACK_WAVE_" [string toupper [set ::attackWaveSpeed$g]]]
-		}
-		if {[set ::bonusSpeed$g] ne {}} {
-			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_BONUS_" [string toupper [set ::bonusSpeed$g]]]
-		}
-		if {$options ne {}} {
-			append levelscomponents "\tLEVEL_COMPONENT_OPTIONS(\n" [join $options "|\n"] "\n\t),\n"
-		}
-
-		## Add attack waves, if any.
-		set attackwaves {}
-		for {set w 0} {$w<8} {incr w} {
-			if {[set ::attackWave$g.$w] ne {}} {
-				lappend attackwaves [string cat "\t\tLEVEL_ITEM_ATTACK_WAVE_" [string toupper [set ::attackWave$g.$w]]]
+		if {$items ne {}} {
+			## Add level options, if any.
+			set options {}
+			if {[set ::stompCount$g] ne {}} {
+				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_STOMP_" [string toupper [set ::stompCount$g]]]
 			}
-		}
-		if {$attackwaves ne {}} {
-			append levelscomponents "\tLEVEL_COMPONENT_ATTACKWAVES(\n" [join $attackwaves ",\n"] "\n\t),\n"
-		}
+			if {[set ::opponentNumber$g] ne {}} {
+				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_" [string toupper [set ::opponentNumber$g]]]
+			}
+			if {[set ::opponentRandomness$g] ne {}} {
+				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_" [string toupper [set ::opponentRandomness$g]]]
+			}
+			if {[set ::attackWaveSpeed$g] ne {}} {
+				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_ATTACK_WAVE_" [string toupper [set ::attackWaveSpeed$g]]]
+			}
+			if {[set ::bonusSpeed$g] ne {}} {
+				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_BONUS_" [string toupper [set ::bonusSpeed$g]]]
+			}
+			if {$options ne {}} {
+				append levelscomponents "\tLEVEL_COMPONENT_OPTIONS(\n" [join $options "|\n"] "\n\t),\n"
+			}
 
-		## Add screen items.
-		set xyitems [dict create]
-		foreach item $items {
-			set tags [.screen gettags $item]
-			if {"images" in $tags} continue
+			## Add attack waves, if any.
+			set attackwaves {}
+			for {set w 0} {$w<8} {incr w} {
+				if {[set ::attackWave$g.$w] ne {}} {
+					lappend attackwaves [string cat "\t\tLEVEL_ITEM_ATTACK_WAVE_" [string toupper [set ::attackWave$g.$w]]]
+				}
+			}
+			if {$attackwaves ne {}} {
+				append levelscomponents "\tLEVEL_COMPONENT_ATTACKWAVES(\n" [join $attackwaves ",\n"] "\n\t),\n"
+			}
 
-			set itemtype {}
-			set type {}
-			set length {}
-			foreach tag $tags {
-				switch -regexp -matchvar match -- $tag {
-					score - level - bonus - lives - peppers - plate - sign - playerstartpoint - opponentstartpoint {
-						set itemtype $tag
+			## Add screen items.
+			set xyitems [dict create]
+			foreach item $items {
+				set tags [.screen gettags $item]
+				if {"images" in $tags} continue
+
+				set itemtype {}
+				set type {}
+				set length {}
+				foreach tag $tags {
+					switch -regexp -matchvar match -- $tag {
+						score - level - bonus - lives - peppers - plate - sign - playerstartpoint - opponentstartpoint {
+							set itemtype $tag
+						}
+						{^burger (.+)$} {
+							set itemtype burger
+							set type [lindex $match 1]
+						}
+						{^(floor) (.+) ([[:digit:]]+)$} - {^(ladder) (.+) ([[:digit:]]+)$} {
+							set itemtype [lindex $match 1]
+							set type     [lindex $match 2]
+							set length   [lindex $match 3]
+						}
+						{^origin ([[:digit:]]+) ([[:digit:]]+)$} {
+							set x [lindex $match 1]
+							set y [lindex $match 2]
+						}
 					}
-					{^burger (.+)$} {
-						set itemtype burger
-						set type [lindex $match 1]
-					}
-					{^(floor) (.+) ([[:digit:]]+)$} - {^(ladder) (.+) ([[:digit:]]+)$} {
-						set itemtype [lindex $match 1]
-						set type     [lindex $match 2]
-						set length   [lindex $match 3]
-					}
-					{^origin ([[:digit:]]+) ([[:digit:]]+)$} {
-						set x [lindex $match 1]
-						set y [lindex $match 2]
-					}
+				}
+
+				## Remember item by origin.
+				set xyitem [list [dict create itemtype $itemtype type $type length $length]]
+				if {[dict exists $xyitems $x $y]} {
+					dict set xyitems $x $y [concat [dict get $xyitems $x $y] $xyitem]
+				} else {
+					dict set xyitems $x $y $xyitem
 				}
 			}
 
-			## Remember item by origin.
-			set xyitem [list [dict create itemtype $itemtype type $type length $length]]
-			if {[dict exists $xyitems $x $y]} {
-				dict set xyitems $x $y [concat [dict get $xyitems $x $y] $xyitem]
-			} else {
-				dict set xyitems $x $y $xyitem
-			}
-		}
-
-		## Output items, sorted by increasing x, then decreasing y origin.
-		dict for {x yitems} [lsort -stride 2 -index 0 -integer $xyitems] {
-			append levelscomponents "\n"
-			dict for {y items} [lsort -stride 2 -index 0 -integer -decreasing $yitems] {
-				foreach item $items {
-					dict with item {
-						switch -- $itemtype {
-							score - level - bonus - plate - sign {
-								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x $y]
-							}
-							burger {
-								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y]
-							}
-							floor - ladder {
-								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y $length]
-							}
-							lives - peppers {
-								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x [expr {$y-1+$::lives_draw_max}]]
-							}
-							playerstartpoint - opponentstartpoint {
-								append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] [expr {$x+1}] [expr {$y+2}]]
+			## Output items, sorted by increasing x, then decreasing y origin.
+			dict for {x yitems} [lsort -stride 2 -index 0 -integer $xyitems] {
+				append levelscomponents "\n"
+				dict for {y items} [lsort -stride 2 -index 0 -integer -decreasing $yitems] {
+					foreach item $items {
+						dict with item {
+							switch -- $itemtype {
+								score - level - bonus - plate - sign {
+									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x $y]
+								}
+								burger {
+									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y]
+								}
+								floor - ladder {
+									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y $length]
+								}
+								lives - peppers {
+									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] $x [expr {$y-1+$::lives_draw_max}]]
+								}
+								playerstartpoint - opponentstartpoint {
+									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\("] [expr {$x+1}] [expr {$y+2}]]
+								}
 							}
 						}
 					}
