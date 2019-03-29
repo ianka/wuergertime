@@ -726,19 +726,23 @@ proc loadLevels {filename} {
 	set level 1
 	foreach line [lrange [dict get $levelsparts $levelsdrawingspart] 1 end] {
 		if {[regexp -- {^[[:blank:]]*([[:digit:]]+,[[:blank:]]*)+$} $line match]} {
+			## Parse level line.
 			foreach value [lrange [split $match ,] 0 end-1] {
 				set value [expr $value]
 				if {$value == 0} {
 					incr level
+					break
 				} else {
-					set ::group$value 1
 					dict set ::groups $level $value 1
 				}
 			}
 		}
 	}
 
-	## Hide/show groups.
+	## Switch to first level.
+	set ::previousLevel $level
+	set ::currentLevel 1
+	switchLevel
 	applyGroups
 }
 
