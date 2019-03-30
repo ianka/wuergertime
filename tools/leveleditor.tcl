@@ -773,8 +773,18 @@ proc saveLevels {filename} {
 	## Get last level component in use.
 	set m 0
 	for {set g 1} {$g<100} {incr g} {
-		if {[.screen find withtag [list group $g]] ne {}} {
+		if {([.screen find withtag [list group $g]] ne {})
+			|| ([set ::stompCount$g] ne {})
+			|| ([set ::opponentNumber$g] ne {})
+			|| ([set ::opponentRandomness$g] ne {})
+			|| ([set ::attackWaveSpeed$g] ne {})
+			|| ([set ::bonusSpeed$g] ne {})} {
 			set m $g
+		}
+		for {set w 0} {$w<8} {incr w} {
+			if {[set ::attackWave$g.$w] ne {}} {
+				set m $g
+			}
 		}
 	}
 
@@ -784,39 +794,40 @@ proc saveLevels {filename} {
 
 		append levelscomponents "\t/* Component block $g */\n"
 
+		## Add level options, if any.
+		set options {}
+		if {[set ::stompCount$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_STOMP_" [string toupper [set ::stompCount$g]]]
+		}
+		if {[set ::opponentNumber$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_" [string toupper [set ::opponentNumber$g]]]
+		}
+		if {[set ::opponentRandomness$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_" [string toupper [set ::opponentRandomness$g]]]
+		}
+		if {[set ::attackWaveSpeed$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_ATTACK_WAVE_" [string toupper [set ::attackWaveSpeed$g]]]
+		}
+		if {[set ::bonusSpeed$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_BONUS_" [string toupper [set ::bonusSpeed$g]]]
+		}
+		if {$options ne {}} {
+			append levelscomponents "\tLEVEL_COMPONENT_OPTIONS(\n" [join $options "|\n"] "\n\t),\n"
+		}
+
+		## Add attack waves, if any.
+		set attackwaves {}
+		for {set w 0} {$w<8} {incr w} {
+			if {[set ::attackWave$g.$w] ne {}} {
+				lappend attackwaves [string cat "\t\tLEVEL_ITEM_ATTACK_WAVE_" [string toupper [set ::attackWave$g.$w]]]
+			}
+		}
+		if {$attackwaves ne {}} {
+			append levelscomponents "\tLEVEL_COMPONENT_ATTACKWAVES(\n" [join $attackwaves ",\n"] "\n\t),\n"
+		}
+
+		## Add level items, if any.
 		if {$items ne {}} {
-			## Add level options, if any.
-			set options {}
-			if {[set ::stompCount$g] ne {}} {
-				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_STOMP_" [string toupper [set ::stompCount$g]]]
-			}
-			if {[set ::opponentNumber$g] ne {}} {
-				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_" [string toupper [set ::opponentNumber$g]]]
-			}
-			if {[set ::opponentRandomness$g] ne {}} {
-				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_" [string toupper [set ::opponentRandomness$g]]]
-			}
-			if {[set ::attackWaveSpeed$g] ne {}} {
-				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_ATTACK_WAVE_" [string toupper [set ::attackWaveSpeed$g]]]
-			}
-			if {[set ::bonusSpeed$g] ne {}} {
-				lappend options [string cat "\t\tLEVEL_ITEM_OPTION_BONUS_" [string toupper [set ::bonusSpeed$g]]]
-			}
-			if {$options ne {}} {
-				append levelscomponents "\tLEVEL_COMPONENT_OPTIONS(\n" [join $options "|\n"] "\n\t),\n"
-			}
-
-			## Add attack waves, if any.
-			set attackwaves {}
-			for {set w 0} {$w<8} {incr w} {
-				if {[set ::attackWave$g.$w] ne {}} {
-					lappend attackwaves [string cat "\t\tLEVEL_ITEM_ATTACK_WAVE_" [string toupper [set ::attackWave$g.$w]]]
-				}
-			}
-			if {$attackwaves ne {}} {
-				append levelscomponents "\tLEVEL_COMPONENT_ATTACKWAVES(\n" [join $attackwaves ",\n"] "\n\t),\n"
-			}
-
 			## Add screen items.
 			set xyitems [dict create]
 			foreach item $items {
