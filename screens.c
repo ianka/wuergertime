@@ -109,7 +109,7 @@ void selectLevel(uint8_t level) {
 void prepareLevelDescription(uint8_t sy) {
 	const uint8_t *p=LevelDrawing;
 	const level_item_t *q;
-	uint8_t b, c, x, y, by;
+	uint8_t b, c, x, y, cy;
 
 	/* Go through level specific screen list. */
 	while ((b=pgm_read_byte(p))) {
@@ -123,7 +123,6 @@ void prepareLevelDescription(uint8_t sy) {
 		}
 
 		/* Go through all drawing components in that block. */
-		by=sy-4;
 		while ((c=pgm_read_byte(&(q->component)))) {
 			/* Get coordinate */
 			x=pgm_read_byte(&(q->position.x));
@@ -133,28 +132,23 @@ void prepareLevelDescription(uint8_t sy) {
 			switch (c) {
 				case LEVEL_ITEM_BURGER_BUNTOP:
 					/* Draw top of sign and bun top. */
-					drawShape(x,by-1,ShapeSignLevelDescriptionTop,0);
-					by=sy-4;
+					drawShape(x,sy-9,ShapeSignLevelDescriptionTop,0);
 					break;
 				case LEVEL_ITEM_BURGER_TOMATO:
 					/* Draw tomato part of sign. */
-					drawShape(x,by,ShapeSignLevelDescriptionTomato,0);
-					by--;
+					drawShape(x,sy-7,ShapeSignLevelDescriptionTomato,0);
 					break;
 				case LEVEL_ITEM_BURGER_PATTY:
 					/* Draw patty part of sign. */
-					drawShape(x,by,ShapeSignLevelDescriptionPatty,0);
-					by--;
+					drawShape(x,sy-6,ShapeSignLevelDescriptionPatty,0);
 					break;
 				case LEVEL_ITEM_BURGER_CHEESESALAD:
 					/* Draw cheese salad part of sign. */
-					drawShape(x,by,ShapeSignLevelDescriptionCheesesalad,0);
-					by--;
+					drawShape(x,sy-5,ShapeSignLevelDescriptionCheesesalad,0);
 					break;
 				case LEVEL_ITEM_BURGER_BUNBOTTOM:
 					/* Draw bun bottom bottom of sign and poles. */
-					drawShape(x,by,ShapeSignLevelDescriptionPost,0);
-					by--;
+					drawShape(x,sy-4,ShapeSignLevelDescriptionPost,0);
 					break;
 				case LEVEL_ITEM_SCORE:
 					/* Draw score. */
@@ -172,6 +166,18 @@ void prepareLevelDescription(uint8_t sy) {
 
 		/* Next block. */
 		p++;
+	}
+
+	/* Collapse the columns. */
+	for (x=0;x<SCREEN_WIDTH;x++) {
+		for (cy=sy-5;cy>sy-10;cy--) {
+			for (y=cy;y>cy-5;y--) {
+				if ((getTile(x,y)==TILES1_SPACE)) {
+					setTile(x,y,getTile(x,y-1));
+					setTile(x,y-1,TILES1_SPACE);
+				}
+			}
+		}
 	}
 }
 
