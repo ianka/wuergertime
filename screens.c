@@ -932,7 +932,7 @@ uint8_t awardServedBurgers(void) {
 
 		/* Check buntop position for small burger. */
 		if (GameScreenBurger[burger].component[2].type == LEVEL_ITEM_BURGER_BUNTOP
-			&& GameScreenBurger[burger].component[2].half_y == (GameScreenBurger[burger].component[0].half_y-6)) {
+			&& GameScreenBurger[burger].component[2].half_y == (GameScreenBurger[burger].component[0].half_y-4)) {
 			Score+=SCORE_BURGER_SMALL;
 			GameScreenBurger[burger].component[0].type = LEVEL_ITEM_COUNTED;
 			continue;
@@ -940,7 +940,7 @@ uint8_t awardServedBurgers(void) {
 
 		/* Check buntop position for medium burger. */
 		if (GameScreenBurger[burger].component[3].type == LEVEL_ITEM_BURGER_BUNTOP
-			&& GameScreenBurger[burger].component[3].half_y == (GameScreenBurger[burger].component[0].half_y-8)) {
+			&& GameScreenBurger[burger].component[3].half_y == (GameScreenBurger[burger].component[0].half_y-6)) {
 			Score+=SCORE_BURGER_MEDIUM;
 			GameScreenBurger[burger].component[0].type = LEVEL_ITEM_COUNTED;
 			continue;
@@ -948,7 +948,7 @@ uint8_t awardServedBurgers(void) {
 
 		/* Check buntop position for large burger. */
 		if (GameScreenBurger[burger].component[4].type == LEVEL_ITEM_BURGER_BUNTOP
-			&& GameScreenBurger[burger].component[4].half_y == (GameScreenBurger[burger].component[0].half_y-10)) {
+			&& GameScreenBurger[burger].component[4].half_y == (GameScreenBurger[burger].component[0].half_y-8)) {
 			Score+=SCORE_BURGER_LARGE;
 			GameScreenBurger[burger].component[0].type = LEVEL_ITEM_COUNTED;
 			continue;
