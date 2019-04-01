@@ -28,14 +28,28 @@ player_t Player;
 
 /* Reset player to start position. */
 void resetPlayer(void) {
-	/* Setup flags. */
-	Player.flags=PLAYER_FLAGS_DIRECTION_RIGHT|PLAYER_FLAGS_SPEED_NORMAL;
+	uint16_t flags;
+
+	/* Setup player flags. */
+	Player.flags=PLAYER_FLAGS_SPEED_NORMAL;
+
+	/* Determine player direction. */
+	flags=SPRITE_FLAGS_TYPE_COOK;
+	if (Player.start_position.x<(SCREEN_WIDTH/2)) {
+		/* Face right. */
+		flags|=SPRITE_FLAGS_DIRECTION_RIGHT;
+		Player.flags|=PLAYER_FLAGS_DIRECTION_RIGHT;
+	} else {
+		/* Face left. */
+		flags|=SPRITE_FLAGS_DIRECTION_LEFT;
+		Player.flags|=PLAYER_FLAGS_DIRECTION_LEFT;
+	}
 
 	/* Setup player sprite. */
 	placeSprite(Player.sprite,
 		Player.start_position.x*8,
 		Player.start_position.y*8,
-		SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
+		flags);
 }
 
 
