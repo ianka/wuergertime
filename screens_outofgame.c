@@ -105,8 +105,15 @@ void updateStartScreen(void) {
 	}
 
 	/* Check buttons. */
-	switch (checkControllerButtonsPressed(0,BTN_START)) {
+	switch (checkControllerButtonsPressed(0,BTN_NONDIRECTION)) {
+		case BTN_A:
+		case BTN_B:
+		case BTN_X:
+		case BTN_Y:
+		case BTN_SR:
+		case BTN_SL:
 		case BTN_START:
+		case BTN_SELECT:
 			/* Change to level 1 as soon start is pressed. */
 			selectLevel(1);
 			pushentropy(GameScreenAnimationPhase);
@@ -143,14 +150,24 @@ void initHighscoresScreen(void) {
 		drawHighscore(7,y,name,score);
 	}
 
+	TriggerFx(4,255,true);
+	TriggerFx(5,255,true);
+
 	/* Fade in and wait to complete */
 	FadeIn(1,1);
 }
 
 void updateHighscoresScreen(void) {
 	/* Check buttons. */
-	switch (checkControllerButtonsPressed(0,BTN_START)) {
+	switch (checkControllerButtonsPressed(0,BTN_NONDIRECTION)) {
+		case BTN_A:
+		case BTN_B:
+		case BTN_X:
+		case BTN_Y:
+		case BTN_SR:
+		case BTN_SL:
 		case BTN_START:
+		case BTN_SELECT:
 			/* Change to level 1 as soon start is pressed. */
 			selectLevel(1);
 			pushentropy(GameScreenAnimationPhase);
@@ -346,7 +363,7 @@ void updateEnterHighscoreScreen(void) {
 		moveSprite(Player.sprite,1,0);
 
 	/* Check buttons. */
-	switch (checkControllerButtonsPressed(0,BTN_UP|BTN_DOWN|BTN_RIGHT|BTN_START)) {
+	switch (checkControllerButtonsPressed(0,BTN_ALL)) {
 		case BTN_UP:
 			/* Roll through alphabet backwards. */
 			setTile(x,y,(((getTile(x,y)-1)-16) % 32)+FONT_ALPHA_TILE);
@@ -362,7 +379,16 @@ void updateEnterHighscoreScreen(void) {
 			else
 				ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
 			break;
+		case BTN_LEFT:
+			break;
+		case BTN_A:
+		case BTN_B:
+		case BTN_X:
+		case BTN_Y:
+		case BTN_SR:
+		case BTN_SL:
 		case BTN_START:
+		case BTN_SELECT:
 			/* Switch to next screen when start button is pressed. */
 			ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
 			break;

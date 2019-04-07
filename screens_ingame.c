@@ -193,7 +193,7 @@ void updateInGamePlayScreen(void) {
 		movePlayer(directional_buttons_held);
 
 		/* Try to throw pepper if fire button is pressed and the cook has peppers. */
-		if (checkControllerButtonsPressed(0,BTN_A) && Peppers>0) {
+		if (checkControllerButtonsPressed(0,BTN_NONDIRECTION) && Peppers>0) {
 			/* Decrement the amount of available peppers if throwing was possible. */
 			if (throwPepper())
 				Peppers--;
