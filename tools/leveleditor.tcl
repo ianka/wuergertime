@@ -1333,7 +1333,7 @@ proc setupLevels {} {
 	set ::groups [dict create]
 	for {set g 1} {$g<100} {incr g} {
 		set ::group$g 0
-		for {set l 1} {$l<100} {incr l} {
+		for {set l 1} {$l<=100} {incr l} {
 			dict set ::groups $l $g 0
 		}
 	}
