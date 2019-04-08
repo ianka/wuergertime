@@ -20,6 +20,7 @@
 #include "player.h"
 #include "sprites.h"
 #include "draw.h"
+#include "patches.h"
 
 
 /* Player data. */
@@ -209,6 +210,9 @@ void movePlayer(uint8_t buttons) {
 					if (wailOnLadderAtSprite(Player.sprite)) {
 						/* Switch to clean direction as soon the wailing is done. */
 						changePlayerDirection(PLAYER_FLAGS_DIRECTION_CLEAN);
+					} else {
+						/* Trigger wail sound. */
+						TriggerFx(PATCH_WAIL_LADDER,127,true);
 					}
 				}
 			}
@@ -229,10 +233,15 @@ void movePlayer(uint8_t buttons) {
 				&& (!checkSpriteAtLadderTop(Player.sprite))
 				&& !(GameScreenAnimationPhase & PLAYER_CLEAN_PHASE)) {
 				/* Clean ladder tile, or change to up direction if all done. */
-				if (checkSpriteAtSquirtedLadderEntryUp(Player.sprite))
+				if (checkSpriteAtSquirtedLadderEntryUp(Player.sprite)) {
+					/* Clean ladder. */
 					cleanLadderAtSprite(Player.sprite);
-				else
+
+					/* Trigger clean sound. */
+					TriggerFx(PATCH_CLEAN_LADDER,63,true);
+				} else {
 					changePlayerDirection(PLAYER_FLAGS_DIRECTION_UP);
+				}
 
 				/* Move player slowly. */
 				moveSprite(Player.sprite,0,-1);

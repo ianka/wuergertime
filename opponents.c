@@ -24,6 +24,7 @@
 #include "sprites.h"
 #include "screens.h"
 #include "draw.h"
+#include "patches.h"
 
 
 /* Opponent data. */
@@ -122,6 +123,9 @@ void nextOpponent(void) {
 				OpponentStartPosition[i].x*8,
 				OpponentStartPosition[i].y*8,
 				s);
+
+			/* Trigger opponent sound. */
+			TriggerFx(PATCH_RESPAWN_OPPONENT,192,true);
 
 			/* Opponent setup complete. */
 			return;
@@ -339,6 +343,9 @@ void selectOpponentDirection(uint8_t index) {
 				/* Yes. Continue squirting until the whole ladder is messed up. */
 				if (!(GameScreenAnimationPhase & OPPONENT_SQUIRT_PHASE)) {
 					if (!(squirtOnLadderAtSprite(Opponent[index].sprite))) {
+						/* Trigger squirt sound. */
+						TriggerFx(PATCH_SQUIRT_LADDER,63,true);
+
 						/* Do not select a new direction. */
 						return;
 					}
@@ -526,6 +533,9 @@ void kickOpponentIfHit(uint8_t index) {
 
 	/* Score for hit opponent. */
 	Score+=SCORE_OPPONENT_HIT;
+
+	/* Trigger opponent hit sound. */
+	TriggerFx(PATCH_HIT_OPPONENT,255,true);
 }
 
 
@@ -566,6 +576,9 @@ void kickOpponentIfPeppered(uint8_t index) {
 
 	/* Score for hit opponent. */
 	Score+=SCORE_OPPONENT_HIT;
+
+	/* Trigger opponent hit sound. */
+	TriggerFx(PATCH_HIT_OPPONENT,255,true);
 }
 
 

@@ -17,7 +17,9 @@
 
 /* Actual level data */
 #include "data/levels.inc"
-
+#ifndef START_AT_LEVEL
+#define START_AT_LEVEL 1
+#endif
 
 /* Local includes. */
 #include "screens.h"
@@ -115,7 +117,7 @@ void updateStartScreen(void) {
 		case BTN_START:
 		case BTN_SELECT:
 			/* Change to level 1 as soon start is pressed. */
-			selectLevel(1);
+			selectLevel(START_AT_LEVEL);
 			pushentropy(GameScreenAnimationPhase);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
 			break;
@@ -150,9 +152,6 @@ void initHighscoresScreen(void) {
 		drawHighscore(7,y,name,score);
 	}
 
-	TriggerFx(4,255,true);
-	TriggerFx(5,255,true);
-
 	/* Fade in and wait to complete */
 	FadeIn(1,1);
 }
@@ -169,7 +168,7 @@ void updateHighscoresScreen(void) {
 		case BTN_START:
 		case BTN_SELECT:
 			/* Change to level 1 as soon start is pressed. */
-			selectLevel(1);
+			selectLevel(START_AT_LEVEL);
 			pushentropy(GameScreenAnimationPhase);
 			ChangeGameScreen(GAME_SCREEN_LEVEL_DESCRIPTION);
 			break;

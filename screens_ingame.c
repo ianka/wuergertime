@@ -25,6 +25,7 @@
 #include "player.h"
 #include "pepper.h"
 #include "opponents.h"
+#include "patches.h"
 
 
 /* Fixed strings. */
@@ -61,6 +62,10 @@ void updateInGameDescriptionScreen(void) {
 		clearLine(8);
 	}
 
+	/* Trigger heat up sound. */
+	if (!(GameScreenAnimationPhase & 63))
+		TriggerFx(PATCH_HEAT_UP,127,true);
+
 	/* Move cook until end position reached. */
 	if (getSpriteX(Player.sprite) < DESCRIPTION_COOK_END_POSITION_X*8)
 		moveSprite(Player.sprite,1,0);
@@ -95,6 +100,10 @@ void initInGamePrepareScreen(void) {
 void updateInGamePrepareScreen(void) {
 	/* Level build animation. */
 	animateLevelStart();
+
+	/* Trigger fall sound. */
+	if (!(GameScreenAnimationPhase & 15))
+		TriggerFx(PATCH_BURGER_FALL,63,true);
 
 	/* Change screen when animation is done. */
 	if (GameScreenAnimationPhase > LEVEL_START_ANIMATION_ENDED+1)
@@ -148,6 +157,8 @@ void cleanupInGameStartScreen(void) {
  *  The play screen is showed when the actual game is happening.
  */
 void initInGamePlayScreen(void) {
+	/* Trigger respawn sound. */
+	TriggerFx(PATCH_RESPAWN_COOK,255,true);
 }
 
 
@@ -343,21 +354,45 @@ void updateInGameBonusScreen(void) {
 				/* Reached. Get item type.*/
 				switch (getTile(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2)) {
 					case TILES0_ROACH_UPPER_LEFT:
+						/* Score. */
 						Score+=SCORE_BONUS_ITEM_ROACH;
+
+						/* Trigger collect roach sound. */
+						TriggerFx(PATCH_COLLECT_ROACH,192,true);
 						break;
 					case TILES0_SODA_UPPER_LEFT:
+						/* Score. */
 						Score+=SCORE_BONUS_ITEM_SODA;
+
+						/* Trigger collect soda sound. */
+						TriggerFx(PATCH_COLLECT_SODA,192,true);
 						break;
 					case TILES0_FRIES_UPPER_LEFT:
+						/* Score. */
 						Score+=SCORE_BONUS_ITEM_FRIES;
+
+						/* Trigger collect fries sound. */
+						TriggerFx(PATCH_COLLECT_FRIES,192,true);
 						break;
 					case TILES0_PEPPER_UPPER_LEFT:
+						/* Score. */
 						Score+=SCORE_BONUS_ITEM_PEPPER;
+
+						/* Increment number of peppers.*/
 						Peppers++;
+
+						/* Trigger collect pepper sound. */
+						TriggerFx(PATCH_COLLECT_PEPPER,255,true);
 						break;
 					case TILES0_CROWN_UPPER_LEFT:
+						/* Score. */
 						Score+=SCORE_BONUS_ITEM_CROWN;
+
+						/* Increment number of lives. */
 						Lives++;
+
+						/* Trigger collect crown sound. */
+						TriggerFx(PATCH_COLLECT_CROWN,255,true);
 						break;
 				}
 
@@ -412,6 +447,9 @@ void initInGameLoseScreen(void) {
 
 	/* Kick player from screen. */
 	changePlayerDirection(PLAYER_FLAGS_DIRECTION_CAUGHT);
+
+	/* Trigger hit sound. */
+	TriggerFx(PATCH_HIT_COOK,255,true);
 }
 
 void updateInGameLoseScreen(void) {
@@ -464,6 +502,9 @@ void cleanupInGameLoseScreen(void) {
 void initInGameOverScreen(void) {
 	/* Let all burgers drop off-screen. */
 	dropAllBurgersOffScreen();
+
+	/* Trigger game over sound. */
+	TriggerFx(PATCH_GAME_OVER,255,true);
 }
 
 void updateInGameOverScreen(void) {

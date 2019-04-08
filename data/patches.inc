@@ -1,0 +1,487 @@
+#ifndef PATCHES_INC
+#define PATCHES_INC
+
+/* Original: Ruby Crush, Level Up. */
+const char patchCollectPepper[] PROGMEM={
+	0,PC_WAVE,4,
+	0,PC_ENV_SPEED,-8,
+	0,PC_PITCH,80,
+	3,PC_PITCH,78,
+	3,PC_PITCH,84,
+	2,PC_PITCH,76,
+	2,PC_PITCH,88,
+	2,PC_PITCH,74,
+	1,PC_PITCH,92,
+	0,PC_ENV_SPEED,-4,
+	3,PC_PITCH,96,
+	3,PC_PITCH,90,
+	3,PC_PITCH,96,
+	3,PC_PITCH,90,
+	3,PC_PITCH,96,
+	3,PC_PITCH,90,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Frogger - Paul, Bonus Frog. */
+const char patchCollectFries[] PROGMEM={
+	0,PC_WAVE,2,
+	0,PC_ENV_VOL,0xff,
+	2,PC_NOTE_UP,6,
+	2,PC_NOTE_UP,6,
+	0,PC_ENV_SPEED,-10,
+	0,PATCH_END
+};
+
+/* Original: Arkanoid - Alec, Laser Shot. */
+const char patchThrowPepper[] PROGMEM={
+	0,PC_WAVE,3,
+	0,PC_ENV_VOL,127,
+	0,PC_PITCH,80,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_ENV_VOL,0,
+	3,PC_ENV_VOL,127,
+	0,PC_PITCH,80,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_ENV_VOL,0,
+	3,PC_PITCH,80,
+	0,PC_ENV_VOL,32,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_ENV_VOL,0,
+	3,PC_PITCH,80,
+	0,PC_ENV_VOL,15,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_NOTE_DOWN,6,
+	1,PC_ENV_VOL,0,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Arkanoid - Alec, Vauss Explodes 2 */
+const char patchGameOver[] PROGMEM={
+	0,PC_ENV_VOL,127,
+	0,PC_WAVE,3,
+	0,PC_ENV_SPEED,-1,
+	0,PC_PITCH,65,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	3,PC_ENV_VOL,100,
+	0,PC_PITCH,60,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	3,PC_ENV_VOL,80,
+	0,PC_PITCH,55,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	3,PC_ENV_VOL,50,
+	0,PC_PITCH,50,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	3,PC_ENV_VOL,40,
+	0,PC_PITCH,45,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	3,PC_ENV_VOL,20,
+	0,PC_PITCH,40,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Donkey Kong, Paul, Step 3. */
+const char patchCleanLadder[] PROGMEM={
+	0,PC_WAVE,1,
+	0,PC_PITCH,90,
+	0,PC_ENV_SPEED,-32,
+	0,PC_NOTE_DOWN,32,
+	1,PC_NOTE_UP,3,
+	1,PC_NOTE_UP,3,
+	1,PC_NOTE_UP,3,
+	1,PC_NOTE_UP,4,
+	1,PC_NOTE_UP,4,
+	1,PC_NOTE_DOWN,13,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Pentago, Error. */
+const char patchCollectRoach[] PROGMEM={
+	0,PC_WAVE,0,
+	0,PC_PITCH,38,
+	0,PC_ENV_SPEED,-30,
+	0,PATCH_END
+};
+
+/* Original: Atomix, Move 1. */
+const char patchBurgerFall[] PROGMEM={
+	0,PC_WAVE,3,
+	0,PC_ENV_VOL,0x60,
+	0,PC_ENV_SPEED,0,
+	0,PC_PITCH,20,
+	10,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Donky Kong - Paul, Escape. */
+const char patchSquirtLadder[] PROGMEM={
+	0,PC_WAVE,3,
+	0,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,46,
+	1,PC_PITCH,50,
+	1,PC_PITCH,51,
+	2,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Chess4Uzebox, Computer Move. */
+const char patchHeatUp[] PROGMEM={
+	0,PC_ENV_SPEED,-5,
+	0,PC_WAVE,8,
+	0,PC_TREMOLO_LEVEL,0xa0,
+	0,PC_TREMOLO_RATE,50,
+	0,PC_PITCH,70,
+	0,PATCH_END
+};
+
+/* Original: Chess4Uzebox, Capture. */
+const char patchHitCook[] PROGMEM={
+	0,PC_WAVE,4,
+	0,PC_ENV_VOL,0xa0,
+	0,PC_ENV_SPEED,-10,
+	0,PC_PITCH,50,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	5,PC_PITCH,40,
+	0,PC_ENV_VOL,0xff,
+	0,PC_WAVE,1,
+	0,PC_ENV_SPEED,-10,
+	0,PC_TREMOLO_LEVEL,0xa0,
+	0,PC_TREMOLO_RATE,50,
+	0,PATCH_END
+};
+
+/* Original: Chess4Uzebox, Promotion. */
+const char patchRespawnCook[] PROGMEM={
+	0,PC_WAVE,8,
+	0,PC_ENV_SPEED,10,
+	0,PC_ENV_VOL,0x20,
+	0,PC_PITCH,50,
+	5,PC_PITCH,65,
+	5,PC_PITCH,70,
+	5,PC_PITCH,75,
+	7,PC_PITCH,65,
+	5,PC_PITCH,70,
+	5,PC_PITCH,75,
+	5,PC_PITCH,77,
+	0,PC_TREMOLO_LEVEL,0xa0,
+	0,PC_TREMOLO_RATE,50,
+	0,PC_ENV_SPEED,-10,
+	0,PATCH_END
+};
+
+/* Original: Ninja Beatdown, Bomb. */
+const char patchBurgerTopple[] PROGMEM={
+	0,PC_ENV_VOL,0xff,
+	0,PC_WAVE,3,
+	0,PC_ENV_SPEED,-4,
+	0,PC_PITCH,40,
+	1,PC_NOTE_DOWN,5,
+	1,PC_NOTE_DOWN,4,
+	1,PC_NOTE_DOWN,3,
+	1,PC_NOTE_DOWN,2,
+	1,PC_NOTE_DOWN,1,
+	0,PC_TREMOLO_LEVEL,0x90,
+	0,PC_TREMOLO_RATE,0x60,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_DOWN,1,
+	2,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Pacman - Paul, Fast Siren. */
+const char patchHurry[] PROGMEM={
+	0,PC_WAVE,2,
+	0,PC_NOTE_DOWN,12,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_UP,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Frightened. */
+const char patchCollectSoda[] PROGMEM={
+	0,PC_WAVE,2,
+	0,PC_PITCH,65,
+	0,PC_NOTE_DOWN,24,
+	0,PC_ENV_SPEED,-12,
+	0,PC_NOTE_UP,5,
+	1,PC_NOTE_UP,5,
+	1,PC_NOTE_UP,5,
+	1,PC_NOTE_UP,5,
+	1,PC_NOTE_UP,5,
+	1,PC_NOTE_UP,5,
+	1,PC_NOTE_UP,5,
+	1,PC_NOTE_UP,5,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Frogger - Paul, Droplet. */
+const char patchRespawnOpponent[] PROGMEM={
+	0,PC_ENV_SPEED,-12,
+	5,PC_NOTE_UP,12,
+	5,PC_NOTE_DOWN,12,
+	5,PC_NOTE_UP,12,
+	5,PC_NOTE_DOWN,12,
+	5,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Floor Noise. */
+const char patchStomp[] PROGMEM={
+	0,PC_NOISE_PARAMS,3,
+	0,PC_ENV_SPEED,-30,
+	3,PC_NOISE_PARAMS,0x6,
+	4,PC_NOISE_PARAMS,0x9,
+	3,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Spin. */
+const char patchHitOpponent[] PROGMEM={
+	0,PC_WAVE,4,
+	0,PC_ENV_SPEED,-5,
+	0,PC_PITCH,62,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_DOWN,10,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_DOWN,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_DOWN,10,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_DOWN,5,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_DOWN,5,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_DOWN,5,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_UP,2,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Tetris. */
+const char patchCollectCrown[] PROGMEM={
+	0,PC_WAVE,3,
+	0,PC_PITCH,86,
+	2,PC_NOTE_DOWN,10,
+	2,PC_NOTE_DOWN,8,
+	2,PC_NOTE_DOWN,6,
+	2,PC_NOTE_DOWN,4,
+	2,PC_NOTE_DOWN,2,
+	0,PC_PITCH,66,
+	2,PC_NOTE_UP,5,
+	2,PC_NOTE_DOWN,2,
+	2,PC_NOTE_UP,5,
+	2,PC_NOTE_UP,5,
+	2,PC_NOTE_DOWN,2,
+	2,PC_NOTE_UP,5,
+	0,PC_ENV_SPEED,-8,
+	4,PC_NOTE_UP,5,
+	4,PC_NOTE_DOWN,5,
+	4,PC_NOTE_UP,5,
+	4,PC_NOTE_DOWN,5,
+	4,PC_NOTE_UP,5,
+	4,PC_NOTE_DOWN,5,
+	4,PC_NOTE_UP,5,
+	1,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+/* Original: Zombienator, Ouch. */
+const char patchWailLadder[] PROGMEM={
+	0,PC_WAVE,1,
+	0,PC_ENV_VOL,0xff,
+	0,PC_ENV_SPEED,-5,
+	0,PC_PITCH,60,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	1,PC_NOTE_DOWN,1,
+	3,PC_NOTE_CUT,0,
+	0,PATCH_END
+};
+
+
+/* Patches to use. */
+const struct PatchStruct patches[] PROGMEM={
+	{0,NULL,patchCollectPepper,0,0},
+	{0,NULL,patchRespawnCook,0,0},
+	{0,NULL,patchCollectCrown,0,0},
+	{0,NULL,patchHitOpponent,0,0},
+	{0,NULL,patchHeatUp,0,0},
+	{0,NULL,patchBurgerTopple,0,0},
+	{0,NULL,patchCollectFries,0,0},
+	{0,NULL,patchHitCook,0,0},
+	{0,NULL,patchGameOver,0,0},
+	{0,NULL,patchRespawnOpponent,0,0},
+	{0,NULL,patchCollectRoach,0,0},
+	{1,NULL,patchThrowPepper,0,0},
+	{0,NULL,patchCollectSoda,0,0},
+	{1,NULL,patchStomp,0,0},
+	{0,NULL,patchSquirtLadder,0,0},
+	{1,NULL,patchBurgerFall,0,0},
+	{0,NULL,patchWailLadder,0,0},
+	{0,NULL,patchHurry,0,0},
+	{0,NULL,patchCleanLadder,0,0},
+};
+
+
+#endif /* PATCHES_INC */
+
+
+

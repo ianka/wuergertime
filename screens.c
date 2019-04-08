@@ -22,6 +22,7 @@
 #include "opponents.h"
 #include "tiles.h"
 #include "sprites.h"
+#include "patches.h"
 
 
 /* Maximum number of burger components per screen. */
@@ -414,6 +415,7 @@ uint8_t animateBurgers(void) {
 				p->type-LEVEL_ITEM_BURGER_BUNTOP+SHAPE_BURGER_BUNTOP,
 				p->stomped,
 				p->background);
+
 		}
 
 	/* Return numberof animated components. */
@@ -640,6 +642,9 @@ void dropHattedComponents(void) {
 
 			/* Score for falling component. */
 			Score+=SCORE_COMPONENT_FALLING_CASCADE;
+
+			/* Trigger topple sound. */
+			TriggerFx(PATCH_BURGER_TOPPLE,127,true);
 		}
 	}
 }
@@ -666,8 +671,14 @@ uint8_t stomp(uint8_t x, uint8_t y) {
 					oldstomped=p->stomped;
 					p->stomped|=1<<(x-burger_x);
 
-					/* Score for any stomped tile. */
-					if (p->stomped != oldstomped) Score+=SCORE_STOMPED_TILE;
+					/* Check if this tile has been stomped right now. */
+					if (p->stomped != oldstomped) {
+						/* Yes. Score. */
+						Score+=SCORE_STOMPED_TILE;
+
+						/* Trigger stomp sound. */
+						TriggerFx(PATCH_STOMP,127,true);
+					}
 
 					/* Restore screen at old position. */
 					handleBurgerBackgroundTile(x-burger_x,
@@ -707,6 +718,9 @@ uint8_t stomp(uint8_t x, uint8_t y) {
 
 									/* Score for falling component. */
 									Score+=SCORE_COMPONENT_FALLING;
+
+									/* Trigger fall sound. */
+									TriggerFx(PATCH_BURGER_FALL,127,true);
 							}
 						}
 					}
@@ -837,6 +851,9 @@ uint8_t animateHurry(void) {
 		case HURRY_ANIMATION_DRAW_UPPER_LEFT:
 			/* Draw "Hurry!" animation left above cook. */
 			drawHurry(x-5,y-3,HurryBuffer);
+
+			/* Trigger hurry sound. */
+			TriggerFx(PATCH_HURRY,255,true);
 			break;
 		case HURRY_ANIMATION_REMOVE_UPPER_LEFT:
 			/* Restore background left above cook. */
@@ -845,6 +862,9 @@ uint8_t animateHurry(void) {
 		case HURRY_ANIMATION_DRAW_LOWER_RIGHT:
 			/* Draw "Hurry!" animation right below cook. */
 			drawHurry(x+2,y+2,HurryBuffer);
+
+			/* Trigger hurry sound. */
+			TriggerFx(PATCH_HURRY,255,true);
 			break;
 		case HURRY_ANIMATION_REMOVE_LOWER_RIGHT:
 			/* Restore background right below cook. */
@@ -853,6 +873,9 @@ uint8_t animateHurry(void) {
 		case HURRY_ANIMATION_DRAW_UPPER_RIGHT:
 			/* Draw "Hurry!" animation right above cook. */
 			drawHurry(x+2,y-3,HurryBuffer);
+
+			/* Trigger hurry sound. */
+			TriggerFx(PATCH_HURRY,255,true);
 			break;
 		case HURRY_ANIMATION_REMOVE_UPPER_RIGHT:
 			/* Restore background right above cook. */
@@ -861,6 +884,9 @@ uint8_t animateHurry(void) {
 		case HURRY_ANIMATION_DRAW_LOWER_LEFT:
 			/* Draw "Hurry!" animation left below cook. */
 			drawHurry(x-5,y+2,HurryBuffer);
+
+			/* Trigger hurry sound. */
+			TriggerFx(PATCH_HURRY,255,true);
 			break;
 		case HURRY_ANIMATION_REMOVE_LOWER_LEFT:
 			/* Restore background left below cook. */
