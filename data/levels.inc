@@ -17,7 +17,7 @@ const uint8_t LevelDrawings[] PROGMEM={
 	1, 2, 3, 33, 40, 50, 51, 0,
 
 	/* Level 2 */
-	1, 13, 14, 15, 33, 43, 60, 61, 62, 63, 0,
+	1, 13, 15, 33, 43, 60, 61, 62, 63, 0,
 
 	/* Level 3 */
 	1, 20, 21, 33, 40, 67, 0,
@@ -38,7 +38,7 @@ const uint8_t LevelDrawings[] PROGMEM={
 	1, 2, 4, 33, 40, 50, 51, 0,
 
 	/* Level 9 */
-	1, 13, 15, 16, 35, 40, 60, 61, 62, 63, 0,
+	1, 13, 14, 15, 35, 40, 60, 61, 62, 63, 0,
 
 	/* Level 10 */
 	1, 20, 23, 34, 41, 67, 68, 69, 0,
@@ -609,7 +609,7 @@ const level_item_t LevelComponents[] PROGMEM={
 	/* Component block 33 */
 	LEVEL_COMPONENT_OPTIONS(
 		LEVEL_ITEM_OPTION_STOMP_ONCE|
-		LEVEL_ITEM_OPTION_OPPONENT_SINGLE|
+		LEVEL_ITEM_OPTION_OPPONENT_DUO|
 		LEVEL_ITEM_OPTION_OPPONENT_RANDOMNESS_HIGH|
 		LEVEL_ITEM_OPTION_ATTACK_WAVE_FAST|
 		LEVEL_ITEM_OPTION_BONUS_FAST
@@ -953,7 +953,7 @@ const level_item_t LevelComponents[] PROGMEM={
 
 	LEVEL_COMPONENT_FLOOR(CAP_BOTH,     11,23, 6),
 	LEVEL_COMPONENT_LADDER(SIMPLE,      11,20, 3),
-	LEVEL_COMPONENT_LADDER(SIMPLE,      11,17, 3),
+	LEVEL_COMPONENT_LADDER(CONTINUED,   11,17, 3),
 	LEVEL_COMPONENT_LADDER(CONTINUED,   11,14, 3),
 	LEVEL_COMPONENT_OPPONENTSTARTPOINT( 12, 8),
 
