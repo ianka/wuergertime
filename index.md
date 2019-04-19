@@ -1,3 +1,13 @@
-There's not much else to say about it. Only that this project is a work-in-progress. The visual artwork is nearly complete, it compiles and you can steer the cook through the ladder and platforms maze. Burger components are falling when the cook stomped them completely, and the falling chain reaction is working, too. All the parts that make you require skill to master the game are not done yet.
+Please look at the sources or the [discussion thread at the Uzebox forum](http://uzebox.org/forums/viewtopic.php?f=5&t=1764) for up-to-date information on development progress.
 
-I will update this page only every month or so. Please look at the sources or the [discussion thread at the Uzebox forum](http://uzebox.org/forums/viewtopic.php?f=5&t=1764) for up-to-date information on development progress.
+Features:
+* 99 Levels
+* Level editor in tools/leveleditor.tcl (hopefully cross-platform enough, tested on Linux)
+* Many different burger schemes
+* Up to four opponents with different aIgorithms (Egghead, Sausageman, Mr. Mustard, Anticook)
+* Lots of other level options
+* Pepper throwing
+* Bonus stage after each level
+* Prepare screen before each level
+* Highscore with 5 Entries of 5 chars
+* A bit of sound.
