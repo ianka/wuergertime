@@ -40,6 +40,11 @@ CFLAGS += -Wall -gdwarf-2 -std=gnu99 -DF_CPU=28636360UL -Os -fsigned-char -ffunc
 CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d
 CFLAGS += $(KERNEL_OPTIONS)
 
+## Start at a certain level in this executable.
+ifdef START_AT_LEVEL
+CFLAGS += -DSTART_AT_LEVEL=$(START_AT_LEVEL)
+endif
+
 ## Assembly specific flags
 ASMFLAGS = $(COMMON)
 ASMFLAGS += $(CFLAGS)
