@@ -1,0 +1,8 @@
+title: Würgertime
+description: An hommage to the game "Burger Time" for the uzebox retro-minimalist game console
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-hacker
+
+gems:
+  - jekyll-mentions

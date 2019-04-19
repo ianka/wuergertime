@@ -1,0 +1,3 @@
+There's not much else to say about it. Only that this project is a work-in-progress. The visual artwork is nearly complete, it compiles and you can steer the cook through the ladder and platforms maze. Burger components are falling when the cook stomped them completely, and the falling chain reaction is working, too. All the parts that make you require skill to master the game are not done yet.
+
+I will update this page only every month or so. Please look at the sources or the [discussion thread at the Uzebox forum](http://uzebox.org/forums/viewtopic.php?f=5&t=1764) for up-to-date information on development progress.
