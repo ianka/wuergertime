@@ -84,9 +84,9 @@ void updateStartScreen(void) {
 
 	/* Animate "Press Start". */
 	if (GameScreenAnimationPhase & 8) {
-		drawShape(15,10,ShapePressStart,0);
+		drawShape(14,10,ShapePressStart,0);
 	} else {
-		drawShape(15,10,ShapePressStartBlink,0);
+		drawShape(14,10,ShapePressStartBlink,0);
 	}
 
 	/* Animate credits. */

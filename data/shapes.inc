@@ -689,32 +689,40 @@ const uint8_t ShapeFoodTruck[] PROGMEM={
 
 /* "Press Start" text used in start screen. */
 const uint8_t ShapePressStart[] PROGMEM={
-	3, /* Width */
+	5, /* Width */
 	2, /* Height */
 
 	/* Line 0 */
-	TILES1_PRESS_START_UPPER_LEFT,
-	TILES1_PRESS_START_UPPER_MIDDLE,
-	TILES1_PRESS_START_UPPER_RIGHT,
+	TILES1_P,
+	TILES1_R,
+	TILES1_E,
+	TILES1_S,
+	TILES1_S,
 
 	/* Line 1 */
-	TILES1_PRESS_START_LOWER_LEFT,
-	TILES1_PRESS_START_LOWER_MIDDLE,
-	TILES1_PRESS_START_LOWER_RIGHT,
+	TILES1_S,
+	TILES1_T,
+	TILES1_A,
+	TILES1_R,
+	TILES1_T,
 };
 
 
 /* Empty "Press Start" background used in start screen. */
 const uint8_t ShapePressStartBlink[] PROGMEM={
-	3, /* Width */
+	5, /* Width */
 	2, /* Height */
 
 	/* Line 0 */
 	TILES1_FOODTRUCK_INNER_WALL,
 	TILES1_FOODTRUCK_INNER_WALL,
 	TILES1_FOODTRUCK_INNER_WALL,
+	TILES1_FOODTRUCK_INNER_WALL,
+	TILES1_FOODTRUCK_INNER_WALL,
 
 	/* Line 1 */
+	TILES1_FOODTRUCK_INNER_WALL,
+	TILES1_FOODTRUCK_INNER_WALL,
 	TILES1_FOODTRUCK_INNER_WALL,
 	TILES1_FOODTRUCK_INNER_WALL,
 	TILES1_FOODTRUCK_INNER_WALL,
