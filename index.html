@@ -28,7 +28,7 @@
 				<h1>Würgertime</h1>
 				<h2>An hommage to the game “Burger Time” for the Uzebox retro-minimalist game console</h2>
 				<section id="downloads">
-					<a href="binaries/wuergertime-1.1.uze" class="btn">Download Würgertime UZE binary</a>
+					<a href="binaries/wuergertime-1.2.uze" class="btn">Download Würgertime UZE binary</a>
 					<a href="https://github.com/ianka/wuergertime" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
 				</section>
 			</div>
@@ -47,7 +47,7 @@
 				</dl>
 				<h1>How to play it?</h1>
 				<p>
-					The most obvious idea is to buy a Uzebox. Or a EUzebox. Or a Uzebox Jamma. They differ in details. Or build one of those or your own design yourself. It can be done on a breadboard in an hour. Parts cost about €10. There are also people selling kits with a preprogrammed ATmega644, a nice PCB and case. You don't need an ISP programmer for the initial flash programming of the game loader then. Download the <a href="binaries/wuergertime-1.1.uze" target="_blank">Würgertime UZE binary</a>, put it on the SD card and load it through the game loader into your Uzebox.
+					The most obvious idea is to buy a Uzebox. Or a EUzebox. Or a Uzebox Jamma. They differ in details. Or build one of those or your own design yourself. It can be done on a breadboard in an hour. Parts cost about €10. There are also people selling kits with a preprogrammed ATmega644, a nice PCB and case. You don’t need an ISP programmer for the initial flash programming of the game loader then. Download the <a href="binaries/wuergertime-1.2.uze" target="_blank">Würgertime UZE binary</a>, put it on the SD card and load it through the game loader into your Uzebox.
 				</p>
 				<p>
 					Too complicated? You can also play <em>Würgertime</em> and other Uzebox games in an emulator. There are several, I recommend CUzebox. Download the <a href="http://files.jubatian.com/cuzebox_linux_amd64.tar.bz2" target="_blank">CUzebox Linux binary</a> or the <a href="http://files.jubatian.com/cuzebox_windows_x86.zip" target="_blank">CUzebox MS-Windows Binary</a> from Jubatian, and feed the Würgertime UZE binary into it.
@@ -64,7 +64,7 @@
 				</p>
 				<h2>Controls</h2>
 				<p>
-					You need the directions up, down, left, right and any of the fire buttons. They are all the same in this game. Steer the cook through the ladder and platform maze. Jumping? Silly you! Look at your physique! On a platform, walk right or left, then change to up or down and the cook will take the exit at the next ladder entry. Same for right or left while climbing a ladder. A warning: the unmarked ladder exits are up-only ones. With any fire button, you can throw pepper at your opponents. Careful, you have only three.
+					You need the directions up, down, left, right and any of the fire buttons. They are all the same in this game. Steer the cook through the ladder and platform maze. Jumping? Silly you! Look at your physique! On a platform, walk right or left, then change to up or down and the cook will take the exit at the next ladder entry. Same for right or left while climbing a ladder. A warning: the unmarked ladder exits are up-only ones. With any fire button, you can throw pepper at your opponents. Careful, you have only three per cook.
 				</p>
 				<h2>Burgers</h2>
 				<p>
@@ -75,9 +75,9 @@
 					Each level has up to four opponents. If you hit an opponent off-screen, it gets replaced by another one after a while. There are four different types. Which one is selected by the level you are in, as well as the opponent start points. Each one has its own strategy to be a pain in your … neck.
 				</p>
 				<dl>
-					<dt>Egghead</dt><dd>A matter of common knowledge, eggheads put some silly idea into their minds and then, they insist on executing it. They are no different in <em>Würgertime</em>. They select a burger piece, run to it and if they reached it, they select another burger piece and so on. The good thing about them is they don’t turn around out of sudden so it is safe to run right behind them. Leaves a soda behind. </dd>
-					<dt>Sausageman</dt><dd>It’s a green one! Yeah. This expired sausage is pretty unenjoyable. It chases you all the time, and it may suddenly turn. Don’t approach from behind. And make sure to get rid of it soon! Leaves fries behind.</dd>
-					<dt>Mr. Mustard</dt><dd>This clotted mustard bottle does what’s natural to its species. It spills its yellow contents everywhere it doesn’t belong to … well not everywhere, but on ladders below you specifically. If you happen to step on such a ladder, you slip down to the next exit, followed by a long, painful, and immobilizing wail. Climbing a squirted ladder requires you to clean it first, slowly. Leaves pepper behind.</dd>
+					<dt>Egghead</dt><dd>A matter of common knowledge, eggheads put some silly idea into their minds and then, they insist on executing it. They are no different in <em>Würgertime</em>. They select a burger piece, run to it and if they reached it, they select another burger piece and so on. The good thing about them is they don’t turn around out of sudden so it is safe to run right behind them. The egghead leaves fries behind. </dd>
+					<dt>Sausageman</dt><dd>It’s a green one! Yeah. This expired sausage is pretty unenjoyable. It chases you all the time, and it may suddenly turn. Don’t approach from behind. And make sure to get rid of it soon! Leaves a soda behind.</dd>
+					<dt>Mr Mustard</dt><dd>This clotted mustard bottle does what’s natural to its species. It spills its yellow contents everywhere it doesn’t belong to … well not everywhere, but on ladders below you specifically. If you happen to step on such a ladder, you slip down to the next exit, followed by a long, painful, and immobilizing wail. Climbing a squirted ladder requires you to clean it first, slowly. Mr Mustard leaves pepper behind.</dd>
 					<dt>Anticook</dt><dd>Doing the Moonwalk, this opponent actually helps you to complete your task. On the minus side, you may be knocked off-screen by the burger pieces he stomps. His movement strategy is as least as uninspiring as that of the expired sausage. Leaves a crown behind.</dd>
 				</dl>
 				<h2>Score</h2>
@@ -85,15 +85,15 @@
 					<tr><th>Burger tile stomped</th><td>1 point</td></tr>
 					<tr><th>Burger component falls</th><td>10 points</td></tr>
 					<tr><th>Burger component cascades</th><td>20 points</td></tr>
-					<tr><th>Opponent knocked off-screen</th><td>200 points</td></tr>
+					<tr><th>Opponent knocked off-screen</th><td>50 points</td></tr>
 					<tr><th>Roach bonus item collected</th><td>50 points</td></tr>
-					<tr><th>Soda bonus item collected</th><td>100 points</td></tr>
 					<tr><th>Fries bonus item collected</th><td>150 points</td></tr>
-					<tr><th>Pepper bonus item collected</th><td>250 points + 1 pepper</td></tr>
-					<tr><th>Crown bonus item collected</th><td>500 points + 1 cook</td></tr>
-					<tr><th>Small burger completed</th><td>1000 points</td></tr>
-					<tr><th>Medium burger completed</th><td>1500 points</td></tr>
-					<tr><th>Large burger completed</th><td>2000 points</td></tr>
+					<tr><th>Soda bonus item collected</th><td>250 points</td></tr>
+					<tr><th>Pepper bonus item collected</th><td>500 points + 1 pepper</td></tr>
+					<tr><th>Crown bonus item collected</th><td>1000 points + 1 cook</td></tr>
+					<tr><th>Small burger completed</th><td>150 points</td></tr>
+					<tr><th>Medium burger completed</th><td>250 points</td></tr>
+					<tr><th>Large burger completed</th><td>500 points</td></tr>
 				</table>
 				</dl>
 				<h1>Game Development</h1>
