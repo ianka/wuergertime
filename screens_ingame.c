@@ -480,6 +480,9 @@ void updateInGameLoseScreen(void) {
 		/* Animations done. Notice lost life. */
 		Lives--;
 
+		/* Add new peppers. */
+		Peppers+=DEFAULT_PEPPERS;
+
 		/* Re-initialize level or game over. */
 		if (Lives)
 				ChangeGameScreen(GAME_SCREEN_LEVEL_START);

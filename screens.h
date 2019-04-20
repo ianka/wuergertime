@@ -27,7 +27,7 @@
 /* Number of lives at beginning of the game. */
 #define DEFAULT_LIVES 3
 
-/* Number of peppers at the beginning of the game. */
+/* Number of peppers added when a life is lost. */
 #define DEFAULT_PEPPERS 3
 
 /* Default bonus whenever a life is lost. */
@@ -215,15 +215,15 @@ extern position_t GameScreenLevelPosition;
 #define SCORE_STOMPED_TILE                1
 #define SCORE_COMPONENT_FALLING          10
 #define SCORE_COMPONENT_FALLING_CASCADE  20
-#define SCORE_OPPONENT_HIT              200
+#define SCORE_OPPONENT_HIT               50
 #define SCORE_BONUS_ITEM_ROACH           50
-#define SCORE_BONUS_ITEM_SODA           100
 #define SCORE_BONUS_ITEM_FRIES          150
-#define SCORE_BONUS_ITEM_PEPPER         250
-#define SCORE_BONUS_ITEM_CROWN          500
-#define SCORE_BURGER_SMALL             1000
-#define SCORE_BURGER_MEDIUM            1500
-#define SCORE_BURGER_LARGE             2000
+#define SCORE_BONUS_ITEM_SODA           250
+#define SCORE_BONUS_ITEM_PEPPER         500
+#define SCORE_BONUS_ITEM_CROWN         1000
+#define SCORE_BURGER_SMALL              150
+#define SCORE_BURGER_MEDIUM             250
+#define SCORE_BURGER_LARGE              500
 
 
 extern uint8_t Scratchpad;
