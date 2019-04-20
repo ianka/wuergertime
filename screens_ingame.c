@@ -278,39 +278,36 @@ void cleanupInGameHurryScreen(void) {
  *  It shows the bonus animation on the level screen.
  */
 void initInGameBonusScreen(void) {
-	uint8_t i, j;
+	uint8_t i, p, start_positions=0;
 
 	/* Fast bonus counting. */
 	GameScreenOptions&=~LEVEL_ITEM_OPTION_BONUS_MASK;
 
-	/* Handle all opponents. */
-	for (i=0,j=0;i<OPPONENT_MAX;i++,j++) {
-		/* Draw a roach for invalid or hit opponents. */
-		if (checkInvalidOrHitOpponent(i)) {
-			drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_ROACH);
+	/* Go through all start positions. */
+	for (i=0;i<OPPONENT_START_POSITION_MAX;i++) {
+		/* Skip invalid start positions. */
+		if (OpponentStartPosition[i].x == OPPONENT_START_POSITION_INVALID)
 			continue;
-		}
 
-		/* Wrap invalid start positions. */
-		if ((j>=OPPONENT_START_POSITION_MAX)
-			|| (OpponentStartPosition[j].x == OPPONENT_START_POSITION_INVALID))
-			j=0;
+		/* Draw a roach on each valid startpoint. */
+		drawBonusItem(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2,SHAPE_BONUS_ROACH);
 
-		/* Draw bonus item depending on opponent. */
-		switch (Opponent[i].flags & OPPONENT_FLAGS_ALGORITHM_MASK) {
-			case OPPONENT_FLAGS_ALGORITHM_BURGER_PATROLLER:
-				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_SODA);
-				break;
-			case OPPONENT_FLAGS_ALGORITHM_FOLLOW_PLAYER:
-				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_FRIES);
-				break;
-			case OPPONENT_FLAGS_ALGORITHM_MESS_UP_LADDERS:
-				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_PEPPER);
-				break;
-			case OPPONENT_FLAGS_ALGORITHM_STOMPER:
-				drawBonusItem(OpponentStartPosition[j].x-1,OpponentStartPosition[j].y-2,SHAPE_BONUS_CROWN);
-				break;
-		}
+		/* Remember the number of valid start positions. */
+		start_positions++;
+	}
+
+	/* Handle all opponents. */
+	for (i=0;i<OPPONENT_MAX;i++) {
+		/* Skip invalid and hit opponents. */
+		if (checkInvalidOrHitOpponent(i))
+			continue;
+
+		/* Calculate start position to use. */
+		p=(i*11)%start_positions;
+
+		/* Draw bonus item depending on opponent over roach. */
+		drawBonusItem(OpponentStartPosition[p].x-1,OpponentStartPosition[p].y-2,
+			((Opponent[i].flags & OPPONENT_FLAGS_ALGORITHM_MASK)>>OPPONENT_FLAGS_ALGORITHM_SHIFT)+1);
 
 		/* Kick opponent off-screen. */
 		kickOpponent(i);
