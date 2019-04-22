@@ -843,8 +843,8 @@ uint8_t animateHurry(void) {
 	uint8_t x,y;
 
 	/* Get tile coordinate of the cook. */
-	x=getSpriteX(Player.sprite)/8;
-	y=getSpriteY(Player.sprite)/8;
+	x=getSpriteTileX(Player.sprite,0);
+	y=getSpriteTileY(Player.sprite,0);
 
 	/* Decide what to do by animation phase. */
 	switch (GameScreenAnimationPhase) {

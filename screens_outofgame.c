@@ -311,31 +311,31 @@ void updateNewHighscoreScreen(void) {
 		/* Setup cook start position and direction. */
 		Player.flags=PLAYER_FLAGS_DIRECTION_UP|PLAYER_FLAGS_SPEED_NORMAL;
 		placeSprite(Player.sprite,
-			HIGHSCORE_COOK_START_POSITION_X*8,
+			HIGHSCORE_COOK_START_POSITION_X*8+SPRITE_BORDER_WIDTH,
 			HIGHSCORE_COOK_START_POSITION_Y*8,
 			SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_LADDER);
 	}
 
 	if (GameScreenAnimationPhase > HIGHSCORE_COOK_ANIMATION_PHASE) {
 		/* Top of ladder reached? */
-		if (getSpriteY(Player.sprite) > (HIGHSCORE_TOPMOST+2*Scratchpad+1)*8) {
+		if (getSpriteTileY(Player.sprite,-1) > (HIGHSCORE_TOPMOST+2*Scratchpad)) {
 			/* No. Move cook upwards. */
 			moveSprite(Player.sprite,0,-1);
 		} else {
 			/* Yes. Go right to first letter of name. */
-			if (getSpriteX(Player.sprite) == HIGHSCORE_COOK_START_POSITION_X*8)
+			if (getSpriteTileX(Player.sprite,0) == HIGHSCORE_COOK_START_POSITION_X)
 				changePlayerDirection(PLAYER_FLAGS_DIRECTION_RIGHT);
 
 			/* Enter highscore if some existing highscore was topped. */
 			if (Scratchpad != HIGHSCORE_ENTRY_MAX) {
 				/* Move cook until end position reached. */
-				if (getSpriteX(Player.sprite) < HIGHSCORE_COOK_END_POSITION_X*8)
+				if (getSpriteTileX(Player.sprite,0) < HIGHSCORE_COOK_END_POSITION_X)
 					moveSprite(Player.sprite,1,0);
 				else
 					ChangeGameScreen(GAME_SCREEN_ENTER_HIGHSCORE);
 			} else {
 				/* Move cook until floor end reached. */
-				if (getSpriteX(Player.sprite) < 14*8)
+				if (getSpriteTileX(Player.sprite,0) < 14)
 					moveSprite(Player.sprite,1,0);
 				else
 					ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
@@ -355,7 +355,7 @@ void initEnterHighscoreScreen(void) {
 }
 
 void updateEnterHighscoreScreen(void) {
-	uint8_t x=(getSpriteX(Player.sprite) / 8)+1;
+	uint8_t x=getSpriteTileX(Player.sprite,8);
 	uint8_t y=HIGHSCORE_TOPMOST+2*Scratchpad;
 
 	/* Move cook to next half-tile position. */
@@ -425,18 +425,18 @@ void initEnteredHighscoreScreen(void) {
 
 void updateEnteredHighscoreScreen(void) {
 	/* Go left to ladder. */
-	if (getSpriteX(Player.sprite) > HIGHSCORE_COOK_START_POSITION_X*8)
+	if (getSpriteTileX(Player.sprite,7) > HIGHSCORE_COOK_START_POSITION_X)
 		moveSprite(Player.sprite,-1,0);
 
 	/* When on ladder, go downwards. */
-	if (getSpriteX(Player.sprite) == HIGHSCORE_COOK_START_POSITION_X*8) {
+	if (getSpriteTileX(Player.sprite,7) == HIGHSCORE_COOK_START_POSITION_X) {
 		/* Change movement direction. */
-		if (getSpriteY(Player.sprite) == (HIGHSCORE_TOPMOST+2*Scratchpad+1)*8)
+		if (getSpriteTileY(Player.sprite,0) == (HIGHSCORE_TOPMOST+2*Scratchpad+1))
 			changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
 
 		/* Move cook until end position reached. */
 		/* Then switch to new highscore entry screen. */
-		if (getSpriteY(Player.sprite) < (HIGHSCORE_COOK_START_POSITION_Y-1)*8)
+		if (getSpriteTileY(Player.sprite,0) < (HIGHSCORE_COOK_START_POSITION_Y-1))
 			moveSprite(Player.sprite,0,1);
 		else
 			ChangeGameScreen(GAME_SCREEN_START);

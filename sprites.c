@@ -297,7 +297,7 @@ void updateSprite(uint8_t slot) {
 				tile=pgm_read_byte(p);
 				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
 				sprites[i].flags=(((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0)|(flip_y*SPRITE_FLIP_Y);
-				sprites[i].x=GameSpriteSlots[slot].x-((j&1)^view_right?0:8);
+				sprites[i].x=GameSpriteSlots[slot].x-((j&1)^view_right?0:8)-SPRITE_BORDER_WIDTH;
 				sprites[i].y=GameSpriteSlots[slot].y-8-((~j^(flip_y*2))&2)*4;
 				p++;
 				i++;
@@ -313,7 +313,7 @@ void updateSprite(uint8_t slot) {
 				tile=pgm_read_byte(p);
 				sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
 				sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-				sprites[i].x=GameSpriteSlots[slot].x-4;
+				sprites[i].x=GameSpriteSlots[slot].x-4-SPRITE_BORDER_WIDTH;
 				sprites[i].y=GameSpriteSlots[slot].y-16+(j&1)*8;
 				p++;
 				i++;
@@ -330,7 +330,7 @@ void updateSprite(uint8_t slot) {
 			tile=pgm_read_byte(p);
 			sprites[i].tileIndex=tile & (~SPRITE_MIRROR);
 			sprites[i].flags=((tile & SPRITE_MIRROR)^view_right)?SPRITE_FLIP_X:0;
-			sprites[i].x=GameSpriteSlots[slot].x-4;
+			sprites[i].x=GameSpriteSlots[slot].x-4-SPRITE_BORDER_WIDTH;
 			sprites[i].y=GameSpriteSlots[slot].y-16;
 			i++;
 
@@ -358,19 +358,19 @@ void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint16_t flags) {
 
 
 /* Move a sprite. */
-uint8_t moveSprite(uint8_t slot, int8_t x, int8_t y) {
+uint8_t moveSpriteIfNotBorder(uint8_t slot, int8_t x, int8_t y) {
 	/* Fail if horizontal position is not within boundaries. */
-	if ((GameSpriteSlots[slot].x+x<8) || (GameSpriteSlots[slot].x+x>(SCREEN_WIDTH<<3)-8))
+	if ((GameSpriteSlots[slot].x+x<SPRITE_BORDER_WIDTH) || (GameSpriteSlots[slot].x+x>(SCREEN_WIDTH<<3)+SPRITE_BORDER_WIDTH))
 		return 0;
 
 	/* Actuall move sprite. */
-	moveSpriteUncondionally(slot,x,y);
+	moveSprite(slot,x,y);
 
 	/* Sucess. */
 	return 1;
 }
 
-void moveSpriteUncondionally(uint8_t slot, int8_t x, int8_t y) {
+void moveSprite(uint8_t slot, int8_t x, int8_t y) {
 	/* Remember new position. */
 	GameSpriteSlots[slot].x+=x;
 	GameSpriteSlots[slot].y+=y;
@@ -408,8 +408,16 @@ uint8_t getSpriteX(uint8_t slot) {
 	return GameSpriteSlots[slot].x;
 }
 
+uint8_t getSpriteTileX(uint8_t slot, int8_t c) {
+	return ((GameSpriteSlots[slot].x-SPRITE_BORDER_WIDTH+c)>>3);
+}
+
 uint8_t getSpriteY(uint8_t slot) {
 	return GameSpriteSlots[slot].y;
+}
+
+uint8_t getSpriteTileY(uint8_t slot, int8_t c) {
+	return ((GameSpriteSlots[slot].y+c)>>3);
 }
 
 
@@ -417,9 +425,9 @@ uint8_t getSpriteY(uint8_t slot) {
 uint8_t getSpriteFloorTile(uint8_t slot) {
 	switch (GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) {
 		case SPRITE_FLAGS_DIRECTION_LEFT:
-			return getTile(((GameSpriteSlots[slot].x-1)>>3),GameSpriteSlots[slot].y>>3);
+			return getTile(getSpriteTileX(slot,-1),getSpriteTileY(slot,0));
 		default:
-			return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+			return getTile(getSpriteTileX(slot,0),getSpriteTileY(slot,0));
 	}
 }
 
@@ -427,31 +435,31 @@ uint8_t getSpriteFloorTile(uint8_t slot) {
 uint8_t getSpriteFloorDirectionTile(uint8_t slot) {
 	switch (GameSpriteSlots[slot].flags & SPRITE_FLAGS_DIRECTION_MASK) {
 		case SPRITE_FLAGS_DIRECTION_LEFT:
-			return getTile(((GameSpriteSlots[slot].x-1)>>3)-1,GameSpriteSlots[slot].y>>3);
+			return getTile(getSpriteTileX(slot,-9),getSpriteTileY(slot,0));
 		case SPRITE_FLAGS_DIRECTION_RIGHT:
-			return getTile((GameSpriteSlots[slot].x>>3)+1,GameSpriteSlots[slot].y>>3);
+			return getTile(getSpriteTileX(slot,8),getSpriteTileY(slot,0));
 		default:
-			return getTile(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+			return getTile(getSpriteTileX(slot,0),getSpriteTileY(slot,0));
 	}
 }
 
 
 /* Get tile index for floor tile when going up on a ladder. */
 uint8_t getSpriteLadderTopTile(uint8_t slot) {
-	return getTile(GameSpriteSlots[slot].x>>3,((GameSpriteSlots[slot].y-1)>>3)+1);
+	return getTile(getSpriteTileX(slot,0),getSpriteTileY(slot,7));
 }
 
 
 /* Get tile index for tile behind sprite. */
 uint8_t getSpriteLadderTile(uint8_t slot) {
-	return getTile(GameSpriteSlots[slot].x>>3,(GameSpriteSlots[slot].y-1)>>3);
+	return getTile(getSpriteTileX(slot,0),getSpriteTileY(slot,-1));
 }
 
 
 /* Try to stomp the tile under the sprite. */
 void stompUnderSprite(uint8_t slot) {
-	if (!(stomp(GameSpriteSlots[slot].x>>3,(GameSpriteSlots[slot].y>>3)-1)))
-		stomp(GameSpriteSlots[slot].x>>3,GameSpriteSlots[slot].y>>3);
+	if (!(stomp(getSpriteTileX(slot,0),getSpriteTileY(slot,-8))))
+		stomp(getSpriteTileX(slot,0),getSpriteTileY(slot,0));
 }
 
 
@@ -590,7 +598,7 @@ uint8_t checkSpriteAtLeftFloorEnd(uint8_t slot) {
 		case TILES0_LADDER_TOP_UPONLY_LEFT:
 		case TILES0_LADDER_BOTTOM_LEFT:
 			/* At left floor end if at left screen border. */
-			return (GameSpriteSlots[slot].x==8);
+			return (GameSpriteSlots[slot].x==8-SPRITE_BORDER_WIDTH);
 		default:
 			/* Not at left floor end. */
 			return 0;
@@ -608,7 +616,7 @@ uint8_t checkSpriteAtRightFloorEnd(uint8_t slot) {
 		case TILES0_LADDER_TOP_UPONLY_RIGHT:
 		case TILES0_LADDER_BOTTOM_RIGHT:
 			/* At right floor end if at right screen border. */
-			return (GameSpriteSlots[slot].x==((SCREEN_WIDTH*8)-8));
+			return (GameSpriteSlots[slot].x==((SCREEN_WIDTH*8)-8-SPRITE_BORDER_WIDTH));
 		default:
 			/* Not at left floor end. */
 			return 0;
@@ -621,8 +629,8 @@ uint8_t squirtOnLadderAtSprite(uint8_t slot) {
 	uint8_t x, y;
 
 	/* Get position. */
-	x=(getSpriteX(slot)>>3)-1;
-	y=(getSpriteY(slot)>>3)-1;
+	x=getSpriteTileX(slot,-8);
+	y=getSpriteTileY(slot,-8);
 
 	/* Skip squirted ladder pieces. */
 	while (getTile(x,y) == TILES0_LADDER_SQUIRTED_LEFT)
@@ -647,7 +655,7 @@ uint8_t squirtOnLadderAtSprite(uint8_t slot) {
 
 /* Clean ladder piece at sprite. */
 void cleanLadderAtSprite(uint8_t slot) {
-	drawCleanedLadderPiece((getSpriteX(slot)>>3)-1,(getSpriteY(slot)>>3)-1);
+	drawCleanedLadderPiece(getSpriteTileX(slot,-8),getSpriteTileY(slot,-8));
 }
 
 
@@ -656,8 +664,8 @@ uint8_t wailOnLadderAtSprite(uint8_t slot) {
 	uint8_t x, y;
 
 	/* Get position. */
-	x=(getSpriteX(slot)>>3)-1;
-	y=(getSpriteY(slot)>>3)-1;
+	x=getSpriteTileX(slot,-8);
+	y=getSpriteTileY(slot,-8);
 
 	/* Skip wailed ladder pieces. */
 	while (getTile(x,y) == TILES0_LADDER_WAILED_LEFT)
@@ -685,8 +693,8 @@ void unwailLadderAtSprite(uint8_t slot) {
 	uint8_t x, y;
 
 	/* Get position. */
-	x=(getSpriteX(slot)>>3)-1;
-	y=(getSpriteY(slot)>>3)-1;
+	x=getSpriteTileX(slot,-8);
+	y=getSpriteTileY(slot,-8);
 
 	/* Replace the wail by squirt. */
 	while (getTile(x,y) == TILES0_LADDER_WAILED_LEFT)

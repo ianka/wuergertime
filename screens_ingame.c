@@ -50,7 +50,7 @@ void initInGameDescriptionScreen(void) {
 	/* Setup cook start position and direction. */
 	Player.flags=PLAYER_FLAGS_DIRECTION_RIGHT|PLAYER_FLAGS_SPEED_NORMAL;
 	placeSprite(Player.sprite,
-		DESCRIPTION_COOK_START_POSITION_X*8,
+		DESCRIPTION_COOK_START_POSITION_X*8+SPRITE_BORDER_WIDTH,
 		DESCRIPTION_COOK_START_POSITION_Y*8,
 		SPRITE_FLAGS_TYPE_COOK|SPRITE_FLAGS_DIRECTION_RIGHT);
 }
@@ -68,7 +68,7 @@ void updateInGameDescriptionScreen(void) {
 		TriggerFx(PATCH_HEAT_UP,127,true);
 
 	/* Move cook until end position reached. */
-	if (getSpriteX(Player.sprite) < DESCRIPTION_COOK_END_POSITION_X*8)
+	if (getSpriteTileX(Player.sprite,0) < DESCRIPTION_COOK_END_POSITION_X)
 		moveSprite(Player.sprite,1,0);
 	else
 		ChangeGameScreen(GAME_SCREEN_LEVEL_PREPARE);
@@ -346,9 +346,9 @@ void updateInGameBonusScreen(void) {
 			cleared=0;
 
 			/* Check if bonus item reached. */
-			if (((getSpriteX(Player.sprite)>>3 == OpponentStartPosition[i].x-1)
-				|| (getSpriteX(Player.sprite)>>3 == OpponentStartPosition[i].x))
-				&& (getSpriteY(Player.sprite)>>3 == OpponentStartPosition[i].y)) {
+			if (((getSpriteTileX(Player.sprite,0) == OpponentStartPosition[i].x-1)
+				|| (getSpriteTileX(Player.sprite,0) == OpponentStartPosition[i].x))
+				&& (getSpriteTileY(Player.sprite,0) == OpponentStartPosition[i].y)) {
 				/* Reached. Get item type.*/
 				switch (getTile(OpponentStartPosition[i].x-1,OpponentStartPosition[i].y-2)) {
 					case TILES0_ROACH_UPPER_LEFT:

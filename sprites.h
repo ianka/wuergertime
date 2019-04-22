@@ -32,6 +32,8 @@ extern const char SpriteTiles[] PROGMEM;
 #define SPRITEMAP_WIDTH 7
 #define SPRITE_MIRROR 0x80
 
+/* Sprite border width. */
+#define SPRITE_BORDER_WIDTH 16
 
 /* Tile index by sprite tile. */
 #define mtile(row,column,mirror) (((SPRITEMAP_WIDTH*row+column)|(mirror?SPRITE_MIRROR:0)))
@@ -70,12 +72,14 @@ void unmapSprite(uint8_t slot);
 void freeSpriteSlot(uint8_t slot);
 void updateSprite(uint8_t slot);
 void placeSprite(uint8_t slot, uint8_t x, uint8_t y, uint16_t flags);
-uint8_t moveSprite(uint8_t slot, int8_t x, int8_t y);
-void moveSpriteUncondionally(uint8_t slot, int8_t x, int8_t y);
+uint8_t moveSpriteIfNotBorder(uint8_t slot, int8_t x, int8_t y);
+void moveSprite(uint8_t slot, int8_t x, int8_t y);
 void alignSpriteToPlatform(uint8_t slot);
 void changeSpriteDirection(uint8_t slot, uint8_t direction);
 uint8_t getSpriteX(uint8_t slot);
+uint8_t getSpriteTileX(uint8_t slot, int8_t c);
 uint8_t getSpriteY(uint8_t slot);
+uint8_t getSpriteTileY(uint8_t slot, int8_t c);
 uint8_t getSpriteFloorTile(uint8_t slot);
 uint8_t getSpriteFloorDirectionTile(uint8_t slot);
 uint8_t getSpriteLadderTopTile(uint8_t slot);

@@ -86,9 +86,9 @@ extern const uint8_t ShapeSignLevelDescriptionTop[] PROGMEM;
 #define HIGHSCORE_COOK_END_POSITION_X 6
 
 /* Description screen constants. */
-#define DESCRIPTION_COOK_START_POSITION_X 2
+#define DESCRIPTION_COOK_START_POSITION_X 0
 #define DESCRIPTION_COOK_START_POSITION_Y 20
-#define DESCRIPTION_COOK_END_POSITION_X 28
+#define DESCRIPTION_COOK_END_POSITION_X 30
 
 /* Center strings. */
 #define drawStringCentered(y,string) Print(SCREEN_WIDTH/2-sizeof(string)/2,y,string);

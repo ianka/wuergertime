@@ -48,7 +48,7 @@ void resetPlayer(void) {
 
 	/* Setup player sprite. */
 	placeSprite(Player.sprite,
-		Player.start_position.x*8,
+		Player.start_position.x*8+SPRITE_BORDER_WIDTH,
 		Player.start_position.y*8,
 		flags);
 }
@@ -267,7 +267,7 @@ uint8_t animateCaughtPlayer(void) {
 		return 1;
 	} else {
 		/* No. Move with hit speed. */
-		moveSpriteUncondionally(Player.sprite,0,Player.hit_speed);
+		moveSprite(Player.sprite,0,Player.hit_speed);
 
 		/* Turn hit speed from negative to more positive for next step. */
 		Player.hit_speed++;
@@ -280,6 +280,6 @@ uint8_t animateCaughtPlayer(void) {
 
 /* Check if the player is hit by a burger component. */
 uint8_t checkIfPlayerIsHit(void) {
-	return (checkFallingBurgerComponentPosition(getSpriteX(Player.sprite),getSpriteY(Player.sprite)));
+	return (checkFallingBurgerComponentPosition(getSpriteX(Player.sprite)-SPRITE_BORDER_WIDTH,getSpriteY(Player.sprite)));
 }
 

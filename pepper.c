@@ -77,7 +77,7 @@ void movePepper(void) {
 	}
 
 	/* Move pepper. Remove it from screen at borders. */
-	if (!moveSprite(Pepper.sprite,dir*(1<<((Pepper.flags & PEPPER_FLAGS_SPEED_MASK)>>PEPPER_FLAGS_SPEED_SHIFT)),0))
+	if (!moveSpriteIfNotBorder(Pepper.sprite,dir*(1<<((Pepper.flags & PEPPER_FLAGS_SPEED_MASK)>>PEPPER_FLAGS_SPEED_SHIFT)),0))
 		removePepper();
 }
 

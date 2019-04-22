@@ -120,7 +120,7 @@ void nextOpponent(void) {
 
 			/* Setup opponent sprite. */
 			placeSprite(Opponent[i].sprite,
-				OpponentStartPosition[i].x*8,
+				OpponentStartPosition[i].x*8+SPRITE_BORDER_WIDTH,
 				OpponentStartPosition[i].y*8,
 				s);
 
@@ -455,7 +455,7 @@ void moveOpponent(uint8_t index) {
 			moveSprite(Opponent[index].sprite,0,1<<((Opponent[index].flags & OPPONENT_FLAGS_SPEED_MASK)>>OPPONENT_FLAGS_SPEED_SHIFT));
 			break;
 		case OPPONENT_FLAGS_DIRECTION_SQUIRT:
-			moveSpriteUncondionally(Opponent[index].sprite,0,0);
+			moveSprite(Opponent[index].sprite,0,0);
 			break;
 		case OPPONENT_FLAGS_DIRECTION_HIT_LEFT:
 			dir=-1;
@@ -471,7 +471,7 @@ void moveOpponent(uint8_t index) {
 				Opponent[index].flags=OPPONENT_FLAGS_INVALID;
 			} else {
 				/* No. Move with hit speed. */
-				moveSpriteUncondionally(Opponent[index].sprite,dir*OPPONENT_HIT_SPEED_X,Opponent[index].info.hit_speed);
+				moveSprite(Opponent[index].sprite,dir*OPPONENT_HIT_SPEED_X,Opponent[index].info.hit_speed);
 
 				/* Turn hit speed from negative to more positive for next step. */
 				Opponent[index].info.hit_speed++;
@@ -525,7 +525,7 @@ void kickOpponentIfHit(uint8_t index) {
 		return;
 
 	/* Skip if opponent is not hit by any burger component. */
-	if (!checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite),getSpriteY(Opponent[index].sprite)))
+	if (!checkFallingBurgerComponentPosition(getSpriteX(Opponent[index].sprite)-SPRITE_BORDER_WIDTH,getSpriteY(Opponent[index].sprite)))
 		return;
 
 	/* Collision. Kick it off the screen. */
