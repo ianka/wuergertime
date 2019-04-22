@@ -115,10 +115,6 @@
 #define LEVEL_ITEM_LADDER_CONTUPONLY    ((LEVEL_ITEM_LADDER_UPONLY|LEVEL_ITEM_LADDER_CONTINUED))
 #define LEVEL_ITEM_LADDER_LENGTH        0x0f
 #define LEVEL_ITEM_FLOOR                0x00
-#define LEVEL_ITEM_FLOOR_CAP_NONE       0x00
-#define LEVEL_ITEM_FLOOR_CAP_LEFT       0x40
-#define LEVEL_ITEM_FLOOR_CAP_RIGHT      0x20
-#define LEVEL_ITEM_FLOOR_CAP_BOTH       ((LEVEL_ITEM_FLOOR_CAP_LEFT|LEVEL_ITEM_FLOOR_CAP_RIGHT))
 #define LEVEL_ITEM_FLOOR_LENGTH         0x1f
 
 
@@ -141,7 +137,7 @@ typedef struct {
 
 #define LEVEL_COMPONENT_SIGN(xc,yc) { component: LEVEL_ITEM_SIGN, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_PLATE(xc,yc) { component: LEVEL_ITEM_PLATE, { position: { x: xc, y: yc } } }
-#define LEVEL_COMPONENT_FLOOR(type,xc,yc,len) { component: ((LEVEL_ITEM_FLOOR|LEVEL_ITEM_FLOOR_ ## type|len)), { position: { x: xc, y: yc } } }
+#define LEVEL_COMPONENT_FLOOR(xc,yc,len) { component: ((LEVEL_ITEM_FLOOR|len)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_LADDER(type,xc,yc,len) { component: ((LEVEL_ITEM_LADDER|LEVEL_ITEM_LADDER_ ## type|len)), { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_BURGER(type,xc,yc) { component: LEVEL_ITEM_BURGER_ ## type, { position: { x: xc, y: yc } } }
 #define LEVEL_COMPONENT_SCORE(xc,yc) { component: LEVEL_ITEM_SCORE, { position: { x: xc, y: yc } } }

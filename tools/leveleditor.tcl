@@ -200,7 +200,7 @@ proc addXyTags {tag x y} {
 			.screen addtag [list origin $x $y] withtag $item
 			switch -- [lindex $t 0] {
 				floor {
-					for {set i 0} {$i<[lindex $t 2]} {incr i} {
+					for {set i 0} {$i<[lindex $t 1]} {incr i} {
 						.screen addtag [list xy [expr {$x+$i}] $y] withtag $item
 					}
 				}
@@ -274,15 +274,15 @@ proc addPickedGroupLabel {group tags} {
 
 
 ## Add a floor item.
-proc addFloor {type len} {
+proc addFloor {len} {
 	set ::xdiff 0
 	set ::ydiff 0
 	set ::group$::group 1
 	applyGroup $::group
-	addPickedGroupLabel $::group [list [list floor $type $len]]
+	addPickedGroupLabel $::group [list [list floor $len]]
 	.screen itemconfigure pickedimage \
-		-state normal -image [floor $type $len] \
-		-tags [list images pickedimage picked floors [list floor $type $len]]
+		-state normal -image [floor $len] \
+		-tags [list images pickedimage picked floors [list floor $len]]
 }
 
 
@@ -576,7 +576,7 @@ foreach {simplecomponent params} {
 	peppers            {x y}
 	plate              {x y}
 	burger             {type x y}
-	floor              {type x y length}
+	floor              {x y length}
 	ladder             {type x y length}} {
 	set i 1
 	set paramstring {}
@@ -687,7 +687,7 @@ proc loadLevels {filename} {
 			set ::group $group
 			dict with component {
 				switch -- $item {
-					floor   {addFloor  $type $length}
+					floor   {addFloor  $length}
 					ladder  {addLadder $type $length}
 					burger  {addBurger $type}
 					plate   {addPlate}
@@ -846,10 +846,14 @@ proc saveLevels {filename} {
 							set itemtype burger
 							set type [lindex $match 1]
 						}
-						{^(floor) (.+) ([[:digit:]]+)$} - {^(ladder) (.+) ([[:digit:]]+)$} {
-							set itemtype [lindex $match 1]
-							set type     [lindex $match 2]
-							set length   [lindex $match 3]
+						{^floor ([[:digit:]]+)$} {
+							set itemtype floor
+							set length   [lindex $match 1]
+						}
+						{^ladder (.+) ([[:digit:]]+)$} {
+							set itemtype ladder
+							set type     [lindex $match 1]
+							set length   [lindex $match 2]
 						}
 						{^origin ([[:digit:]]+) ([[:digit:]]+)$} {
 							set x [lindex $match 1]
@@ -880,7 +884,10 @@ proc saveLevels {filename} {
 								burger {
 									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y]
 								}
-								floor - ladder {
+								floor {
+									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\("] $x $y $length]
+								}
+								ladder {
 									append levelscomponents [format "\tLEVEL_COMPONENT_%-20s%2d,%2d,%2d),\n" [string toupper "$itemtype\($type,"] $x $y $length]
 								}
 								lives - peppers {
@@ -1083,28 +1090,21 @@ image delete $pcxphoto
 
 
 ## Create needed floor, if not already done.
-set floortypes [dict create cap_none "No Caps" cap_left "Left Cap" cap_right "Right Cap" cap_both "Both Caps"]
 set floors [dict create]
-proc floor {type len} {
-	if {[dict exists $::floors $type $len]} {
-		return [dict get $::floors $type $len]
+proc floor {len} {
+	if {[dict exists $::floors $len]} {
+		return [dict get $::floors $len]
 	}
-	set cap_left [expr {$type eq "cap_left"||$type eq "cap_both"?1:0}]
-	set cap_right [expr {$type eq "cap_right"||$type eq "cap_both"?1:0}]
 	set photo [image create photo]
-	for {set x $cap_left} {$x<$len-$cap_right} {incr x} {
+	for {set x 1} {$x<$len-1} {incr x} {
 		lassign [dict get $::coords tiles [list floor middle]] row column
 		copyTile $::tilesphoto $photo $row $column $x 0
 	}
-	if {$cap_left} {
-		lassign [dict get $::coords tiles [list floor left]] row column
-		copyTile $::tilesphoto $photo $row $column 0 0
-	}
-	if {$cap_right} {
-		lassign [dict get $::coords tiles [list floor right]] row column
-		copyTile $::tilesphoto $photo $row $column [expr {$len-1}] 0
-	}
-	dict set floors $type $len $photo
+	lassign [dict get $::coords tiles [list floor left]] row column
+	copyTile $::tilesphoto $photo $row $column 0 0
+	lassign [dict get $::coords tiles [list floor right]] row column
+	copyTile $::tilesphoto $photo $row $column [expr {$len-1}] 0
+	dict set floors $len $photo
 	return $photo
 }
 
@@ -1299,7 +1299,16 @@ set grid 1
 
 
 ## Create cursor.
-.screen configure -cursor [list @[file join [file dirname $argv0] none.cur] black]
+set fd [file tempfile none.cur]
+puts $fd {#define none_width 1
+#define none_height 1
+#define none_x_hot 0
+#define none_y_hot 0
+static unsigned char none_bits[] = {
+0x00};}
+close $fd
+.screen configure -cursor [list @[set none.cur] black]
+file delete [set none.cur]
 .screen create rectangle 0 0 [sc 1] [sc 1] \
 	-outline [dict get $parameters -cursor] -width 3 \
 	-tags cursor
@@ -1483,14 +1492,9 @@ bind . <Control-q> exit
 
 ## Create floors menu.
 menu .menu.floors
-dict for {type name} $floortypes {
-	menu .menu.floors.$type
-		for {set len 1} {$len<=$screen_width} {incr len} {
-			.menu.floors.$type add command -command [list addFloor $type $len] -label $len
-	}
-	.menu.floors add cascade -menu .menu.floors.$type -label $name -underline 0
+for {set len 1} {$len<=$screen_width} {incr len} {
+	.menu.floors add command -command [list addFloor $len] -label $len
 }
-
 
 ## Create ladders menu.
 menu .menu.ladders

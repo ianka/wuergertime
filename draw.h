@@ -26,8 +26,6 @@
 
 
 /* Draw options. */
-#define DRAW_OPTION_FLOOR_CAP_LEFT LEVEL_ITEM_FLOOR_CAP_LEFT
-#define DRAW_OPTION_FLOOR_CAP_RIGHT LEVEL_ITEM_FLOOR_CAP_RIGHT
 #define DRAW_OPTION_LADDER_CONTINUED LEVEL_ITEM_LADDER_CONTINUED
 #define DRAW_OPTION_LADDER_UPONLY LEVEL_ITEM_LADDER_UPONLY
 #define DRAW_OPTION_SHAPE_TILTED ((1<<0))
@@ -101,7 +99,7 @@ void clearQuad(uint8_t x, uint8_t y);
 void clearScreen(void);
 void drawShape(uint8_t x, uint8_t y, const uint8_t *p, uint8_t options);
 void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase);
-void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps);
+void drawFloor(uint8_t x, uint8_t y, uint8_t length);
 void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options);
 void drawSquirtedLadderPiece(uint8_t x, uint8_t y);
 void drawCleanedLadderPiece(uint8_t x, uint8_t y);

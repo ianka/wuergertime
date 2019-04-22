@@ -192,31 +192,37 @@ void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase) {
 }
 
 
+/* Draw a floor cap. */
+static void drawFloorCap(uint8_t x, uint8_t ax, uint8_t y, uint8_t floor, uint8_t cap, uint8_t anticap) {
+	/* Check adjacent tile. */
+	if (((getTile(ax,y)==anticap) && (x==0 || ax==0))
+		|| getTile(ax,y)==floor)
+		/* It's a floor. Draw a normal floor tile. */
+		setTile(x,y,floor);
+	else
+		/* It's something else. Draw a left/right cap. */
+		setTile(x,y,cap);
+}
+
 /* Draw a floor. */
-void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t caps) {
+void drawFloor(uint8_t x, uint8_t y, uint8_t length) {
 	tiles_trio_t floor[2]=TILES_COMPOUND(TILES_TRIO,FLOOR);
+	uint8_t tx;
 
 	/* Skip zero length floor. */
 	if (!length) return;
 
-	/* Draw left cap if desired. */
-	if (caps & DRAW_OPTION_FLOOR_CAP_LEFT) {
-		setTile(x,y,floor[Tileset].left);
-		x++;
-		length--;
-	}
+	/* Draw left cap. */
+	drawFloorCap(x,(x==0)?SCREEN_WIDTH-1:x-1,y,floor[Tileset].middle,floor[Tileset].left,floor[Tileset].right);
 
-	/* End if already reached max length. */
-	if (!length) return;
+	/* Get position of floor end. */
+	tx=x+length-1;
 
-	/* Draw right cap if desired. */
-	if (caps & DRAW_OPTION_FLOOR_CAP_RIGHT) {
-		length--;
-		setTile(x+length,y,floor[Tileset].right);
-	}
+	/* Draw right cap. */
+	drawFloorCap(tx,(tx+1==SCREEN_WIDTH)?0:tx+1,y,floor[Tileset].middle,floor[Tileset].right,floor[Tileset].left);
 
 	/* Draw a floor inbetween. */
-	Fill(x,y,length,1,floor[Tileset].middle);
+	Fill(x+1,y,length-2,1,floor[Tileset].middle);
 }
 
 
