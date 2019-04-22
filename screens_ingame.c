@@ -334,6 +334,9 @@ void updateInGameBonusScreen(void) {
 		/* Move player into selected direction, if possible. */
 		movePlayer(directional_buttons_held);
 
+		/* Move pepper if present. */
+		movePepper();
+
 		/* Move all active opponents. */
 		for (i=0;i<OPPONENT_MAX;i++)
 			moveOpponent(i);
@@ -510,6 +513,9 @@ void initInGameOverScreen(void) {
 
 void updateInGameOverScreen(void) {
 	uint8_t o, b, i;
+
+	/* Move pepper if present. */
+	movePepper();
 
 	/* Handle all opponents. */
 	for (i=0;i<OPPONENT_MAX;i++) {
