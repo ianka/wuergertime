@@ -247,15 +247,17 @@ void drawLadder(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 	} else {
 		/* Normal ladder top. */
 		/* Check if floor end where top is going to be placed. */
-		if (getTile(x,y) == floor[Tileset])
-				setTile(x,y,ladder_top[Tileset].left);
-			else
-				setTile(x,y,ladder_top_floorend[Tileset].left);
+		if ((getTile(x,y) == floor[Tileset])
+			|| (getTile(x,y) == ladder_bottom[Tileset].left))
+			setTile(x,y,ladder_top[Tileset].left);
+		else
+			setTile(x,y,ladder_top_floorend[Tileset].left);
 
-		if (getTile(x+1,y) == floor[Tileset])
-				setTile(x+1,y,ladder_top[Tileset].right);
-			else
-				setTile(x+1,y,ladder_top_floorend[Tileset].right);
+		if ((getTile(x+1,y) == floor[Tileset])
+			|| (getTile(x+1,y) == ladder_bottom[Tileset].right))
+			setTile(x+1,y,ladder_top[Tileset].right);
+		else
+			setTile(x+1,y,ladder_top_floorend[Tileset].right);
 	}
 
 	/* Advance one row. */

@@ -1110,14 +1110,13 @@ proc floor {len} {
 
 
 ## Create needed ladder, if not already done.
-set laddertypes [dict create simple "Simple" continued "Continued" uponly "Up Only" contuponly "Both"]
+set laddertypes [dict create simple "Simple" uponly "Up Only"]
 set ladders [dict create]
 proc ladder {type len} {
 	if {[dict exists $::ladders $type $len]} {
 		return [dict get $::ladders $type $len]
 	}
-	set continued [expr {$type eq "continued"||$type eq "contuponly"?1:0}]
-	set uponly [expr {$type eq "uponly"||$type eq "contuponly"?1:0}]
+	set uponly [expr {$type eq "uponly"?1:0}]
 	set photo [image create photo]
 	foreach side {left right} x {0 1} {
 		lassign [dict get $::coords tiles [list ladder top [expr {$uponly?"uponly":"floorend"}] $side]] row column
@@ -1126,10 +1125,8 @@ proc ladder {type len} {
 			lassign [dict get $::coords tiles [list ladder $side]] row column
 			copyTile $::tilesphoto $photo $row $column $x $y
 		}
-		if {!$continued} {
-			lassign [dict get $::coords tiles [list ladder bottom floorend $side]] row column
-			copyTile $::tilesphoto $photo $row $column $x $len
-		}
+		lassign [dict get $::coords tiles [list ladder bottom floorend $side]] row column
+		copyTile $::tilesphoto $photo $row $column $x $len
 	}
 	dict set ladders $type $len $photo
 	return $photo

@@ -511,7 +511,7 @@ void animateLevelStart(void) {
 							length=(GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED)>>1;
 							pos=y+(c & LEVEL_ITEM_LADDER_LENGTH)-length;
 							if ((length <= (c & LEVEL_ITEM_LADDER_LENGTH)) && ((GameScreenAnimationPhase-LEVEL_START_ANIMATION_FLOORS_ENDED) & 0x01))
-								drawLadder(x,pos,length,(length==1)?c & (LEVEL_ITEM_LADDER_CONTINUED|LEVEL_ITEM_LADDER_UPONLY):(c& LEVEL_ITEM_LADDER_UPONLY)|LEVEL_ITEM_LADDER_CONTINUED);
+								drawLadder(x,pos,length,(length==1)?c & (LEVEL_ITEM_LADDER_UPONLY):(c & LEVEL_ITEM_LADDER_UPONLY)|DRAW_OPTION_LADDER_CONTINUED);
 						}
 					} else {
 						/* Floor. Animate width. */
