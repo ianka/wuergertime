@@ -59,8 +59,7 @@ void initStartScreen(void) {
 	FadeIn(1,0);
 
 	/* Draw picture */
-	drawFloor(0,20,SCREEN_WIDTH);
-	drawFloor(0,20,SCREEN_WIDTH);
+	drawFloor(0,20,SCREEN_WIDTH,DRAW_OPTION_FLOOR_FORCE_WRAP);
 	drawShape(9,1,ShapeSignOutOfGame,0);
 	drawShape(7,6,ShapeFoodTruck,0);
 	drawShape(3,0,ShapeHighscoreSignPoleRightLong,DRAW_OPTION_SHAPE_TILTED);
@@ -299,7 +298,7 @@ void initNewHighscoreScreen(void) {
 void updateNewHighscoreScreen(void) {
 	/* Animate floor. */
 	if (GameScreenAnimationPhase < HIGHSCORE_FLOOR_WIDTH)
-		drawFloor(2,HIGHSCORE_TOPMOST+2*Scratchpad+1,GameScreenAnimationPhase);
+		drawFloor(2,HIGHSCORE_TOPMOST+2*Scratchpad+1,GameScreenAnimationPhase,0);
 
 	/* Animate ladder. */
 	if (GameScreenAnimationPhase >= HIGHSCORE_FLOOR_WIDTH && GameScreenAnimationPhase < SCREEN_HEIGHT+HIGHSCORE_FLOOR_WIDTH-HIGHSCORE_TOPMOST-2*Scratchpad) {

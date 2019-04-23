@@ -437,6 +437,7 @@ proc setOptions {options} {
 	set ::opponentNumber$::group {}
 	set ::attackWaveSpeed$::group {}
 	set ::bonusSpeed$::group {}
+	set ::wrap$::group {}
 	foreach option $options {
 		switch -regexp -matchvar match -- $option {
 			{^stomp_(.*)$}               {set ::stompCount$::group         [lindex $match 1]}
@@ -444,6 +445,7 @@ proc setOptions {options} {
 			{^opponent_(.*)$}            {set ::opponentNumber$::group     [lindex $match 1]}
 			{^attack_wave_(.*)$}         {set ::attackWaveSpeed$::group    [lindex $match 1]}
 			{^bonus_(.*)$}               {set ::bonusSpeed$::group         [lindex $match 1]}
+			{^wrap_(.*)$}                {set ::wrap$::group               [lindex $match 1]}
 		}
 	}
 }
@@ -598,7 +600,8 @@ foreach leveloption {
 	opponent_single opponent_duo opponent_trio opponent_quad
 	opponent_randomness_minimal opponent_randomness_normal opponent_randomness_medium opponent_randomness_high
 	attack_wave_fast attack_wave_medium attack_wave_slow attack_wave_slowest
-	bonus_fast bonus_medium bonus_slow bonus_slowest} {
+	bonus_fast bonus_medium bonus_slow bonus_slowest
+	wrap_none wrap_eastwest} {
 		lappend leveloptionpatterns \
 			[string cat {^[[:blank:]]*LEVEL_ITEM_OPTION_} [string toupper $leveloption] {\|?[[:blank:]]*$}] \
 			[list lappend leveloptions $leveloption]
@@ -778,7 +781,8 @@ proc saveLevels {filename} {
 			|| ([set ::opponentNumber$g] ne {})
 			|| ([set ::opponentRandomness$g] ne {})
 			|| ([set ::attackWaveSpeed$g] ne {})
-			|| ([set ::bonusSpeed$g] ne {})} {
+			|| ([set ::bonusSpeed$g] ne {})
+			|| ([set ::wrap$g] ne {})} {
 			set m $g
 		}
 		for {set w 0} {$w<8} {incr w} {
@@ -810,6 +814,9 @@ proc saveLevels {filename} {
 		}
 		if {[set ::bonusSpeed$g] ne {}} {
 			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_BONUS_" [string toupper [set ::bonusSpeed$g]]]
+		}
+		if {[set ::wrap$g] ne {}} {
+			lappend options [string cat "\t\tLEVEL_ITEM_OPTION_WRAP_" [string toupper [set ::wrap$g]]]
 		}
 		if {$options ne {}} {
 			append levelscomponents "\tLEVEL_COMPONENT_OPTIONS(\n" [join $options "|\n"] "\n\t),\n"
@@ -1329,6 +1336,7 @@ proc setupGroups {} {
 		set ::opponentNumber$g {}
 		set ::attackWaveSpeed$g {}
 		set ::bonusSpeed$g {}
+		set ::wrap$g {}
 		for {set w 0} {$w<8} {incr w} {
 			set ::attackWave$g.$w {}
 		}
@@ -1385,6 +1393,8 @@ proc createOptionsGroup {g} {
 	ttk::combobox .right.options.group$g.attackwavespeed         -state readonly -values {{} fast medium slow slowest} -textvariable ::attackWaveSpeed$g
 	ttk::label    .right.options.group$g.bonusspeedlabel         -text "Bonus speed:"
 	ttk::combobox .right.options.group$g.bonusspeed              -state readonly -values {{} fast medium slow slowest} -textvariable ::bonusSpeed$g
+	ttk::label    .right.options.group$g.wraplabel               -text "Wrap:"
+	ttk::combobox .right.options.group$g.wrap                    -state readonly -values {{} none eastwest} -textvariable ::wrap$g
 
 	grid .right.options.group$g.stomplabel
 	grid .right.options.group$g.stomp
@@ -1396,6 +1406,8 @@ proc createOptionsGroup {g} {
 	grid .right.options.group$g.attackwavespeed
 	grid .right.options.group$g.bonusspeedlabel
 	grid .right.options.group$g.bonusspeed
+	grid .right.options.group$g.wraplabel
+	grid .right.options.group$g.wrap
 
 	grid .right.options.group$g
 	grid remove .right.options.group$g

@@ -520,7 +520,7 @@ void animateLevelStart(void) {
 							pos=x+((c & LEVEL_ITEM_FLOOR_LENGTH)-length)/2;
 
 							/* Draw it. */
-							drawFloor(pos,y,length);
+							drawFloor(pos,y,length,(GameScreenOptions & LEVEL_ITEM_OPTION_WRAP_MASK)?0:DRAW_OPTION_FLOOR_FORCE_NOWRAP);
 						}
 					}
 			}

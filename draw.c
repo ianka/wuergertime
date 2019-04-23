@@ -193,19 +193,30 @@ void drawShapeAnimated(uint8_t x, uint8_t y, const uint8_t *p, uint8_t phase) {
 
 
 /* Draw a floor cap. */
-static void drawFloorCap(uint8_t x, uint8_t ax, uint8_t y, uint8_t floor, uint8_t cap, uint8_t anticap) {
-	/* Check adjacent tile. */
-	if (((getTile(ax,y)==anticap) && (x==0 || ax==0))
-		|| getTile(ax,y)==floor)
-		/* It's a floor. Draw a normal floor tile. */
-		setTile(x,y,floor);
-	else
-		/* It's something else. Draw a left/right cap. */
-		setTile(x,y,cap);
+static void drawFloorCap(uint8_t x, uint8_t ax, uint8_t y, uint8_t floor, uint8_t cap, uint8_t anticap, uint8_t options) {
+	switch (options) {
+		case DRAW_OPTION_FLOOR_FORCE_WRAP:
+			/* Draw a normal floor tile. */
+			setTile(x,y,floor);
+			break;
+		case DRAW_OPTION_FLOOR_FORCE_NOWRAP:
+			/* Draw a left/right cap. */
+			setTile(x,y,cap);
+			break;
+		default:
+			/* Check adjacent tile. */
+			if (((getTile(ax,y)==anticap) && (x==0 || ax==0))
+				|| getTile(ax,y)==floor)
+				/* It's a floor. Draw a normal floor tile. */
+				setTile(x,y,floor);
+			else
+				/* It's something else. Draw a left/right cap. */
+				setTile(x,y,cap);
+	}
 }
 
 /* Draw a floor. */
-void drawFloor(uint8_t x, uint8_t y, uint8_t length) {
+void drawFloor(uint8_t x, uint8_t y, uint8_t length, uint8_t options) {
 	tiles_trio_t floor[2]=TILES_COMPOUND(TILES_TRIO,FLOOR);
 	uint8_t tx;
 
@@ -213,13 +224,13 @@ void drawFloor(uint8_t x, uint8_t y, uint8_t length) {
 	if (!length) return;
 
 	/* Draw left cap. */
-	drawFloorCap(x,(x==0)?SCREEN_WIDTH-1:x-1,y,floor[Tileset].middle,floor[Tileset].left,floor[Tileset].right);
+	drawFloorCap(x,(x==0)?SCREEN_WIDTH-1:x-1,y,floor[Tileset].middle,floor[Tileset].left,floor[Tileset].right,options);
 
 	/* Get position of floor end. */
 	tx=x+length-1;
 
 	/* Draw right cap. */
-	drawFloorCap(tx,(tx+1==SCREEN_WIDTH)?0:tx+1,y,floor[Tileset].middle,floor[Tileset].right,floor[Tileset].left);
+	drawFloorCap(tx,(tx+1==SCREEN_WIDTH)?0:tx+1,y,floor[Tileset].middle,floor[Tileset].right,floor[Tileset].left,options);
 
 	/* Draw a floor inbetween. */
 	Fill(x+1,y,length-2,1,floor[Tileset].middle);

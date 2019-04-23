@@ -40,8 +40,7 @@ const char TextHeatUp[] PROGMEM = "READY FOR HEAT UP!";
 void initInGameDescriptionScreen(void) {
 	/* Draw level description picture. */
 	clearScreen();
-	drawFloor(0,20,SCREEN_WIDTH);
-	drawFloor(0,20,SCREEN_WIDTH);
+	drawFloor(0,20,SCREEN_WIDTH,DRAW_OPTION_FLOOR_FORCE_WRAP);
 	prepareLevelDescription(20);
 
 	/* Fade in.*/
