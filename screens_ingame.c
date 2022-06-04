@@ -322,24 +322,21 @@ void updateInGameBonusScreen(void) {
 	dropHattedComponents();
 	animateBurgers();
 
-	/* Check if player should move. */
-	if ((GameScreenAnimationPhase & 1)) {
-		/* Yes. Get held buttons. */
-		directional_buttons_held=checkControllerButtonsHeld(0,BTN_DIRECTIONS);
+	/* Get held buttons. */
+	directional_buttons_held=checkControllerButtonsHeld(0,BTN_DIRECTIONS);
 
-		/* Select direction to move player. */
-		selectPlayerDirection(directional_buttons_held);
+	/* Select direction to move player. */
+	selectPlayerDirection(directional_buttons_held);
 
-		/* Move player into selected direction, if possible. */
-		movePlayer(directional_buttons_held);
+	/* Move player into selected direction, if possible. */
+	movePlayer(directional_buttons_held);
 
-		/* Move pepper if present. */
-		movePepper();
+	/* Move pepper if present. */
+	movePepper();
 
-		/* Move all active opponents. */
-		for (i=0;i<OPPONENT_MAX;i++)
-			moveOpponent(i);
-	}
+	/* Move all active opponents. */
+	for (i=0;i<OPPONENT_MAX;i++)
+		moveOpponent(i);
 
 	/* Check if bonus stage cleared. */
 	for (i=0;i<OPPONENT_START_POSITION_MAX;i++) {
