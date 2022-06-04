@@ -29,7 +29,7 @@
 
 
 /* Fixed strings. */
-const char TextHeatUp[] PROGMEM = "READY FOR HEAT UP!";
+const char TextHeatUp[] PROGMEM = "HEAT IS ON!";
 
 
 /*
