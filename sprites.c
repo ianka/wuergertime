@@ -551,11 +551,13 @@ uint8_t checkSpriteAtLadderTop(uint8_t slot) {
 	switch (getSpriteLadderTopTile(slot)) {
 		case TILES0_LADDER_TOP_RIGHT:
 		case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+		case TILES0_LADDER_TOP_UPONLY_RIGHT:
 			/* Ladder top end? */
 			switch (getSpriteLadderTile(slot)) {
 				case TILES0_LADDER_RIGHT:
 				case TILES0_LADDER_TOP_RIGHT:
 				case TILES0_LADDER_TOP_FLOOREND_RIGHT:
+				case TILES0_LADDER_TOP_UPONLY_RIGHT:
 				case TILES0_LADDER_SQUIRTED_RIGHT:
 				case TILES0_LADDER_CLEANED_RIGHT:
 					/* Not at ladder top. */
