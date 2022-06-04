@@ -357,11 +357,22 @@ void updateEnterHighscoreScreen(void) {
 	uint8_t x=getSpriteTileX(Player.sprite,8);
 	uint8_t y=HIGHSCORE_TOPMOST+2*Scratchpad;
 
-	/* Move cook to next half-tile position. */
-	if ((getSpriteX(Player.sprite) % 8) != 2)
-		moveSprite(Player.sprite,1,0);
+	/* Move cook to previous/next half-tile position. */
+	if ((getSpriteX(Player.sprite) % 8) != 2) {
+		switch (Player.flags & PLAYER_FLAGS_DIRECTION_MASK) {
+			case PLAYER_FLAGS_DIRECTION_LEFT:
+				moveSprite(Player.sprite,-1,0);
+				break;
+			case PLAYER_FLAGS_DIRECTION_RIGHT:
+				moveSprite(Player.sprite,1,0);
+				break;
+		}
 
-	/* Check buttons. */
+		/* Do nothing before not in correct position. */
+		return;
+	}
+
+	/* Otherwise check buttons. */
 	switch (checkControllerButtonsPressed(0,BTN_ALL)) {
 		case BTN_UP:
 			/* Roll through alphabet backwards. */
@@ -371,14 +382,12 @@ void updateEnterHighscoreScreen(void) {
 			/* Roll through alphabet forward. */
 			setTile(x,y,(((getTile(x,y)+1)-16) % 32)+FONT_ALPHA_TILE);
 			break;
-		case BTN_RIGHT:
-			/* Move to next position. */
-			if (x < HIGHSCORE_COOK_END_POSITION_X+5)
-				moveSprite(Player.sprite,1,0);
-			else
-				ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
-			break;
 		case BTN_LEFT:
+			/* Move to previous position. */
+			if (x > HIGHSCORE_COOK_END_POSITION_X+1) {
+				Player.flags=(Player.flags & ~PLAYER_FLAGS_DIRECTION_MASK)|PLAYER_FLAGS_DIRECTION_LEFT;
+				moveSprite(Player.sprite,-1,0);
+			}
 			break;
 		case BTN_A:
 		case BTN_B:
@@ -388,13 +397,20 @@ void updateEnterHighscoreScreen(void) {
 		case BTN_SL:
 		case BTN_START:
 		case BTN_SELECT:
-			/* Switch to next screen when start button is pressed. */
-			ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
-			break;
-		default:
-			/* Switch to next screen after a while. */
-			if (GameScreenAnimationPhase>5000)
+			/* Change game screen when in last position. */
+			if (x == HIGHSCORE_COOK_END_POSITION_X+5) {
 				ChangeGameScreen(GAME_SCREEN_ENTERED_HIGHSCORE);
+				return;
+			}
+
+			/* Else fallthrough. */
+		case BTN_RIGHT:
+			/* Move to next position. */
+			if (x < HIGHSCORE_COOK_END_POSITION_X+5) {
+				Player.flags=(Player.flags & ~PLAYER_FLAGS_DIRECTION_MASK)|PLAYER_FLAGS_DIRECTION_RIGHT;
+				moveSprite(Player.sprite,1,0);
+			}
+			break;
 	}
 }
 
@@ -434,7 +450,7 @@ void updateEnteredHighscoreScreen(void) {
 			changePlayerDirection(PLAYER_FLAGS_DIRECTION_DOWN);
 
 		/* Move cook until end position reached. */
-		/* Then switch to new highscore entry screen. */
+		/* Then switch to game start screen. */
 		if (getSpriteTileY(Player.sprite,0) < (HIGHSCORE_COOK_START_POSITION_Y-1))
 			moveSprite(Player.sprite,0,1);
 		else
