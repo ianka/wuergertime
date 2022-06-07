@@ -11,6 +11,9 @@ CC = avr-gcc
 INFO=../gameinfo.properties
 AVR_SYSROOT=/usr/avr/sys-root/
 
+## Use the avr toolset
+export PATH := $(AVR_SYSROOT)/../bin:$(PATH)
+
 ## Escape spaces in mixer path (due to custom sounds.inc)
 #EMPTY:=
 #SPACE:= $(EMPTY) $(EMPTY)
@@ -19,7 +22,7 @@ AVR_SYSROOT=/usr/avr/sys-root/
 #MIX_PATH_ESC:= $(subst $(SPACE),$(SPACE_ESC),$(MIX_PATH))
 
 ## Kernel settings
-KERNEL_DIR = ../../../kernel
+KERNEL_DIR = kernel
 KERNEL_OPTIONS  = -DVIDEO_MODE=3 -DINTRO_LOGO=0
 KERNEL_OPTIONS += -DSOUND_MIXER=1
 KERNEL_OPTIONS += -DSCROLLING=0
