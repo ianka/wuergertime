@@ -283,7 +283,7 @@ void prepareLevel(void) {
 							if (GameScreenBurger[burger].component[component].type == LEVEL_ITEM_INVALID) break;
 
 						/* Check if we have a place slot now. */
-						/* component don't need to be tested, it's always <= place */
+						/* Component doesn't need to be tested, it's always <= place */
 						if (place != SCREEN_BURGER_PLACE_MAX) {
 							/* Yes.	Remember burger place parameters. */
 							GameScreenBurger[burger].place[place].occupied_by=SCREEN_BURGER_PLACE_FREE;
@@ -542,7 +542,7 @@ void animateLevelStart(void) {
 /* Drop a component. */
 void dropComponent(uint8_t burger, uint8_t component) {
 	uint8_t component_below, place, i;
-	burger_component_t *p, *q;
+	burger_component_t *p;
 
 	/* Shortcut pointer to current component. */
 	p=&(GameScreenBurger[burger].component[component]);
@@ -558,13 +558,13 @@ void dropComponent(uint8_t burger, uint8_t component) {
 			for(i=0;i<5;i++)
 				p->background[((p->half_y)>>1) & 0x01][i]=TILES0_SPACE;
 
+			/* Set target coordinate. */
+			p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
+
 			/* Get component on place below. */
 			component_below=GameScreenBurger[burger].place[place-1].occupied_by & SCREEN_BURGER_OCCUPIED_MASK;
 			if (component_below == SCREEN_BURGER_PLACE_FREE_BODY) {
 				/* Place below is free. */
-				/* Set target coordinate. */
-				p->half_target_y=GameScreenBurger[burger].place[place-1].half_y;
-
 				/* Plate below? */
 				if (place == 1) {
 					/*
@@ -577,12 +577,6 @@ void dropComponent(uint8_t burger, uint8_t component) {
 					GameScreenBurger[burger].place[place-1].occupied_by=component|SCREEN_BURGER_PLACE_FREE_HAT;
 				}
 			} else {
-				/* Place below is occupied. Get component. */
-				q=&(GameScreenBurger[burger].component[component_below]);
-
-				/* Set target coordinate. */
-				p->half_target_y=q->half_y-2;
-
 				/* Remember current component soon being a "hat" for the component_below. */
 				GameScreenBurger[burger].place[place-1].occupied_by=
 					component_below|(component<<SCREEN_BURGER_OCCUPIED_HAT_SHIFT);
@@ -596,7 +590,7 @@ void dropComponent(uint8_t burger, uint8_t component) {
 
 
 /*
- *  Search a move components which have other components as a "hat".
+ *  Search and move components which have other components as a "hat".
  *  This introduces chain reaction falling of components.
  */
 void dropHattedComponents(void) {
