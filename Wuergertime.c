@@ -34,7 +34,7 @@
 
 
 /*
- *  Main funcion
+ *  Main function
  */
 int main(void) {
 	/* Game-wide initialisation */
